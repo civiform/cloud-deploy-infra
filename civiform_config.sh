@@ -2,6 +2,7 @@
 
 # CiviForm deployment configuration file for AWS staging.
 
+export APP_PREFIX="staging-aws"
 export CIVIFORM_CLOUD_PROVIDER="aws"
 export CIVIFORM_MODE="staging"
 export TERRAFORM_TEMPLATE_DIR="cloud/aws/templates/aws_oidc"
