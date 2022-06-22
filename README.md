@@ -1,2 +1,1 @@
-# civiform-deploy
-Some Run Books and Documentation Live [Here](https://github.com/seattle-uat/civiform/wiki/Terraform-Deploy-System)
+Setup for Civifor on AWS. See more documentation [here](https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system).
