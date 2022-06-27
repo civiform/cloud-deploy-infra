@@ -21,7 +21,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: resolve latest snapshot tag
-        run: source <(bin/run cloud/shared/bin/resolve-latest-snapshot-tag --tag=latest)
+        run: source bin/resolve-latest-snapshot-tag
 
       - name: Run deployment with latest
         run: bin/deploy "--tag=${LATEST_SNAPSHOT_TAG}"
