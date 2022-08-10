@@ -1,0 +1,26 @@
+name: Deploy
+  # Setting this enables manually triggering workflow in the GitHub UI
+  # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+on: 
+  workflow_dispatch: {}
+  schedule:
+    - cron: 0 */12 * * * # “At minute 0 past every 12th hour.”
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out branch
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: resolve latest snapshot tag
+        run: source bin/resolve-latest-snapshot-tag
+
+      - name: Run deployment with latest
+        run: bin/deploy "--tag=${LATEST_SNAPSHOT_TAG}"
