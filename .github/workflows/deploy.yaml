@@ -1,7 +1,7 @@
 name: Deploy
   # Setting this enables manually triggering workflow in the GitHub UI
   # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
- on: 
+on: 
   workflow_dispatch: {}
   schedule:
     - cron: 0 */12 * * * # “At minute 0 past every 12th hour.”
