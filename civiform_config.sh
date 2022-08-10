@@ -109,69 +109,6 @@ export CUSTOM_HOSTNAME="staging-aws.civiform.dev"
 export CIVIFORM_TIME_ZONE_ID="America/Los_Angeles"
 
 #################################################
-# Template variables for: azure_saml_ses
-#################################################
-
-# REQUIRED
-# The Azure region to use, must be lower case.
-# See https://azure.microsoft.com/en-us/global-infrastructure/geographies
-export AZURE_LOCATION="eastus"
-
-# REQUIRED
-# The storage account name for the deployment log file (not the application
-# server logs). Only letters and numbers allowed.
-# e.g. "civiformdeploylogstorage"
-export AZURE_LOG_STORAGE_ACCOUNT_NAME=""
-
-# REQUIRED
-# The Azure subscription ID for this deployment, used for billing.
-export AZURE_SUBSCRIPTION=""
-
-# REQUIRED
-# The Azure resource group for this deployment.
-export AZURE_RESOURCE_GROUP=""
-
-# REQUIRED
-# The AWS account username for sending emails with SES.
-export AWS_USERNAME=""
-
-# REQUIRED
-# An Azure Storage Account name for storing the SAML keystore secrets.
-# Only letters and numbers allowed.
-# e.g. "civiformsamlkeystoresecrets"
-export SAML_KEYSTORE_ACCOUNT_NAME=""
-
-# REQUIRED
-# The Azure key vault for storing application secrets.
-# Only letters and numbers allowed.
-# e.g. "civiformkeyvault"
-export KEY_VAULT_NAME=""
-
-# REQUIRED
-# The ADFS group name for specifying CiviForm admins. If usinge
-# Azure AD this is the group's object ID
-export ADFS_ADMIN_GROUP=""
-
-# REQUIRED
-# API key for the LoginRadius application. Copy from the LoginRadius dashboard.
-export LOGIN_RADIUS_API_KEY=""
-
-# REQUIRED
-# URI for retrieving LoginRadius metadata. Copy from the LoginRadius dashboard.
-export LOGIN_RADIUS_METADATA_URI=""
-
-# REQUIRED
-# App name for CiviForm in LoginRadius. Copy from the LoginRadius dashboard.
-export LOGIN_RADIUS_SAML_APP_NAME=""
-
-# REQUIRED
-# The name of the application in Azure App Service.
-# The Azure public DNS entry for the app will prepend this value.
-# Can only consist of lowercase letters and numbers, and must be between 3 and 24
-# characters long.
-export APPLICATION_NAME=""
-
-#################################################
 # Template variables for: aws_oidc
 #################################################
 
