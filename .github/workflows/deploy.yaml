@@ -18,7 +18,10 @@ jobs:
           aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
+        
+      - name: skip terraform confirmations
+        run: echo "SKIP_CONFIRMATIONS=true" >> $GITHUB_ENV
+      
       - name: resolve latest snapshot tag
         run: source bin/resolve-latest-snapshot-tag
 
