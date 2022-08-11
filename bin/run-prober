@@ -9,3 +9,4 @@ docker run \
   -e TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" \
   civiform/civiform-browser-test:latest \
   /bin/bash -c "yarn install && yarn probe"
+  
