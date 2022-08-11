@@ -20,7 +20,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: skip deploy script confirmations
-        run: echo "CI_SKIP_WARN=true" >> $GITHUB_ENV
+        run: echo "CF_SKIP_WARN=true" >> $GITHUB_ENV
         
       - name: skip terraform confirmations
         run: echo "SKIP_CONFIRMATIONS=true" >> $GITHUB_ENV
