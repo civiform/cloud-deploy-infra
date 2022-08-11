@@ -19,14 +19,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: resolve latest snapshot tag
-        run: source bin/resolve-latest-snapshot-tag
-
       - name: skip deploy script confirmations
         run: echo "CI_SKIP_WARN=true" >> $GITHUB_ENV
         
       - name: skip terraform confirmations
         run: echo "SKIP_CONFIRMATIONS=true" >> $GITHUB_ENV
+      
+      - name: resolve latest snapshot tag
+        run: source bin/resolve-latest-snapshot-tag
 
       - name: Run deployment with latest
         run: bin/deploy "--tag=${LATEST_SNAPSHOT_TAG}"
