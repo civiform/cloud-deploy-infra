@@ -1,11 +1,12 @@
 #! /usr/bin/env bash
 
 # DOC: Run the browser test suite in Docker against the staging environment.
-docker pull civiform/civiform-browser-test:latest
+# First argument is expected to be valid image tag.
+docker pull civiform/civiform-browser-test:${1}
 
 docker run \
   -e BASE_URL="https://staging-aws.civiform.dev" \
   -e TEST_USER_LOGIN="${TEST_USER_LOGIN}" \
   -e TEST_USER_PASSWORD="${TEST_USER_PASSWORD}" \
-  civiform/civiform-browser-test:latest \
+  civiform/civiform-browser-test:${1} \
   /bin/bash -c "yarn install && yarn probe"

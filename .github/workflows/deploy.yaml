@@ -43,4 +43,4 @@ jobs:
           timeout_minutes: 50
           max_attempts: 2
           retry_wait_seconds: 30
-          command: bin/run-prober
+          command: bin/run-prober ${LATEST_SNAPSHOT_TAG}
