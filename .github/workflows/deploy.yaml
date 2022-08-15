@@ -1,4 +1,4 @@
-name: Deploy and Run Probers
+name: AWS Staging Deploy
   # Setting this enables manually triggering workflow in the GitHub UI
   # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
 on: 
