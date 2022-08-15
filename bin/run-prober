@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+# DOC: Run the browser test suite in Docker against the staging environment.
+docker pull civiform/civiform-browser-test:latest
+
+docker run \
+  -e BASE_URL="https://staging-aws.civiform.dev" \
+  civiform/civiform-browser-test:latest \
+  /bin/bash -c "yarn install && yarn probe"
