@@ -16,6 +16,7 @@ jobs:
     
     env:
       SKIP_CONFIRMATIONS: true
+      DISABLE_SCREENSHOTS: true
     steps:
       - name: check out branch
         uses: actions/checkout@v2
