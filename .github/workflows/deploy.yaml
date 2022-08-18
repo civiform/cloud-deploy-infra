@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      SKIP_CONFIRMATIONS: true
-      DISABLE_SCREENSHOTS: true
+      SKIP_CONFIRMATIONS: true # for terraform
+      CF_SKIP_WARN: true # for resolving git commit
     steps:
       - name: check out branch
         uses: actions/checkout@v2
@@ -35,13 +35,9 @@ jobs:
         run: bin/deploy "--tag=${LATEST_SNAPSHOT_TAG}"
 
       - name: Run Prober tests
-        env:
-          # These are credentials from Auth0. If auth provider is changed, update values.
-          TEST_USER_LOGIN: ${{ secrets.TEST_USER_LOGIN }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 50
           max_attempts: 2
           retry_wait_seconds: 30
-          command: bin/run-prober ${LATEST_SNAPSHOT_TAG}
+          command: bin/run-prober "https://staging-aws.civiform.dev"

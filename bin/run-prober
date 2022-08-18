@@ -6,6 +6,7 @@ docker pull civiform/civiform-browser-test:latest
 # Uses /bin/bash entrypoint declared in 
 # https://github.com/civiform/civiform/blob/615e7008b1c3e4273ab34556a1e6b692d5b7e5ca/browser-test/playwright.Dockerfile#L27
 docker run \
-  -e BASE_URL="https://staging-aws.civiform.dev" \
+  -e BASE_URL="${1}" \
+  -e DISABLE_SCREENSHOTS=true \
   civiform/civiform-browser-test:latest \
   -c "yarn install && yarn probe"
