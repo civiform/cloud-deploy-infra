@@ -7,4 +7,4 @@ docker run \
   -e BASE_URL="https://staging-aws.civiform.dev" \
   --init \
   civiform/civiform-browser-test:latest \
-  /bin/bash -c "yarn install && yarn probe"
+  --entrypoint /bin/bash -c "yarn install && yarn probe"
