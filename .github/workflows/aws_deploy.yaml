@@ -32,7 +32,7 @@ jobs:
         run: source bin/resolve-latest-snapshot-tag
 
       - name: Run deployment with latest
-        run: bin/deploy --tag=${LATEST_SNAPSHOT_TAG} --config_file="aws_staging_civiform_config.sh"
+        run: bin/deploy --tag=${LATEST_SNAPSHOT_TAG} --config="aws_staging_civiform_config.sh"
 
       - name: Run Prober tests
         uses: nick-fields/retry@v2
