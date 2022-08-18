@@ -1,20 +1,19 @@
-name: AWS Staging Deploy
+name: Deploy Azure Staging
+on:
   # Setting this enables manually triggering workflow in the GitHub UI
   # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
-on: 
   workflow_dispatch: {}
   schedule:
     - cron: 0 */12 * * * # “At minute 0 past every 12th hour.”
-
-concurrency:
-  group: stagingenvironment
-  cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     env:
+      ARM_TENANT_ID: ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_SERVICE_PRINCIPAL_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }}
       SKIP_CONFIRMATIONS: true # for terraform
       CF_SKIP_WARN: true # for resolving git commit
     steps:
@@ -27,17 +26,12 @@ jobs:
           aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
+
+      - name: login to Azure
+        run: bin/azure-cli-login
+
       - name: resolve latest snapshot tag
         run: source bin/resolve-latest-snapshot-tag
 
       - name: Run deployment with latest
-        run: bin/deploy "--tag=${LATEST_SNAPSHOT_TAG}"
-
-      - name: Run Prober tests
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 50
-          max_attempts: 2
-          retry_wait_seconds: 30
-          command: bin/run-prober "https://staging-aws.civiform.dev"
+        run: bin/deploy --tag=${LATEST_SNAPSHOT_TAG} --config_file="aws_staging_civiform_config.sh"
