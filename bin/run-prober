@@ -6,4 +6,4 @@ docker pull civiform/civiform-browser-test:latest
 docker run \
   -e BASE_URL="https://staging-aws.civiform.dev" \
   civiform/civiform-browser-test:latest \
-  -c "yarn install && yarn probe"
+  yarn install && yarn probe
