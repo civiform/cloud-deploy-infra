@@ -1,1 +1,2 @@
-Setup for Civiform on AWS. See more documentation [here](https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system).
+# civiform-tf-deploy
+Use this repo to store standardized Terraform deployment configurations for CiviForm.
