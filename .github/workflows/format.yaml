@@ -1,0 +1,53 @@
+name: Format
+
+on:
+  # code review question: this commits directly to PR branches.
+  # that seems like what we're looking for, but we could also format only
+  # committed code.
+  pull_request:
+    branches:
+      - main
+
+# cancels in-progress jobs on this pull request
+# avoids wasted work when a new commit is pushed
+concurrency:
+  group: format-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  terraform-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: terraform fmt
+        id: tf_fmt
+        run: terraform fmt -check -recursive -diff cloud
+
+  shell-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the shell checker
+        uses: luizm/action-sh-checker@master
+        env:
+          SHELLCHECK_OPTS: -s bash -S error
+          sh_checker_exclude: '*.md'
+          SHFMT_OPTS:
+            -bn -ci -i 2
+            # -i 2   indent 2 spaces
+            # -bn    binary ops like && and | may start a line
+            # -ci    switch cases will be indented
+  python-formatting:
+    name: Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: run YAPF to test if python code is correctly formatted
+        uses: AlexanderMelde/yapf-action@v1.0
+        with:
+          args: "--verbose --style='{based_on_style: google, SPLIT_BEFORE_FIRST_ARGUMENT:true}'"
