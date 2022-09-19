@@ -42,8 +42,9 @@ jobs:
             # -i 2   indent 2 spaces
             # -bn    binary ops like && and | may start a line
             # -ci    switch cases will be indented
+  
   python-formatting:
-    name: Formatting Check
+    name: python-formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
