@@ -1,0 +1,40 @@
+name: build_push_image
+
+on:
+  push:
+    branches: 
+    - main
+  # Setting this enables manually triggering workflow in the GitHub UI
+  # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+  workflow_dispatch: {}
+
+permissions: read-all
+
+# Build and push the civiform/civiform-cloud-deployment.
+jobs:
+  build_civiform_cloud_deployment:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    name: Build civiform-cloud-deployment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # TODO: run terraform init for all templates to download modules and providers.
+      - name: Set up Docker QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Check if we should push
+        if: ${{ (github.event_name == 'workflow_dispatch') || (github.event_name == 'push') }}
+        run: echo "PUSH_IMAGE=1" >> $GITHUB_ENV
+      - name: Run build
+        id: build_and_push
+        env:
+          DOCKER_BUILDKIT: 1
+          PLATFORM: 'linux/amd64'
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        run: bin/build-cloud-deployment

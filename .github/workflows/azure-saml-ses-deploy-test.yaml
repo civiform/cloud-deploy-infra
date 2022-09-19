@@ -4,7 +4,7 @@ on:
   # TODO(#23): Enable on every PR once secrets are set.
 
 concurrency:
-  group: format-${{ github.head_ref || github.run_id }}
+  group: azure-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 permissions: read-all

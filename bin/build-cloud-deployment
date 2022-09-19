@@ -2,12 +2,17 @@
 
 # DOC: Build civiform/civiform-cloud-deployment.
 
-IMAGE="civiform-cloud-deployment"
-LOCATION="."
-DOCKERFILE="cloud/cloud.Dockerfile"
+readonly SHORT_SHA="$(git rev-parse --short HEAD)"
+readonly GIT_SHA="$(git rev-parse HEAD)"
+readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
+readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
+readonly IMAGE="civiform-cloud-deployment"
+readonly LOCATION="."
+readonly DOCKERFILE="cloud/cloud.Dockerfile"
 
 BUILD_ARGS=(-f "${DOCKERFILE}"
   -t "civiform/${IMAGE}:latest"
+  -t "civiform/${IMAGE}:${SNAPSHOT_TAG}"
   --cache-from "civiform/${IMAGE}"
   --build-arg BUILDKIT_INLINE_CACHE=1
   "${LOCATION}")
