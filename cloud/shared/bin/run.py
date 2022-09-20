@@ -44,8 +44,8 @@ def main():
         )
 
     print("Writing TF Vars file")
-    terraform_tfvars_path = os.path.join(
-        config.get_template_dir(), config.tfvars_filename)
+    terraform_tfvars_path = os.path.join(config.get_template_dir(),
+                                         config.tfvars_filename)
 
     # Write the passthrough vars to a temporary file
     tf_var_writter = TfVarWriter(terraform_tfvars_path)
@@ -56,8 +56,7 @@ def main():
         params = shlex.split(args.command)[1:]
         if not os.path.exists(f'cloud/shared/bin/{cmd}.py'):
             exit(f'Command {cmd} not found.')
-        command_module = importlib.import_module(
-            f'cloud.shared.bin.{cmd}')
+        command_module = importlib.import_module(f'cloud.shared.bin.{cmd}')
         if not command_module:
             exit(f'Command {cmd} not found.')
         command_module.run(config, params)

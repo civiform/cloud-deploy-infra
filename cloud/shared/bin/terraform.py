@@ -12,4 +12,5 @@ def run(config: ConfigLoader, params):
         exit('terraform command requires arguments, but none were provided.')
     if config.use_local_backend:
         terraform.copy_backend_override(config)
-    subprocess.check_call(['terraform', f'-chdir={config.get_template_dir()}'] + params)
+    subprocess.check_call(
+        ['terraform', f'-chdir={config.get_template_dir()}'] + params)
