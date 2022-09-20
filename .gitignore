@@ -3,6 +3,7 @@ target/
 RUNNING_PID
 .Dockerfile.swp
 .idea/
+.vscode/
 *.swp
 .bsp/
 .DS_Store
