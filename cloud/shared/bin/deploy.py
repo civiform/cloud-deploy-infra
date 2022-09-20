@@ -6,7 +6,7 @@ from typing import List
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 
-def run(config: ConfigLoader, params: List[str] = None) :
+def run(config: ConfigLoader, params: List[str] = None):
     deploy_file_py = os.path.join(
         'cloud', config.get_cloud_provider(), 'bin', 'deploy.py')
     # TODO(#2741): remove the fork after Azure scripts are in python
