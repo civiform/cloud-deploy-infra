@@ -3,11 +3,12 @@ Run terraform commands.
 """
 
 import subprocess
+from typing import List
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib import terraform
 
 
-def run(config: ConfigLoader, params):
+def run(config: ConfigLoader, params: List[str]):
     if not params:
         exit('terraform command requires arguments, but none were provided.')
     if config.use_local_backend:
