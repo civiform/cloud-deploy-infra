@@ -44,8 +44,8 @@ def main():
         )
 
     print("Writing TF Vars file")
-    terraform_tfvars_path = os.path.join(config.get_template_dir(),
-                                         config.tfvars_filename)
+    terraform_tfvars_path = os.path.join(
+        config.get_template_dir(), config.tfvars_filename)
 
     # Write the passthrough vars to a temporary file
     tf_var_writter = TfVarWriter(terraform_tfvars_path)
