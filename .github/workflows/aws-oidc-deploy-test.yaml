@@ -6,7 +6,7 @@ on:
     - main
 
 concurrency:
-  group: format-${{ github.head_ref || github.run_id }}
+  group: aws-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 permissions: read-all
