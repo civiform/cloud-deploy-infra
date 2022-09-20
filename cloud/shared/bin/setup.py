@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from typing import List
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_setup
@@ -15,7 +16,7 @@ The script generates a .tfvars file that is used to deploy via terraform.
 """
 
 
-def run(config: ConfigLoader):
+def run(config: ConfigLoader, params: List[str]):
     ###############################################################################
     # Load Setup Class for the specific template directory
     ###############################################################################

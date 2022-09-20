@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+import shlex
 import os
 import sys
 import importlib
@@ -27,7 +28,7 @@ def main():
     args = parser.parse_args()
     if args.tag:
         os.environ['TF_VAR_image_tag'] = args.tag
-    elif args.command is not None and args.command not in ['destroy', 'doctor']:
+    elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
 
     os.environ['TF_VAR_FILENAME'] = "setup.auto.tfvars"
@@ -51,13 +52,14 @@ def main():
     tf_var_writter.write_variables(config.get_terraform_variables())
 
     if args.command:
-        if not os.path.exists(f'cloud/shared/bin/{args.command}.py'):
-            exit(f'Command {args.command} not found.')
-        command_module = importlib.import_module(
-            f'cloud.shared.bin.{args.command}')
+        cmd = shlex.split(args.command)[0]
+        params = shlex.split(args.command)[1:]
+        if not os.path.exists(f'cloud/shared/bin/{cmd}.py'):
+            exit(f'Command {cmd} not found.')
+        command_module = importlib.import_module(f'cloud.shared.bin.{cmd}')
         if not command_module:
-            exit(f'Command {args.command} not found.')
-        command_module.run(config)
+            exit(f'Command {cmd} not found.')
+        command_module.run(config, params)
 
 
 if __name__ == "__main__":
