@@ -8,6 +8,7 @@ Destroy the setup
 
 
 class Destroy(AwsSetupTemplate):
+
     def post_terraform_destroy(self):
         # when config is dev then the state is stored locally and no clean up
         # required
