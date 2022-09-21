@@ -17,12 +17,6 @@ class SetupTemplate:
     def __init__(self, config: ConfigLoader):
         self.config: ConfigLoader = config
 
-    def _make_backend_override(self):
-        current_directory = self.config.get_template_dir()
-        shutil.copy2(
-            f'{current_directory}/backend_override',
-            f'{current_directory}/backend_override.tf')
-
     def pre_terraform_setup(self):
         print(" - TODO: Pre terraform setup.")
 

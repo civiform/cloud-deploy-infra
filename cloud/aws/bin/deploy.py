@@ -3,15 +3,9 @@ import sys
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
-from cloud.aws.bin.lib import backend_setup
 
 
 def run(config):
-    if config.use_local_backend:
-        terraform.copy_backend_override(config)
-    else:
-        backend_setup.setup_backend_config(config)
-
     if not terraform.perform_apply(config):
         sys.stderr.write('Terraform deployment failed.')
         # TODO(#2606): write and upload logs.

@@ -8,11 +8,6 @@ Destroy the setup
 
 
 class Destroy(AwsSetupTemplate):
-
-    def pre_terraform_destroy(self):
-        if self.config.use_local_backend:
-            self._make_backend_override()
-
     def post_terraform_destroy(self):
         # when config is dev then the state is stored locally and no clean up
         # required

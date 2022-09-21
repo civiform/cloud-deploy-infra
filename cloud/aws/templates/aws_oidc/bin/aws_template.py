@@ -2,7 +2,6 @@ import os
 import tempfile
 import shutil
 
-from cloud.aws.bin.lib import backend_setup
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.setup_template import SetupTemplate
 
@@ -19,10 +18,6 @@ class AwsSetupTemplate(SetupTemplate):
                 self.config.get_template_dir(), 'setup',
                 self.config.tfvars_filename))
         terraform.perform_apply(self.config, is_destroy, template_dir)
-
-    def _setup_shared_state_file(self):
-        if not self.config.use_local_backend:
-            backend_setup.setup_backend_config(self.config)
 
     def setup_log_file(self):
         # TODO(#2606): If remote file exist fetch it here.

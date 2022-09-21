@@ -24,17 +24,12 @@ class Setup(SetupTemplate):
         return True
 
     def pre_terraform_setup(self):
-        print(" - Setting up shared state")
-        self._setup_shared_state()
         print(" - Setting up the keyvault")
         self._setup_keyvault()
         print(" - Setting up the SAML keystore")
         self._setup_saml_keystore()
         print(" - Setting up SES")
         self._setup_ses()
-        # Only run in dev mode
-        if self.config.use_local_backend:
-            self._make_backend_override()
 
     def get_current_user(self):
         current_user_process = subprocess.run(
@@ -112,17 +107,6 @@ class Setup(SetupTemplate):
             check=True)
         self.resource_group = resource_group
         self.resource_group_location = resource_group_location
-
-    def _setup_shared_state(self):
-        if not self.resource_group:
-            raise RuntimeError("Resource group required")
-        if not self.config.use_local_backend:
-            subprocess.run(
-                [
-                    "cloud/azure/bin/setup_tf_shared_state",
-                    f"{self.config.get_template_dir()}/{self.config.backend_vars_filename}"
-                ],
-                check=True)
 
     def _setup_keyvault(self):
         if not self.resource_group:

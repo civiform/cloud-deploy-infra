@@ -10,11 +10,6 @@ Destroy the setup
 
 
 class Destroy(SetupTemplate):
-
-    def pre_terraform_destroy(self):
-        if self.config.use_local_backend:
-            self._make_backend_override()
-
     def post_terraform_destroy(self):
         print(" - Purge the keyvault")
         self._purge_keyvault()
