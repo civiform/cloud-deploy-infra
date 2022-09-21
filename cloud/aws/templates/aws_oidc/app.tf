@@ -61,7 +61,7 @@ module "civiform_server_container_def" {
     },
     {
       name      = "ADFS_CLIENT_ID"
-      valueFrom = aws_secretsmanager_secret_version.applicant_oidc_client_id_secret_version.arn
+      valueFrom = aws_secretsmanager_secret_version.adfs_client_id_secret_version.arn
     },
     {
       name      = "APPLICANT_OIDC_CLIENT_ID"
