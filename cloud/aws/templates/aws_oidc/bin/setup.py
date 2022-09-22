@@ -5,7 +5,6 @@ from typing import Dict
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
-from cloud.aws.bin.lib import backend_setup
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 # TODO(#3116): move these to variable_definitions.json and read docs from there.
@@ -39,14 +38,6 @@ class Setup(AwsSetupTemplate):
     def pre_terraform_setup(self):
         print(' - Running the setup script in terraform')
         self._tf_run_for_aws(is_destroy=False)
-        print(' - Setting up shared state file')
-        self._setup_shared_state_file()
-        if self.config.use_local_backend:
-            self._make_backend_override()
-
-    def _setup_shared_state_file(self):
-        if not self.config.use_local_backend:
-            backend_setup.setup_backend_config(self.config)
 
     def requires_post_terraform_setup(self):
         return True

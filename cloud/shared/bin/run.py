@@ -11,6 +11,7 @@ sys.path.append(os.getcwd())
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
+from cloud.shared.bin.lib import backend_setup
 
 
 def main():
@@ -47,6 +48,8 @@ def main():
     terraform_tfvars_path = os.path.join(
         config.get_template_dir(), config.tfvars_filename)
 
+    # Setup backend
+    backend_setup.setup_backend(config)
     # Write the passthrough vars to a temporary file
     tf_var_writter = TfVarWriter(terraform_tfvars_path)
     tf_var_writter.write_variables(config.get_terraform_variables())
