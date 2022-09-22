@@ -1,4 +1,4 @@
-name: Format
+name: PyTest
 
 on:
   # code review question: this commits directly to PR branches.
