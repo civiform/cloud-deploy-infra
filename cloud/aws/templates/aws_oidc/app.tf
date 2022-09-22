@@ -61,7 +61,7 @@ module "civiform_server_container_def" {
     },
     {
       name      = "ADFS_CLIENT_ID"
-      valueFrom = aws_secretsmanager_secret_version.applicant_oidc_client_id_secret_version.arn
+      valueFrom = aws_secretsmanager_secret_version.adfs_client_id_secret_version.arn
     },
     {
       name      = "APPLICANT_OIDC_CLIENT_ID"
@@ -110,6 +110,9 @@ module "civiform_server_container_def" {
     APPLICANT_OIDC_LAST_NAME_ATTRIBUTE   = var.applicant_oidc_last_name_attribute
     APPLICANT_OIDC_DISCOVERY_URI         = var.applicant_oidc_discovery_uri
     ADFS_DISCOVERY_URI                   = var.adfs_discovery_uri
+    ADFS_ADDITIONAL_SCOPES               = var.adfs_additional_scopes
+    AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name
+    ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
 
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
     CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet

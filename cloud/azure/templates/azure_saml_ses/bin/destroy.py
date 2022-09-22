@@ -10,6 +10,7 @@ Destroy the setup
 
 
 class Destroy(SetupTemplate):
+
     def post_terraform_destroy(self):
         print(" - Purge the keyvault")
         self._purge_keyvault()
