@@ -13,6 +13,7 @@ if civiform_mode::use_local_backend; then
   echo "Using local backend."
   terraform::copy_override
   exit 0
+fi
 
 if [[ -z "${1}" ]]; then
   out::error "Must specify backend vars filename."
