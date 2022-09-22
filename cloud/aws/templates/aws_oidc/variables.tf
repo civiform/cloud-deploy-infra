@@ -219,6 +219,23 @@ variable "adfs_discovery_uri" {
   default     = ""
 }
 
+variable "adfs_additional_scopes" {
+  type        = string
+  description = "Additional scopes requested during ADFS authentication flow. In Azure AD should be set to empty"
+  default     = "allatclaims"
+}
+
+variable "ad_groups_attribute_name" {
+  type        = string
+  description = "Key of authentication id_token map that contains list of groups that user belongs to."
+  default     = "group"
+}
+variable "adfs_admin_group" {
+  type        = string
+  description = "Name a group in ADFS or group id in Azure AD that user must belong to to be considered CiviForm admin"
+  default     = ""
+}
+
 variable "custom_hostname" {
   type        = string
   description = "The custom hostname this app is deployed on"
