@@ -1,6 +1,6 @@
 import unittest
 
-from check import Check
+from cloud.shared.bin.lib.check import Check
 
 
 class TestCheck(unittest.TestCase):

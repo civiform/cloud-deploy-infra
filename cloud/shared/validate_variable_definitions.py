@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from bin.lib.variable_definition_loader import VariableDefinitionLoader
+from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
 
 
 # Loads all configuration variable definition files and validates each

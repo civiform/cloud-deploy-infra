@@ -1,10 +1,4 @@
 {
-  "ADFS_ADMIN_GROUP": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "APPLICATION_NAME": {
     "required": true,
     "secret": false,

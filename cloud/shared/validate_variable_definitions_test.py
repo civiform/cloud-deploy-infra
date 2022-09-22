@@ -1,6 +1,6 @@
 import unittest
 
-from validate_variable_definitions import ValidateVariableDefinitions
+from cloud.shared.validate_variable_definitions import ValidateVariableDefinitions
 
 
 class TestValidateVariableDefinitions(unittest.TestCase):
