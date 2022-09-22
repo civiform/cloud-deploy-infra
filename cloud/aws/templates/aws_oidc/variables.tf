@@ -230,6 +230,7 @@ variable "ad_groups_attribute_name" {
   description = "Key of authentication id_token map that contains list of groups that user belongs to."
   default     = "group"
 }
+
 variable "adfs_admin_group" {
   type        = string
   description = "Name a group in ADFS or group id in Azure AD that user must belong to to be considered CiviForm admin"
