@@ -130,6 +130,24 @@
     "tfvar": true,
     "type": "string"
   },
+  "ADFS_ADMIN_GROUP": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ADFS_ADDITIONAL_SCOPES": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "AD_GROUPS_ATTRIBUTE_NAME": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "SSL_CERTIFICATE_ARN": {
     "required": true,
     "secret": false,
