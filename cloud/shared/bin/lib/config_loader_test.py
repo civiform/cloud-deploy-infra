@@ -1,6 +1,6 @@
 import unittest
 
-from config_loader import ConfigLoader
+from cloud.shared.bin.lib.config_loader import ConfigLoader
 """
  Tests for the ConfigLoader, calls the I/O methods to match the actual
  experience of running the class.

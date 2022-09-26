@@ -1,8 +1,7 @@
 import unittest
 import os
-import json
 
-from write_tfvars import TfVarWriter
+from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 """
  Tests for the WriteTfVars, calls the I/O methods to match the actual 
  experience of running the class. 
