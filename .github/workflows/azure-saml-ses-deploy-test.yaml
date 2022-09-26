@@ -1,7 +1,9 @@
 name: azure_saml_ses deploy test
 on:
   workflow_dispatch: {}
-  # TODO(#23): Enable on every PR once secrets are set.
+  pull_request:
+    branches: 
+    - main
 
 concurrency:
   group: azure-${{ github.head_ref || github.run_id }}
