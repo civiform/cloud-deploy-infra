@@ -67,6 +67,7 @@ resource "aws_iam_policy" "civiform_monitoring_role_policy" {
             "aps:ListRuleGroupsNamespaces",
             "aps:PutAlertManagerDefinition",
             "aps:PutRuleGroupsNamespace",
+            "aps:QueryMetrics",
             "aps:TagResource",
             "aps:UntagResource",
             "aps:CreateLoggingConfiguration",
