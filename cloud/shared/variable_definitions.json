@@ -158,5 +158,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
