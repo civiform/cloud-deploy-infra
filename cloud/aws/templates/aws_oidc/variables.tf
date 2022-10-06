@@ -317,3 +317,9 @@ variable "civiform_server_metrics_enabled" {
   description = "Whether to enable exporting server metrics on the /metrics route."
   default     = false
 }
+
+variable "allow_civiform_admin_access_programs" {
+  type        = bool
+  description = "Whether CiviForm admins can view program applications, similar to Program Admins."
+  default     = false
+}

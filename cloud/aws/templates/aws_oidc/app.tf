@@ -117,6 +117,7 @@ module "civiform_server_container_def" {
     ADFS_ADDITIONAL_SCOPES                    = var.adfs_additional_scopes
     AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
     ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
+    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
 
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
     CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
