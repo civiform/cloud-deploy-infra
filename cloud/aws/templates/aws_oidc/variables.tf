@@ -121,90 +121,91 @@ variable "postgres_backup_retention_days" {
 variable "staging_program_admin_notification_mailing_list" {
   type        = string
   description = "Admin notification mailing list for staging"
-  default     = ""
+  default     = null
 }
 
 variable "staging_ti_notification_mailing_list" {
   type        = string
   description = "intermediary notification mailing list for staging"
-  default     = ""
+  default     = null
 }
 
 variable "sender_email_address" {
   type        = string
   description = "Email address that emails will be sent from"
-  default     = ""
+  default     = null
 }
 
 variable "staging_applicant_notification_mailing_list" {
   type        = string
   description = "Applicant notification mailing list for staging"
-  default     = ""
+  default     = null
 }
 
 variable "app_prefix" {
   type        = string
   description = "A prefix to add to values so we can have multiple deploys in the same aws account"
+  default     = null
 }
 
 variable "applicant_oidc_provider_name" {
   type        = string
   description = "Applicant OIDC login provider name"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_response_mode" {
   type        = string
   description = "Applicant OIDC login response mode"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_response_type" {
   type        = string
   description = "Applicant OIDC login response type"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_additional_scopes" {
   type        = string
   description = "Applicant OIDC login additional scopes to request"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_locale_attribute" {
   type        = string
   description = "Applicant OIDC login user locale returned in token"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_email_attribute" {
   type        = string
   description = "Applicant OIDC login user email returned in token"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_first_name_attribute" {
   type        = string
   description = "Applicant OIDC login first name (or display name) returned in token"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_middle_name_attribute" {
   type        = string
   description = "Applicant OIDC login middle name (if not using display name) returned in token"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_last_name_attribute" {
   type        = string
   description = "Applicant OIDC login last name (if not using display name) returned in token"
-  default     = ""
+  default     = null
 }
 
 variable "civiform_applicant_idp" {
   type        = string
   description = "Applicant IDP"
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_provider_logout" {
@@ -216,7 +217,7 @@ variable "applicant_oidc_provider_logout" {
 variable "applicant_oidc_override_logout_url" {
   type        = string
   description = "The URL to use for the OIDC logout endpoint (when applicant_oidc_provider_logout is true).  If not set, uses the `end_session_endpoint` value from the discovery metadata."
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_post_logout_redirect_param" {
@@ -228,19 +229,19 @@ variable "applicant_oidc_post_logout_redirect_param" {
 variable "applicant_oidc_logout_client_param" {
   type        = string
   description = "What query parameter to use for sending the client id to the central OIDC provider for logout (when applicant_oidc_provider_logout is true).  If left blank, doesn't send the client id."
-  default     = ""
+  default     = null
 }
 
 variable "applicant_oidc_discovery_uri" {
   type        = string
   description = "Discovery URI"
-  default     = ""
+  default     = null
 }
 
 variable "adfs_discovery_uri" {
   type        = string
   description = "ADFS Discovery URI"
-  default     = ""
+  default     = null
 }
 
 variable "adfs_additional_scopes" {
@@ -258,7 +259,7 @@ variable "ad_groups_attribute_name" {
 variable "adfs_admin_group" {
   type        = string
   description = "Name a group in ADFS or group id in Azure AD that user must belong to to be considered CiviForm admin"
-  default     = ""
+  default     = null
 }
 
 variable "custom_hostname" {
