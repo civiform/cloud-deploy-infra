@@ -60,7 +60,7 @@
     "secret": false,
     "tfvar": true,
     "type": "enum",
-    "values": ["idcs", "generic-oidc", "adfs", "disabled", "login-gov"]
+    "values": ["idcs", "generic-oidc", "adfs", "disabled", "login-gov", "auth0"]
   },
   "APPLICANT_OIDC_PROVIDER_NAME": {
     "required": false,
