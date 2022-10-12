@@ -17,9 +17,4 @@ COPY --from=amazon/aws-cli:2.8.2 /aws /aws
 RUN /bin/sh -c set -o pipefail && apt-get update && \
 	apt-get upgrade --yes && apt-get install --yes bash python3 git
 
-
-#apk update && \
-#    apk add --upgrade apk-tools && apk upgrade --available && \
-#    apk add --no-cache --update bash python3 git less groff
-
 COPY ./cloud/ cloud/
