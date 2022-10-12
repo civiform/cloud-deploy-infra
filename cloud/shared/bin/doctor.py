@@ -90,7 +90,7 @@ class AwsCliCheck(Check):
         return self._get_cloud_provider() not in ['aws', 'azure']
 
     def is_ok(self):
-        return self._check_command_succeeds(["aws", "help"])
+        return self._check_command_succeeds(["aws", "--version"])
 
 
 class AzureCliCheck(Check):
@@ -168,10 +168,13 @@ class AwsLoginCheck(Check):
         return self._get_cloud_provider() not in ['aws', 'azure']
 
     def is_ok(self):
-        output = self._get_command_output(["aws", "configure", "list-profiles"])
+        output = self._get_command_output(["aws", "sts", "get-caller-identity"])
 
-        # the default profile will be present if they are logged in
-        return 'default' in output
+        # If AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not set, the above
+        # command will print nothing to stdout and an error message to stderr.
+        # If they are set, a json object with the following keys will be
+        # printed to stdout.
+        return 'UserId' in output and 'Account' in output and 'Arn' in output
 
 
 class AzureLoginCheck(Check):
