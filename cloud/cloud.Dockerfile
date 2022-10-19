@@ -10,8 +10,8 @@ FROM bellsoft/liberica-openjre-debian:11.0.16-8 as arm64
 FROM ${TARGETARCH}
 
 COPY --from=hashicorp/terraform:1.3.2 /bin/terraform /usr/local/bin/
-COPY --from=amazon/aws-cli:2.8.2 /usr/local /usr/local
-COPY --from=amazon/aws-cli:2.8.2 /aws /aws
+COPY --from=amazon/aws-cli:2.8.4 /usr/local /usr/local
+COPY --from=amazon/aws-cli:2.8.4 /aws /aws
 # TODO(#3222): Add Azure CLI and make sure It works with arm64.
 
 RUN /bin/sh -c set -o pipefail && apt-get update && \
