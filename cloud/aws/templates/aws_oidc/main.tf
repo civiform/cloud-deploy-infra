@@ -48,6 +48,14 @@ resource "aws_db_instance" "civiform" {
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 }
 
+# Provide database information for other resources (pgadmin, for example).
+data "aws_db_instance" "civiform" {
+  db_instance_identifier = "${var.app_prefix}-${var.postgress_name}-db"
+  depends_on = [
+    aws_db_instance.civiform
+  ]
+}
+
 module "email_service" {
   for_each = toset([
     var.sender_email_address,
@@ -57,4 +65,27 @@ module "email_service" {
   ])
   source               = "../../modules/ses"
   sender_email_address = each.key
+}
+
+module "pgadmin" {
+  source = "../../modules/pgadmin"
+  count  = 0
+
+  app_prefix = var.app_prefix
+  aws_region = var.aws_region
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  lb_arn          = module.ecs_fargate_service.aws_lb_lb_arn
+  lb_ssl_cert_arn = var.ssl_certificate_arn
+  lb_access_sg_id = module.ecs_fargate_service.aws_security_group_lb_access_sg_id
+  ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
+
+  db_sg_id               = aws_security_group.rds.id
+  db_address             = data.aws_db_instance.civiform.address
+  db_port                = data.aws_db_instance.civiform.port
+  db_username_secret_arn = aws_secretsmanager_secret_version.postgres_username_secret_version.arn
+
+  secrets_kms_key_arn             = aws_kms_key.civiform_kms_key.arn
+  secrets_recovery_window_in_days = local.secret_recovery_window_in_days
 }
