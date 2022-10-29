@@ -13,7 +13,7 @@ def run(config: ConfigLoader, params: List[str]):
         [
             "rover",
             f"-workingDir=/{td}",
-            f"-tfBackendConfig=/{td}/backend_vars",
-            f"-tfVarsFile=/{td}/setup.auto.tfvars",
+            f"-tfVarsFile=/{td}/{config.tfvars_filename}",
+            f"-tfBackendConfig=/{td}/{config.backend_vars_filename}",
         ]
     )
