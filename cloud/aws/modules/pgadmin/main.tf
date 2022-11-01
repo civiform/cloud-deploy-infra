@@ -26,7 +26,7 @@ resource "aws_lb_listener" "pgadmin" {
 
 # Traffic from load balancer is forwarded to IPs in this target group.
 resource "aws_lb_target_group" "pgadmin" {
-  name        = "${local.name_prefix}"
+  name        = local.name_prefix
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -74,7 +74,7 @@ resource "aws_security_group" "pgadmin_tasks" {
 
 # Run a pgadmin container via a ecs service.
 resource "aws_ecs_service" "pgadmin" {
-  name            = "${local.name_prefix}"
+  name            = local.name_prefix
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.pgadmin.arn
   desired_count   = 1
@@ -88,7 +88,7 @@ resource "aws_ecs_service" "pgadmin" {
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.pgadmin.arn
-    container_name   = "${local.name_prefix}"
+    container_name   = local.name_prefix
     container_port   = 80
   }
 }

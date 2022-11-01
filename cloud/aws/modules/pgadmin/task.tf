@@ -24,7 +24,7 @@ module "pgadmin_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
   version = "0.58.1"
 
-  container_name  = "${local.name_prefix}"
+  container_name  = local.name_prefix
   container_image = "dpage/pgadmin4:6.15"
   container_depends_on = [
     { containerName = "${local.name_prefix}-init", condition = "COMPLETE" }
