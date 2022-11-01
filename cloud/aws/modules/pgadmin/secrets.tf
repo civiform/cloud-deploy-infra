@@ -7,7 +7,7 @@ resource "random_password" "pgadmin_username" {
   }
 }
 resource "aws_secretsmanager_secret" "pgadmin_username_secret" {
-  name                    = "${var.app_prefix}-civiform_pgadmin_default_username"
+  name                    = "${local.name_prefix}-default-username"
   kms_key_id              = var.secrets_kms_key_arn
   recovery_window_in_days = var.secrets_recovery_window_in_days
   tags = {
@@ -29,7 +29,7 @@ resource "random_password" "pgadmin_password" {
   }
 }
 resource "aws_secretsmanager_secret" "pgadmin_password_secret" {
-  name                    = "${var.app_prefix}-civiform_pgadmin_default_password"
+  name                    = "${local.name_prefix}-default-password"
   kms_key_id              = var.secrets_kms_key_arn
   recovery_window_in_days = var.secrets_recovery_window_in_days
   tags = {

@@ -26,7 +26,7 @@ resource "aws_lb_listener" "pgadmin" {
 
 # Traffic from load balancer is forwarded to IPs in this target group.
 resource "aws_lb_target_group" "pgadmin" {
-  name        = "${var.app_prefix}-pgadmin"
+  name        = "${local.name_prefix}"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -44,7 +44,7 @@ resource "aws_lb_target_group" "pgadmin" {
 
 # Security group for pgadmin tasks to run in.
 resource "aws_security_group" "pgadmin_tasks" {
-  name        = "${var.app_prefix}-pgadmin-tasks"
+  name        = "${local.name_prefix}-tasks"
   description = "Allow HTTP traffic on port 80."
   vpc_id      = var.vpc_id
 
@@ -74,7 +74,7 @@ resource "aws_security_group" "pgadmin_tasks" {
 
 # Run a pgadmin container via a ecs service.
 resource "aws_ecs_service" "pgadmin" {
-  name            = "${var.app_prefix}-pgadmin"
+  name            = "${local.name_prefix}"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.pgadmin.arn
   desired_count   = 1
@@ -88,14 +88,14 @@ resource "aws_ecs_service" "pgadmin" {
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.pgadmin.arn
-    container_name   = "${var.app_prefix}-pgadmin"
+    container_name   = "${local.name_prefix}"
     container_port   = 80
   }
 }
 
 # IAM config for pgadmin tasks.
 locals {
-  name_prefix = "${var.app_prefix}-civiform"
+  name_prefix = "${var.app_prefix}-civiform-pgadmin"
   tags = {
     Name = "${var.app_prefix} Civiform EC2 Task Definition"
     Type = "Civiform EC2 Task Definition"
@@ -129,7 +129,7 @@ locals {
   ]
 }
 resource "aws_iam_role" "civiform_pgadmin_task_execution_role" {
-  name               = "${local.name_prefix}-pgadmin-task-execution-role"
+  name               = "${local.name_prefix}-task-execution-role"
   assume_role_policy = <<JSON
     {
       "Version": "2012-10-17",
@@ -153,8 +153,8 @@ resource "aws_iam_role_policy_attachment" "civiform_pgadmin_task_execution_role_
 }
 resource "aws_iam_policy" "civiform_pgadmin_task_execution_role_custom_policy" {
   count       = length(local.civiform_pgadmin_task_execution_role_custom_policies)
-  name        = "${local.name_prefix}-pgadmin-task-execution-role-custom-policy-${count.index}"
-  description = "A custom policy for ${local.name_prefix}-pgadmin-task-execution-role IAM Role"
+  name        = "${local.name_prefix}-task-execution-role-custom-policy-${count.index}"
+  description = "A custom policy for ${local.name_prefix}-task-execution-role IAM Role"
   policy      = local.civiform_pgadmin_task_execution_role_custom_policies[count.index]
   tags        = local.tags
 }

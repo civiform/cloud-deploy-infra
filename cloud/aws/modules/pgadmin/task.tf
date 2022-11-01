@@ -24,10 +24,10 @@ module "pgadmin_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
   version = "0.58.1"
 
-  container_name  = "${var.app_prefix}-pgadmin"
+  container_name  = "${local.name_prefix}"
   container_image = "dpage/pgadmin4:6.15"
   container_depends_on = [
-    { containerName = "${var.app_prefix}-init", condition = "COMPLETE" }
+    { containerName = "${local.name_prefix}-init", condition = "COMPLETE" }
   ]
 
   secrets = [
@@ -81,18 +81,23 @@ module "pgadmin_container_def" {
 module "pgadmin_logs" {
   source    = "cn-terraform/cloudwatch-logs/aws"
   version   = "1.0.12"
-  logs_path = "${var.app_prefix}-pgadmin-logs/"
+  logs_path = "${local.name_prefix}-logs/"
   tags = {
-    Name = "${var.app_prefix} pgAdmin Cloud Watch Logs"
-    Type = "pgAdmin Cloud Watch Logs"
+    Name = "${var.app_prefix} CiviForm pgAdmin Cloud Watch Logs"
+    Type = "CiviForm pgAdmin Cloud Watch Logs"
   }
 }
 
+# Pgadmin supports server import via a json file readable by the pgadmin process. This init
+# container writes such a file to a volume readable by the pgadmin container.
+#
+# The pgadmin container runs as a user that does not have permissions to write to most
+# of the container filesystem which is why we use a separate bash image to write the file.
 module "pgadmin_init_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
   version = "0.58.1"
 
-  container_name  = "${var.app_prefix}-init"
+  container_name  = "${local.name_prefix}-init"
   container_image = "bash:4.4"
   essential       = false # Makes it so other containers in the same task are not stopped when this container exits.
 
@@ -143,9 +148,9 @@ module "pgadmin_init_container_def" {
 module "pgadmin_init_logs" {
   source    = "cn-terraform/cloudwatch-logs/aws"
   version   = "1.0.12"
-  logs_path = "${var.app_prefix}-pgadmin-init-logs/"
+  logs_path = "${local.name_prefix}-init-logs/"
   tags = {
-    Name = "${var.app_prefix} pgAdmin init Cloud Watch Logs"
-    Type = "pgAdmin init Cloud Watch Logs"
+    Name = "${var.app_prefix} CiviForm pgAdmin init Cloud Watch Logs"
+    Type = "CiviForm pgAdmin init Cloud Watch Logs"
   }
 }
