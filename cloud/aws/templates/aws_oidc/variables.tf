@@ -325,6 +325,11 @@ variable "allow_civiform_admin_access_programs" {
   default     = false
 }
 
+variable "pgadmin" {
+  type = bool
+  description = "Whether to depoy pgadmin or not."
+  default = false
+}
 variable "pgadmin_cidr_allowlist" {
   type        = list(string)
   description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
