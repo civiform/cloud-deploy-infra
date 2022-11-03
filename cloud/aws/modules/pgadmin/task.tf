@@ -12,10 +12,6 @@ resource "aws_ecs_task_definition" "pgadmin" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
 
-  volume {
-    name = local.volume_name
-  }
-
   tags = local.tags
 }
 
