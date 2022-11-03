@@ -1,3 +1,11 @@
+locals {
+  volume_name            = "config"
+  volume_mount_path      = "/config"
+  servers_json_file_path = "${local.volume_mount_path}/servers.json"
+
+  init_container_name = "${local.name_prefix}-init"
+}
+
 resource "aws_ecs_task_definition" "pgadmin" {
   family = "${local.name_prefix}-pgadmin"
 
@@ -14,7 +22,7 @@ resource "aws_ecs_task_definition" "pgadmin" {
   requires_compatibilities = ["FARGATE"]
 
   volume {
-    name = "config"
+    name = local.volume_name
   }
 
   tags = local.tags
@@ -25,9 +33,9 @@ module "pgadmin_container_def" {
   version = "0.58.1"
 
   container_name  = local.name_prefix
-  container_image = "dpage/pgadmin4:6.15"
+  container_image = var.pgadmin_image
   container_depends_on = [
-    { containerName = "${local.name_prefix}-init", condition = "COMPLETE" }
+    { containerName = local.init_container_name, condition = "COMPLETE" }
   ]
 
   secrets = [
@@ -42,7 +50,7 @@ module "pgadmin_container_def" {
   ]
 
   map_environment = {
-    PGADMIN_SERVER_JSON_FILE = "/config/servers.json"
+    PGADMIN_SERVER_JSON_FILE = local.servers_json_file_path
   }
 
   port_mappings = [
@@ -55,8 +63,8 @@ module "pgadmin_container_def" {
 
   mount_points = [
     {
-      containerPath = "/config",
-      sourceVolume  = "config",
+      sourceVolume  = local.volume_name,
+      containerPath = local.volume_mount_path,
       readOnly      = false
     }
   ]
@@ -97,16 +105,10 @@ module "pgadmin_init_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
   version = "0.58.1"
 
-  container_name  = "${local.name_prefix}-init"
-  container_image = "bash:4.4"
+  container_name  = local.init_container_name
+  container_image = var.init_image
   essential       = false # Makes it so other containers in the same task are not stopped when this container exits.
 
-  entrypoint = [
-    "sh", "-c"
-  ]
-  command = [
-    "printf '{ \"Servers\": { \"1\": { \"Group\": \"CiviForm\", \"Name\": \"civiform-db\", \"Host\": \"%s\", \"Port\": %d, \"Username\": \"%s\", \"SSLMode\": \"prefer\", \"MaintenanceDB\": \"postgres\" } } }\n' \"$DB_ADDRESS\" \"$DB_PORT\" \"$DB_USERNAME\" > /config/servers.json && cat /config/servers.json"
-  ]
 
   secrets = [
     {
@@ -116,14 +118,15 @@ module "pgadmin_init_container_def" {
   ]
 
   map_environment = {
-    DB_ADDRESS = var.db_address
-    DB_PORT    = var.db_port
+    PGADMIN_SERVER_JSON_FILE = local.servers_json_file_path
+    DB_ADDRESS               = var.db_address
+    DB_PORT                  = var.db_port
   }
 
   mount_points = [
     {
-      containerPath = "/config",
-      sourceVolume  = "config",
+      sourceVolume  = local.volume_name,
+      containerPath = local.volume_mount_path,
       readOnly      = false
     }
   ]

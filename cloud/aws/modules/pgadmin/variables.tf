@@ -31,6 +31,16 @@ variable "ecs_cluster_arn" {
   type        = string
   description = "ARN of the ESC cluster the pgadmin service will be deployed in"
 }
+variable "init_image" {
+  type        = string
+  description = "Fully qualified image tag for the pgadmin-init contianer"
+  default     = "docker.io/avritt/pgadmin-init:avritt-dev"
+}
+variable "pgadmin_image" {
+  type        = string
+  description = "Fully qualified image tag for the pgadmin contianer"
+  default     = "docker.io/dpage/pgadmin4:6.15"
+}
 
 variable "db_sg_id" {
   type        = string
