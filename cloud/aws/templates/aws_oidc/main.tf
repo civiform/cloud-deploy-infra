@@ -73,13 +73,15 @@ module "pgadmin" {
 
   app_prefix = var.app_prefix
   aws_region = var.aws_region
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
 
+  vpc_id     = module.vpc.vpc_id
   lb_arn          = module.ecs_fargate_service.aws_lb_lb_arn
   lb_ssl_cert_arn = var.ssl_certificate_arn
   lb_access_sg_id = module.ecs_fargate_service.aws_security_group_lb_access_sg_id
+  cidr_allowlist = var.pgadmin_cidr_allowlist
+
   ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
+  subnet_ids = module.vpc.private_subnets
 
   db_sg_id               = aws_security_group.rds.id
   db_address             = data.aws_db_instance.civiform.address

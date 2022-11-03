@@ -2,7 +2,7 @@
 resource "aws_security_group_rule" "pgadmin_lb" {
   description       = "Allow tcp traffic on port 4433"
   security_group_id = var.lb_access_sg_id
-  cidr_blocks       = ["0.0.0.0/0"] # Allow traffic from all IPs.
+  cidr_blocks       = var.cidr_allowlist
   type              = "ingress"
   from_port         = 4433
   to_port           = 4433

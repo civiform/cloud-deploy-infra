@@ -6,15 +6,11 @@ variable "aws_region" {
   type        = string
   description = "Region where the AWS servers will live"
 }
+
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC to depoy pgadmin in"
 }
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Subnet IDs to deploy pgadmin tasks in"
-}
-
 variable "lb_arn" {
   type        = string
   description = "ARN of the load balancer to hook pgadmin tasks up to"
@@ -27,9 +23,30 @@ variable "lb_access_sg_id" {
   type        = string
   description = "ID of the security group the load balancer runs in"
 }
+variable "cidr_allowlist" {
+  type = list(string)
+  description = "List of cidr block notations to allow traffic to pgadmin"
+
+  validation {
+    condition     = length(var.cidr_allowlist) > 0
+    error_message = "Allowlist must not be empty"
+  }
+  validation {
+    # Regexp lifted from https://www.regextester.com/93987, with:
+    # - Removed optional subnet mask to match AWS provider validation.
+    # - `\`s escaped.
+    condition     = can([for c in var.cidr_allowlist : regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/([0-9]|[1-2][0-9]|3[0-2]))$", c)])
+    error_message = "Each IPv4 cidr block must be valid notation"
+  }
+}
+
 variable "ecs_cluster_arn" {
   type        = string
   description = "ARN of the ESC cluster the pgadmin service will be deployed in"
+}
+variable "subnet_ids" {
+  type        = list(string)
+  description = "Subnet IDs to deploy pgadmin tasks in"
 }
 variable "init_image" {
   type        = string
