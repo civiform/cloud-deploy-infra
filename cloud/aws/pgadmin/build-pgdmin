@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+# Builds the customized pgadmin Docker image.
+
+docker build \
+  -t docker.io/avritt/pgadmin:avritt-dev \
+  -f pgadmin.Dockerfile .
+
+docker push docker.io/avritt/pgadmin:avritt-dev

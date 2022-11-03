@@ -48,15 +48,10 @@ variable "subnet_ids" {
   type        = list(string)
   description = "Subnet IDs to deploy pgadmin tasks in"
 }
-variable "init_image" {
-  type        = string
-  description = "Fully qualified image tag for the pgadmin-init contianer"
-  default     = "docker.io/avritt/pgadmin-init:avritt-dev"
-}
 variable "pgadmin_image" {
   type        = string
   description = "Fully qualified image tag for the pgadmin contianer"
-  default     = "docker.io/dpage/pgadmin4:6.15"
+  default     = "docker.io/avritt/pgadmin:avritt-dev"
 }
 
 variable "db_sg_id" {

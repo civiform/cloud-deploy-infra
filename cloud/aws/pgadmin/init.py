@@ -6,11 +6,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Config:
-    # Where to write the pgadmin servers import file.
-    out_path: str
-
-    # Database details to include in servers import file.
+class DBConfig:
     address: str
     port: int
     username: str
@@ -34,22 +30,18 @@ def main():
         }
     }
 
-    with open(config.out_path, "w+") as f:
+    with open("/pgadmin4/servers.json", "w+") as f:
         json.dump(data, f)
         f.write("\n")
 
 
-def validate_env_variables() -> Config:
+def validate_env_variables() -> DBConfig:
     """
-    Parses expected environment variables and returns a Config.
+    Parses expected environment variables and returns a DBConfig.
 
     Exits if there are any validation errors.
     """
     try:
-        path = os.environ["PGADMIN_SERVER_JSON_FILE"]
-        if path == "":
-            sys.exit("PGADMIN_SERVER_JSON_FILE must be a non-empty string")
-
         address = os.environ["DB_ADDRESS"]
         if address == "":
             sys.exit("DB_ADDRESS must be a non-empty string")
@@ -71,7 +63,7 @@ def validate_env_variables() -> Config:
     except KeyError as e:
         sys.exit(f"{e.args[0]} must be present in the environment variables")
 
-    return Config(path, address, port, username)
+    return DBConfig(address, port, username)
 
 
 if __name__ == "__main__":
