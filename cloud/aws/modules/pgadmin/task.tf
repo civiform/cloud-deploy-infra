@@ -71,3 +71,12 @@ module "pgadmin_container_def" {
     secretOptions = null
   }
 }
+module "pgadmin_logs" {
+  source    = "cn-terraform/cloudwatch-logs/aws"
+  version   = "1.0.12"
+  logs_path = "${local.name_prefix}-logs/"
+  tags = {
+    Name = "${var.app_prefix} CiviForm pgAdmin Cloud Watch Logs"
+    Type = "CiviForm pgAdmin Cloud Watch Logs"
+  }
+}
