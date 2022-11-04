@@ -1,5 +1,5 @@
 resource "aws_ecs_task_definition" "pgadmin" {
-  family = "${local.name_prefix}-pgadmin"
+  family = "${local.name_prefix}"
 
   cpu    = 1024
   memory = 2048

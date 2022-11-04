@@ -51,7 +51,7 @@ variable "subnet_ids" {
 variable "pgadmin_image" {
   type        = string
   description = "Fully qualified image tag for the pgadmin contianer"
-  default     = "docker.io/avritt/pgadmin:avritt-dev"
+  default     = "docker.io/civiform/pgadmin:latest"
 }
 
 variable "db_sg_id" {

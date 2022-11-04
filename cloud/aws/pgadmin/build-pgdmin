@@ -3,7 +3,7 @@
 # Builds the customized pgadmin Docker image.
 
 docker build \
-  -t docker.io/avritt/pgadmin:avritt-dev \
+  -t docker.io/civiform/pgadmin:latest \
   -f pgadmin.Dockerfile .
 
-# docker push docker.io/avritt/pgadmin:avritt-dev
+docker push docker.io/civiform/pgadmin:latest
