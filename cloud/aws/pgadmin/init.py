@@ -13,24 +13,27 @@ class DBConfig:
 
 
 def main():
-    logging.basicConfig(format="%(levelname)s (%(filename)s): %(message)s", level='INFO')
+    logging.basicConfig(
+        format="%(levelname)s (%(filename)s): %(message)s", level='INFO')
     logging.info("init start")
 
     config = validate_env_variables()
 
     # See https://www.pgadmin.org/docs/pgadmin4/development/import_export_servers.html#json-format for expected format.
     data = {
-        "Servers": {
-            "1": {
-                "Group": "CiviForm",
-                "Name": "civiform-db",
-                "Host": config.address,
-                "Port": config.port,
-                "Username": config.username,
-                "SSLMode": "prefer",
-                "MaintenanceDB": "postgres",
+        "Servers":
+            {
+                "1":
+                    {
+                        "Group": "CiviForm",
+                        "Name": "civiform-db",
+                        "Host": config.address,
+                        "Port": config.port,
+                        "Username": config.username,
+                        "SSLMode": "prefer",
+                        "MaintenanceDB": "postgres",
+                    }
             }
-        }
     }
 
     with open("/pgadmin4/servers.json", "w+") as f:

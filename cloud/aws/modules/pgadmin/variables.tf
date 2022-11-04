@@ -24,7 +24,7 @@ variable "lb_access_sg_id" {
   description = "ID of the security group the load balancer runs in"
 }
 variable "cidr_allowlist" {
-  type = list(string)
+  type        = list(string)
   description = "List of cidr block notations to allow traffic to pgadmin"
 
   validation {
