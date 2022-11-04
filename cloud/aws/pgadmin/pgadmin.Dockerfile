@@ -8,4 +8,6 @@ RUN chown pgadmin:root /init.py /pgadmin4
 
 USER pgadmin
 
-CMD python3 /init.py; /entrypoint.sh
+ENTRYPOINT ["/bin/sh", "-c"]
+
+CMD ["python3 /init.py; /entrypoint.sh"]

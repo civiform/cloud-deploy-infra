@@ -6,4 +6,4 @@ docker build \
   -t docker.io/avritt/pgadmin:avritt-dev \
   -f pgadmin.Dockerfile .
 
-docker push docker.io/avritt/pgadmin:avritt-dev
+# docker push docker.io/avritt/pgadmin:avritt-dev
