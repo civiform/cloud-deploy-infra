@@ -14,7 +14,8 @@ class DBConfig:
 
 def main():
     logging.basicConfig(
-        format="%(levelname)s (%(filename)s): %(message)s", level='INFO')
+        format="%(levelname)s (%(filename)s:%(lineno)d): %(message)s",
+        level='INFO')
     logging.info("init start")
 
     config = validate_env_variables()

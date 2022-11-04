@@ -4,7 +4,7 @@ USER root
 
 COPY init.py /init.py
 
-RUN chown pgadmin:root /init.py /pgadmin4
+RUN touch /pgadmin4/servers.json && chown pgadmin:root /pgadmin4/servers.json
 
 USER pgadmin
 
