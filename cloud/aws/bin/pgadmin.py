@@ -134,26 +134,26 @@ class CIDRInputStateMachine:
         "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/([0-9]|[1-2][0-9]|3[0-2]))$")
 
     def __init__(self, detect_ip_func: PublicIPDetector):
-        self.detect_ip = detect_ip_func
-        self.state = self.State.DETECT_IP
-        self.cidrs = ""
+        self._detect_ip = detect_ip_func
+        self._state = self.State.DETECT_IP
+        self._cidrs = ""
 
     def next(self, user_input: UserInput) -> UserPrompt:
         # State transition helpers.
         def goto_input_list():
-            self.cidrs = ""
-            self.state = self.State.SET_VALIDATE_FORMAT
+            self._cidrs = ""
+            self._state = self.State.SET_VALIDATE_FORMAT
             return "REQUIRED: input a comma-separated list of IPv4 CIDR blocks that should have access to the pgadmin service.\n> "
 
         def goto_accept_list(formatted_cidrs):
-            self.cidrs = formatted_cidrs
-            self.state = self.State.ACCEPT_LIST
+            self._cidrs = formatted_cidrs
+            self._state = self.State.ACCEPT_LIST
             return f"Parsed list: {formatted_cidrs}. Accept? (anything entered other than 'y' will trigger list re-entry) "
 
         # State transition logic.
-        s = self.state
+        s = self._state
         if s == self.State.DETECT_IP:
-            ip = self.detect_ip()
+            ip = self._detect_ip()
             if ip == "":
                 return "Public IP detection failed. " + goto_input_list()
             else:
@@ -177,7 +177,7 @@ class CIDRInputStateMachine:
             return goto_accept_list(f"{blocks}".replace("'", '"'))
         elif s == self.State.ACCEPT_LIST:
             if user_input == "y":
-                self.state = self.State.DONE
+                self._state = self.State.DONE
                 return ""
             else:
                 return goto_input_list()
@@ -185,7 +185,7 @@ class CIDRInputStateMachine:
             return ""
 
     def cidrs(self) -> CIDRList:
-        if self.state == self.State.DONE:
-            return self.cidrs
+        if self._state == self.State.DONE:
+            return self._cidrs
         else:
             return ""
