@@ -47,25 +47,6 @@ class TestCIDRInputStateMachine(unittest.TestCase):
         self.assertEqual(sm._cidrs, '["127.0.0.1/32"]')
         self.assertEqual(sm.cidrs(), '["127.0.0.1/32"]')
 
-    def test_accept_list_completes_machine(self):
-        sm = CIDRInputStateMachine(ip(""))
-        sm.next("")
-
-        sm.next("127.0.0.1/32")
-        sm.next("y")
-
-        self.assertEqual(sm._state, sm.State.DONE)
-        self.assertEqual(sm._cidrs, '["127.0.0.1/32"]')
-        self.assertEqual(sm.cidrs(), '["127.0.0.1/32"]')
-
-        self.assertEqual(sm.next("wait I want to change the list!"), "")
-        self.assertEqual(sm._cidrs, '["127.0.0.1/32"]')
-        self.assertEqual(sm.cidrs(), '["127.0.0.1/32"]')
-
-        self.assertEqual(sm.next("time for ctrl-c I guess"), "")
-        self.assertEqual(sm._cidrs, '["127.0.0.1/32"]')
-        self.assertEqual(sm.cidrs(), '["127.0.0.1/32"]')
-
     def test_not_accept_list_prompts_for_input(self):
         sm = CIDRInputStateMachine(ip(""))
         sm.next("")
