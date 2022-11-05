@@ -5,6 +5,9 @@ import re
 import urllib.error
 import urllib.request
 
+from enum import Enum
+from collections.abc import Callable
+
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
@@ -13,10 +16,7 @@ from cloud.shared.bin.lib import terraform
 def run(config):
     os.environ["TF_VAR_pgadmin_cidr_allowlist"] = get_cidr_list()
     os.environ["TF_VAR_pgadmin"] = "true"
-
-    if not terraform.perform_apply(config):
-        sys.stderr.write("Terraform deployment failed.")
-        raise ValueError("Terraform deployment failed.")
+    run_terraform()
 
     pgurl = f"{config.get_base_url()}:4433"
     print(
@@ -29,56 +29,44 @@ def run(config):
 
     input(
         "\nWARNING: it is strongly recommended to clean up pgadmin resources once they are no-longer needed.\n"
-        "Run 'bin/deploy --tag=latest' to manually clean up pgadmin resources.\n\n"
+        f"Run 'bin/deploy --tag={os.environ['TF_VAR_image_tag']}' to manually clean up pgadmin resources.\n\n"
         "Waiting to clean up pgadmin resources.  Press enter to trigger cleanup...\n"
     )
 
     os.unsetenv("TF_VAR_pgadmin_cidr_allowlist")
     os.unsetenv("TF_VAR_pgadmin")
-    if not terraform.perform_apply(config):
-        sys.stderr.write("Terraform deployment failed.")
-        raise ValueError("Terraform deployment failed.")
+    run_terraform()
 
 
 def get_cidr_list() -> str:
-    print()
-
+    """Runs the CIDRInputStateMachine until the end state is reached."""
+    sm = CIDRInputStateMachine(detect_public_ip)
+    user_input = ""
     while True:
-        got = input(
-            "\nREQUIRED: input a comma-separated list of IPv4 CIDR blocks that should have access to the pgadmin service:\n"
-            "To allow a single IP address, use a subnet mask of 32. For example: '192.0.0.1/32'\n"
-            "> ")
+        prompt = sm.next(user_input)
+        if prompt == "":
+            return sm.cidrs
 
-        # Validate each block in list.
-        #
-        # Regexp is from cloud/aws/modules/pgadmin/variables.tf.
-        matcher = re.compile(
-            "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/([0-9]|[1-2][0-9]|3[0-2]))$")
-        errors = False
-        blocks = [x.strip() for x in got.split(",")]
-        for b in blocks:
-            if matcher.fullmatch(b) == None:
-                print(f"  ERROR: '{b}' is not a valid CIDR block.")
-                errors = True
-        if errors:
-            print("Invalid CIDR blocks found.  Please re-enter list.")
-            continue
+        user_input = input(prompt)
 
-        # Terraform expects lists in the `["item1", "item2", ..., "itemN"]` format:
-        # https://developer.hashicorp.com/terraform/language/values/variables#variables-on-the-command-line
-        #
-        # Notably, single quotes are not valid. Strings in lists formatted in f-strings are wrapped in single
-        # quotes so we need to replace them with double quotes.
-        formatted = f"{blocks}".replace("'", '"')
-        print(f"Parsed list: {formatted}")
-        y = input(
-            "\nAccept CIDR list? (anything entered other than 'y' will cause list to be re-entered): "
-        )
-        if y == "y":
-            print()
-            break
 
-    return formatted
+def detect_public_ip() -> str:
+    """Code from https://api.ident.me/"""
+    try:
+        try:
+            with urllib.request.urlopen('https://4.ident.me') as response:
+                return response.read().decode('ascii')
+        except:
+            with urllib.request.urlopen('https://4.tnedi.me') as response:
+                return response.read().decode('ascii')
+    except:
+        return ""
+
+
+def run_terraform():
+    if not terraform.perform_apply(config):
+        sys.stderr.write("Terraform deployment failed.")
+        raise ValueError("Terraform deployment failed.")
 
 
 def wait_for_pgadmin_response(url):
@@ -105,3 +93,98 @@ def print_secrets(config):
         f"  pgadmin default password: {aws.get_secret_value(prefix + '-pgadmin-default-password')}\n"
         f"  postgres database password: {aws.get_secret_value(prefix + '_postgres_password')}"
     )
+
+
+UserPrompt = str
+UserInput = str
+CIDRList = str
+PublicIPDetector = Callable[[], str]
+
+
+class CIDRInputStateMachine:
+    """
+    State machine for getting a user-input list of CIDR blocks.
+
+    Instantiate the class with a function that returns the public IP
+    of the host. The CIDR block list will default to the detected IP.
+    Use a function that returns the empty string to disable this feature.
+
+    After instantiating the class, call the next() function in a loop.
+    Prompt the user with whatever next() returns and pass in the
+    user's input to the following call of next(). When next() returns
+    an empty string, the state machine has terminated. Call cidrs() to
+    get the resulting CIDR block list, correctly formatted as
+    Terraform expects. cidrs() returns an empty string if the state
+    machine has not terminated.
+
+           |>-------------------------------IP found----------------------->|
+           |                                                                v
+    -> DETECT_IP --IP not found--> SET_VALIDATE_FORMAT --valid list--> ACCEPT_LIST --yes--> DONE
+                                    ^               |                       |
+                                    |--invalid list<|                       |
+                                    |                                       |
+                                    ^-------------------------no-----------<|
+    """
+
+    State = Enum(
+        'State', ['DETECT_IP', 'SET_VALIDATE_FORMAT', 'ACCEPT_LIST', 'DONE'])
+    # Regexp is from cloud/aws/modules/pgadmin/variables.tf.
+    valid_cidr_re = re.compile(
+        "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/([0-9]|[1-2][0-9]|3[0-2]))$")
+
+    def __init__(self, detect_ip_func: PublicIPDetector):
+        self.detect_ip = detect_ip_func
+        self.state = self.State.DETECT_IP
+        self.cidrs = ""
+
+    def next(self, user_input: UserInput) -> UserPrompt:
+        # State transition helpers.
+        def goto_input_list():
+            self.cidrs = ""
+            self.state = self.State.SET_VALIDATE_FORMAT
+            return "REQUIRED: input a comma-separated list of IPv4 CIDR blocks that should have access to the pgadmin service.\n> "
+
+        def goto_accept_list(formatted_cidrs):
+            self.cidrs = formatted_cidrs
+            self.state = self.State.ACCEPT_LIST
+            return f"Parsed list: {formatted_cidrs}. Accept? (anything entered other than 'y' will trigger list re-entry) "
+
+        # State transition logic.
+        s = self.state
+        if s == self.State.DETECT_IP:
+            ip = self.detect_ip()
+            if ip == "":
+                return "Public IP detection failed. " + goto_input_list()
+            else:
+                return "Public IP detection sucessful. " + goto_accept_list(
+                    f'["{ip}/32"]')
+        elif s == self.State.SET_VALIDATE_FORMAT:
+            # Validate each block in list.
+            errors = ""
+            blocks = [x.strip() for x in user_input.split(",")]
+            for b in blocks:
+                if self.valid_cidr_re.fullmatch(b) == None:
+                    errors += f"  {b}\n"
+            if errors != "":
+                return "ERROR: found invalid CIDR blocks:\n" + errors + "Re-enter CIDR blocks:\n> "
+
+            # Terraform expects lists in the `["item1", "item2", ..., "itemN"]` format:
+            # https://developer.hashicorp.com/terraform/language/values/variables#variables-on-the-command-line
+            #
+            # Notably, single quotes are not valid. Strings in lists formatted in f-strings are wrapped in single
+            # quotes so we need to replace them with double quotes.
+            return goto_accept_list(f"{blocks}".replace("'", '"'))
+        elif s == self.State.ACCEPT_LIST:
+            if user_input == "y":
+                self.state = self.State.DONE
+                return ""
+            else:
+                return goto_input_list()
+        elif s == self.State.DONE:
+            return ""
+
+    def cidrs(self) -> CIDRList:
+        if self.state == self.State.DONE:
+            return self.cidrs
+        else:
+            return ""
