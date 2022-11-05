@@ -8,15 +8,16 @@ import urllib.request
 from enum import Enum
 from collections.abc import Callable
 
+from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
-from cloud.shared.bin.lib import terraform
 
 
-def run(config):
+def run(config: ConfigLoader):
     os.environ["TF_VAR_pgadmin_cidr_allowlist"] = get_cidr_list()
     os.environ["TF_VAR_pgadmin"] = "true"
-    run_terraform()
+    run_terraform(config)
 
     pgurl = f"{config.get_base_url()}:4433"
     print(
@@ -35,7 +36,7 @@ def run(config):
 
     os.unsetenv("TF_VAR_pgadmin_cidr_allowlist")
     os.unsetenv("TF_VAR_pgadmin")
-    run_terraform()
+    run_terraform(config)
 
 
 def get_cidr_list() -> str:
@@ -63,7 +64,7 @@ def detect_public_ip() -> str:
         return ""
 
 
-def run_terraform():
+def run_terraform(config: ConfigLoader):
     if not terraform.perform_apply(config):
         sys.stderr.write("Terraform deployment failed.")
         raise ValueError("Terraform deployment failed.")
