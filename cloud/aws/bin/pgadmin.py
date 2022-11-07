@@ -155,9 +155,9 @@ class CIDRInputStateMachine:
         if s == self.State.DETECT_IP:
             ip = self._detect_ip()
             if ip == "":
-                return "Public IP detection failed. " + goto_input_list()
+                return goto_input_list()
             else:
-                return "Public IP detection sucessful. " + goto_accept_list(
+                return "Public IP detection sucessful. Defaulting pgadmin IPv4 CIDR block allowlist to found IP.\n" + goto_accept_list(
                     f'["{ip}/32"]')
         elif s == self.State.SET_VALIDATE_FORMAT:
             # Validate each block in list.
