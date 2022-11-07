@@ -46,7 +46,7 @@ def get_cidr_list() -> str:
     while True:
         prompt = sm.next(user_input)
         if prompt == "":
-            return sm.cidrs
+            return sm.cidrs()
 
         user_input = input(prompt)
 
