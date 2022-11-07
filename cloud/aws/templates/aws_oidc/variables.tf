@@ -324,3 +324,9 @@ variable "allow_civiform_admin_access_programs" {
   description = "Whether CiviForm admins can view program applications, similar to Program Admins."
   default     = false
 }
+
+variable "pgadmin_cidr_allowlist" {
+  type        = list(string)
+  description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
+  default     = []
+}
