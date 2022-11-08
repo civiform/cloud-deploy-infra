@@ -1,0 +1,15 @@
+.dockerignore
+cloud.Dockerfile
+docker-compose.yaml
+civiform_config.sh
+.dockerlogs
+**/*_override.tf
+**/*.pyc
+**/*.tfvars
+**/.terraform
+**/.terraform.lock.hcl
+**/*.tfvars
+**/*_backend_vars
+**/backend_vars
+**/terraform_plan
+**/terraform.tfstate
