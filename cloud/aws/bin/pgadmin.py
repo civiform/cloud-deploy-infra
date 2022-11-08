@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 
 from enum import Enum
-from collections.abc import Callable
+from typing import Callable
 
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader

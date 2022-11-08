@@ -326,9 +326,9 @@ variable "allow_civiform_admin_access_programs" {
 }
 
 variable "pgadmin" {
-  type = bool
+  type        = bool
   description = "Whether to depoy pgadmin or not."
-  default = false
+  default     = false
 }
 variable "pgadmin_cidr_allowlist" {
   type        = list(string)
