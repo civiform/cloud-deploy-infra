@@ -16,6 +16,7 @@ from cloud.shared.bin.lib import backend_setup
 
 _CIVIFORM_RELEASE_TAG_REGEX = re.compile(r'^v?[0-9]+\.[0-9]+\.[0-9]+$')
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -70,28 +71,34 @@ def main():
             exit(f'Command {cmd} not found.')
         command_module.run(config, params)
 
+
 def validate_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
         return True
 
-    sys.stderr.write(f'''
+    sys.stderr.write(
+        f'''
         The provided tag "{tag}" does not reference a release tag and may not
         be stable.
         ''')
     if os.getenv('CF_SKIP_WARN'):
         sys.stderr.write(
-            'Proceeding automatically since the "CF_SKIP_WARN" environment variable was set.')
+            'Proceeding automatically since the "CF_SKIP_WARN" environment variable was set.'
+        )
         return True
-    sys.stderr.write(f'''
+    sys.stderr.write(
+        f'''
         If you would like to continue deployment, please type YES below.
         Continue: ''')
     resp = input()
     return resp.lower().strip() == 'yes'
 
+
 def normalize_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag) and not tag[0] == 'v':
         return f'v{tag}'
     return tag
+
 
 if __name__ == "__main__":
     main()
