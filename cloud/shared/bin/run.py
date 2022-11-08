@@ -81,9 +81,9 @@ def validate_tag(tag):
         The provided tag "{tag}" does not reference a release tag and may not
         be stable.
         ''')
-    if os.getenv('CF_SKIP_WARN'):
+    if os.getenv('SKIP_TAG_CHECK'):
         sys.stderr.write(
-            'Proceeding automatically since the "CF_SKIP_WARN" environment variable was set.'
+            'Proceeding automatically since the "SKIP_TAG_CHECK" environment variable was set.'
         )
         return True
     sys.stderr.write(

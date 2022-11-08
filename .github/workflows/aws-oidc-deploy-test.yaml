@@ -17,6 +17,7 @@ jobs:
 
     env:
       USE_LOCAL_BACKEND: true
+      SKIP_TAG_CHECK: true
     steps:
       - name: Check out branch
         uses: actions/checkout@v3
