@@ -53,8 +53,8 @@ def get_cidr_list() -> str:
 
 def detect_public_ip() -> str:
     try:
-        with urllib.request.urlopen(
-                "https://checkip.amazonaws.com/", timeout=3) as response:
+        with urllib.request.urlopen("https://checkip.amazonaws.com/",
+                                    timeout=3) as response:
             # response contains a newline
             return response.read().decode("ascii").strip()
     except:
