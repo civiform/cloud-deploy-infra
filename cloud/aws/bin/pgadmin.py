@@ -52,14 +52,11 @@ def get_cidr_list() -> str:
 
 
 def detect_public_ip() -> str:
-    """Code from https://api.ident.me/"""
     try:
-        try:
-            with urllib.request.urlopen('https://4.ident.me') as response:
-                return response.read().decode('ascii')
-        except:
-            with urllib.request.urlopen('https://4.tnedi.me') as response:
-                return response.read().decode('ascii')
+        with urllib.request.urlopen(
+                "https://checkip.amazonaws.com/") as response:
+            # response contains a newline
+            return response.read().decode("ascii").strip()
     except:
         return ""
 
