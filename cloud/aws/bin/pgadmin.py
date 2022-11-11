@@ -1,3 +1,8 @@
+"""Implements the pgadmin command for aws.
+
+This module is dynamically loaded from cloud/shared/bin/run.py.
+"""
+
 import os
 import sys
 import time
@@ -15,18 +20,18 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 
 def run(config: ConfigLoader):
-    os.environ["TF_VAR_pgadmin_cidr_allowlist"] = get_cidr_list()
+    os.environ["TF_VAR_pgadmin_cidr_allowlist"] = _get_cidr_list()
     os.environ["TF_VAR_pgadmin"] = "true"
-    run_terraform(config)
+    _run_terraform(config)
 
     pgurl = f"{config.get_base_url()}:4433"
     print(
         "\npgadmin terraform deployment finished. Waiting for pgadmin service (some request failures are expected):"
     )
-    wait_for_pgadmin_response(pgurl)
+    _wait_for_pgadmin_response(pgurl)
 
     print(f"\npgadmin service is available. URL: {pgurl}")
-    print_secrets(config)
+    _print_secrets(config)
 
     input(
         "\nWARNING: it is strongly recommended to clean up pgadmin resources once they are no-longer needed.\n"
@@ -36,12 +41,12 @@ def run(config: ConfigLoader):
 
     os.unsetenv("TF_VAR_pgadmin_cidr_allowlist")
     os.unsetenv("TF_VAR_pgadmin")
-    run_terraform(config)
+    _run_terraform(config)
 
 
-def get_cidr_list() -> str:
+def _get_cidr_list() -> str:
     """Runs the CIDRInputStateMachine until the end state is reached."""
-    sm = CIDRInputStateMachine(detect_public_ip)
+    sm = CIDRInputStateMachine(_detect_public_ip)
     user_input = ""
     while True:
         prompt = sm.next(user_input)
@@ -51,7 +56,7 @@ def get_cidr_list() -> str:
         user_input = input(prompt)
 
 
-def detect_public_ip() -> str:
+def _detect_public_ip() -> str:
     try:
         with urllib.request.urlopen("https://checkip.amazonaws.com/",
                                     timeout=3) as response:
@@ -61,13 +66,13 @@ def detect_public_ip() -> str:
         return ""
 
 
-def run_terraform(config: ConfigLoader):
+def _run_terraform(config: ConfigLoader):
     if not terraform.perform_apply(config):
         sys.stderr.write("Terraform deployment failed.")
         raise ValueError("Terraform deployment failed.")
 
 
-def wait_for_pgadmin_response(url):
+def _wait_for_pgadmin_response(url):
     while True:
         error = ""
         try:
