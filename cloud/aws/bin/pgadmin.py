@@ -35,7 +35,7 @@ def run(config: ConfigLoader):
 
     input(
         "\nWARNING: it is strongly recommended to clean up pgadmin resources once they are no-longer needed.\n"
-        f"Run 'bin/deploy --tag={os.environ['TF_VAR_image_tag']}' to manually clean up pgadmin resources.\n\n"
+        f"Run 'bin/deploy' to manually clean up pgadmin resources.\n\n"
         "Waiting to clean up pgadmin resources.  Press enter to trigger cleanup...\n"
     )
 
