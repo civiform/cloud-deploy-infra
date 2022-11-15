@@ -69,7 +69,7 @@ module "email_service" {
 
 module "pgadmin" {
   source = "../../modules/pgadmin"
-  count  = 0
+  count  = var.pgadmin ? 1 : 0
 
   app_prefix = var.app_prefix
   aws_region = var.aws_region
