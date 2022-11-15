@@ -24,21 +24,18 @@ def run(config: ConfigLoader):
     os.environ["TF_VAR_pgadmin"] = "true"
     _run_terraform(config)
 
-    pgurl = f"{config.get_base_url()}:4433"
+    url = f"{config.get_base_url()}:4433"
     print(
-        "\npgadmin terraform deployment finished. Waiting for pgadmin service (some request failures are expected):"
+        "\npgadmin terraform deployment finished. Waiting for pgadmin to be available (some request failures are expected). Press ctlr-c to shortcut this wait and print connection information."
     )
-    _wait_for_pgadmin_response(pgurl)
-
-    print(f"\npgadmin service is available. URL: {pgurl}")
-    _print_secrets(config)
+    _wait_for_pgadmin_response(url)
+    _print_connection_info(config, url)
 
     input(
         "\nWARNING: it is strongly recommended to clean up pgadmin resources once they are no-longer needed.\n"
         f"Run 'bin/deploy' to manually clean up pgadmin resources.\n\n"
         "Waiting to clean up pgadmin resources.  Press enter to trigger cleanup...\n"
     )
-
     os.unsetenv("TF_VAR_pgadmin_cidr_allowlist")
     os.unsetenv("TF_VAR_pgadmin")
     _run_terraform(config)
@@ -73,28 +70,34 @@ def _run_terraform(config: ConfigLoader):
 
 
 def _wait_for_pgadmin_response(url):
-    while True:
-        error = ""
-        try:
-            r = urllib.request.urlopen(f"{url}/misc/ping")
-            if r.getcode() != 200:
-                error = f"expected HTTP code 200, got {r.getcode()}"
-            else:
-                break
-        except urllib.error.URLError as e:
-            error = f"{e}"
+    try:
+        while True:
+            error = ""
+            try:
+                r = urllib.request.urlopen(f"{url}/misc/ping")
+                if r.getcode() != 200:
+                    error = f"expected HTTP code 200, got {r.getcode()}"
+                else:
+                    print(f"\npgadmin service is available.")
+                    break
+            except urllib.error.URLError as e:
+                error = f"{e}"
 
-        print(f"  {error}. Retrying in 10 seconds...")
-        time.sleep(10)
+            print(f"  {error}. Retrying in 10 seconds...")
+            time.sleep(10)
+    except KeyboardInterrupt:
+        print("Cancelled waiting for pgadmin availability. Moving on...")
 
 
-def print_secrets(config):
+def _print_connection_info(config, url):
     aws = AwsCli(config)
     prefix = f"{config.app_prefix}-civiform"
     print(
-        f"  pgadmin default email: {aws.get_secret_value(prefix + '-pgadmin-default-username')}\n"
-        f"  pgadmin default password: {aws.get_secret_value(prefix + '-pgadmin-default-password')}\n"
-        f"  postgres database password: {aws.get_secret_value(prefix + '_postgres_password')}"
+        f"\npgamdin connection info:\n"
+        f"  URL: {url}\n"
+        f"  login email: {aws.get_secret_value(prefix + '-pgadmin-default-username')}\n"
+        f"  login password: {aws.get_secret_value(prefix + '-pgadmin-default-password')}\n"
+        f"  database password: {aws.get_secret_value(prefix + '_postgres_password')}"
     )
 
 

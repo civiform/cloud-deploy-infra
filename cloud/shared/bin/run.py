@@ -35,7 +35,7 @@ def main():
             exit()
         os.environ['TF_VAR_image_tag'] = normalize_tag(args.tag)
         sys.stderr.write(
-            f'Running command with tag {os.environ["TF_VAR_image_tag"]}')
+            f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
 
