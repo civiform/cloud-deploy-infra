@@ -81,12 +81,12 @@ class TestCIDRInputStateMachine(unittest.TestCase):
         sm.next("y")
         sm.next("128.0.0.2/32")
         sm.next("n")
-        sm.next("128.0.0.2/32")
+        sm.next("129.0.0.3/32")
         sm.next("y")
 
         self.assertEqual(sm._state, sm.State.DONE)
         self.assertEqual(sm._ip, "")
-        self.assertEqual(sm._cidrs, '["128.0.0.2/32"]')
+        self.assertEqual(sm._cidrs, '["129.0.0.3/32"]')
 
     def test_no_detected_ip_prompts_for_input(self):
         sm = CIDRInputStateMachine(ip(""))
