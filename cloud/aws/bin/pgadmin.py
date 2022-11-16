@@ -44,7 +44,7 @@ def run(config: ConfigLoader):
 def _get_cidr_list() -> str:
     """Runs the CIDRInputStateMachine until the end state is reached."""
     print(
-        "REQUIRED: configure IPv4 CIDR allow-list for pgadmin. The public IP of the host running the\n"
+        "\nREQUIRED: configure IPv4 CIDR allow-list for pgadmin. The public IP of the host running the\n"
         "web browser used to access pgadmin is required to be covered by a CIDR block in the list.\n\n"
         "The public IP of the host running this tool is optional and allows the tool to wait until\n"
         "pgadmin is available to print out connection information. This wait is cancellable. If the\n"
