@@ -39,6 +39,15 @@ class Setup(AwsSetupTemplate):
         print(' - Running the setup script in terraform')
         self._tf_run_for_aws(is_destroy=False)
 
+    def should_retry_terraform_apply_once(self):
+        """
+        The initial terraform apply after the setup step fails due to
+        https://github.com/hashicorp/terraform-provider-aws/issues/19583.
+
+        Re-running terraform apply will succeed, however.
+        """
+        return True
+
     def requires_post_terraform_setup(self):
         return True
 

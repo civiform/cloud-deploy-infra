@@ -23,6 +23,9 @@ class Setup(SetupTemplate):
     def requires_post_terraform_setup(self):
         return True
 
+    def should_retry_terraform_apply_once(self):
+        return False
+
     def pre_terraform_setup(self):
         print(" - Setting up the keyvault")
         self._setup_keyvault()
