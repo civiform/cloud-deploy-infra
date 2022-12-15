@@ -37,7 +37,12 @@ def run(config: ConfigLoader, params: List[str]):
         # Terraform Init/Plan/Apply
         ###############################################################################
         print("Starting terraform deploy")
-        terraform.perform_apply(config)
+        try:
+            terraform.perform_apply(config)
+        except subprocess.CalledProcessError:
+            if template_setup.should_retry_terraform_apply_once():
+                print("Initial terraform apply failed, retrying once:")
+                terraform.perform_apply(config)
 
         ###############################################################################
         # Post Run Setup Tasks (if needed)
