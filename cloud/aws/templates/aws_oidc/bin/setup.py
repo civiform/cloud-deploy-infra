@@ -60,6 +60,7 @@ class Setup(AwsSetupTemplate):
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
         self._maybe_change_default_db_password()
+        self._aws_cli.wait_for_ecs_service_healthy()
         self._print_final_message()
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):
@@ -110,9 +111,7 @@ class Setup(AwsSetupTemplate):
                 f'{app_prefix}-{resources.DATABASE}', new_password)
             print('Database password has been changed.')
             self._aws_cli.set_secret_value(secret_name, new_password)
-            self._aws_cli.restart_ecs_service(
-                f'{app_prefix}-{resources.CLUSTER}',
-                f'{app_prefix}-{resources.FARGATE_SERVICE}')
+            self._aws_cli.restart_ecs_service()
             print(f'ECS service has been restarted to pickup the new password.')
         else:
             print('Password has already been changed. Not touching it.')
@@ -122,15 +121,6 @@ class Setup(AwsSetupTemplate):
 
     def _print_final_message(self):
         app = self.config.app_prefix
-
-        # Print link to ECS tasks.
-        print()
-        fargate_service = f'{app}-{resources.FARGATE_SERVICE}'
-        cluster = f'{app}-{resources.CLUSTER}'
-        tasks_url = self._aws_cli.get_url_of_fargate_tasks(
-            cluster, fargate_service)
-        print('Setup finished. You can monitor civiform tasks status here:')
-        print(tasks_url)
 
         # Print info about load balancer url.
         print()

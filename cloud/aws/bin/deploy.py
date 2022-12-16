@@ -13,10 +13,7 @@ def run(config):
 
     if config.is_test():
         print('Test completed')
+        return
 
-    print()
-    print('Deployment finished. You can monitor civiform tasks status here:')
-    print(
-        AwsCli(config).get_url_of_fargate_tasks(
-            f'{config.app_prefix}-{resources.CLUSTER}',
-            f'{config.app_prefix}-{resources.FARGATE_SERVICE}'))
+    aws = AwsCli(config)
+    aws.wait_for_ecs_service_healthy()
