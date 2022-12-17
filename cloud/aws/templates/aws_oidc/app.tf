@@ -138,10 +138,10 @@ module "civiform_server_container_def" {
   ]
 
   healthcheck = {
-    command = ["CMD-SHELL", "wget --quiet http://127.0.0.1:${var.port}/playIndex --output-document - > /dev/null 2>&1"]
-    interval = 10
-    timeout = 11
-    retries = 5
+    command     = ["CMD-SHELL", "wget --quiet http://127.0.0.1:${var.port}/playIndex --output-document - > /dev/null 2>&1"]
+    interval    = 10
+    timeout     = 11
+    retries     = 5
     startPeriod = 10
   }
 

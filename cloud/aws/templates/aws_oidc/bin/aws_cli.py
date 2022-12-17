@@ -58,12 +58,11 @@ class AwsCli:
         """
         print(
             "\nWaiting for CiviForm ECS service to become healthy.\n"
-            f"Service URL: {self._get_url_of_ecs_service()}"
-        )
+            f"Service URL: {self._get_url_of_ecs_service()}")
 
         tries = 20
         while True:
-            state = self. _ecs_service_state()
+            state = self._ecs_service_state()
             if state == "COMPLETED":
                 print("Service is healthy.")
                 return
