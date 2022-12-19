@@ -96,11 +96,12 @@ class AwsCli:
         The deployment becomes COMPLETED when all its containers pass their
         healthchecks.
 
-        For CiviForm, the service usually only has deployment. When we upgrade
-        the CiviForm server version, the deployment for the old version goes to
-        ACTIVE and a new PRIMARY deployment is created for the new version.
-        Once the new PRIMARY deployment has a rolloutState of COMPLETED, the
-        ACTIVE deployment stops its tasks and goes to the INACTIVE state.
+        For CiviForm, the service usually only has one deployment. When we
+        upgrade the CiviForm server version, the deployment for the old version
+        goes to ACTIVE and a new PRIMARY deployment is created for the new
+        version. Once the new PRIMARY deployment has a rolloutState of
+        COMPLETED, the ACTIVE deployment stops its tasks and goes to the
+        INACTIVE state.
 
         https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Deployment.html.
         """
