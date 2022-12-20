@@ -3,13 +3,14 @@
 import os
 import subprocess
 
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
-"""
-Destroy the setup
-"""
 
 
 class Destroy(SetupTemplate):
+    """
+    Destroy the setup
+    """
 
     def post_terraform_destroy(self):
         print(" - Purge the keyvault")

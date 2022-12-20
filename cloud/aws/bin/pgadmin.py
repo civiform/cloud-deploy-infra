@@ -13,10 +13,11 @@ import urllib.request
 from enum import Enum
 from typing import Callable, List
 
-from cloud.shared.bin.lib import terraform
-from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
+from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
 
 def run(config: ConfigLoader):

@@ -4,18 +4,20 @@ import subprocess
 import tempfile
 
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
-"""
-Template Setup
-
-This script handles the setup for the specific template. Calls out
-to many different shell script in order to setup the environment
-outside of the terraform setup. The setup is in two phases: pre_terraform_setup
-and post_terraform_setup.
-"""
 
 
 class Setup(SetupTemplate):
+    """
+    Template Setup
+
+    This script handles the setup for the specific template. Calls out
+    to many different shell script in order to setup the environment
+    outside of the terraform setup. The setup is in two phases: pre_terraform_setup
+    and post_terraform_setup.
+    """
+
     resource_group = None
     key_vault_name = None
     log_file_path = None

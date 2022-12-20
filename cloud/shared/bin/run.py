@@ -11,6 +11,7 @@ import re
 sys.path.append(os.getcwd())
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
 
@@ -34,8 +35,7 @@ def main():
         if not validate_tag(args.tag):
             exit()
         os.environ['TF_VAR_image_tag'] = normalize_tag(args.tag)
-        sys.stderr.write(
-            f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
+        print(f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
 
@@ -76,17 +76,17 @@ def validate_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
         return True
 
-    sys.stderr.write(
+    print(
         f'''
         The provided tag "{tag}" does not reference a release tag and may not
         be stable.
         ''')
     if os.getenv('SKIP_TAG_CHECK'):
-        sys.stderr.write(
+        print(
             'Proceeding automatically since the "SKIP_TAG_CHECK" environment variable was set.'
         )
         return True
-    sys.stderr.write(
+    print(
         f'''
         If you would like to continue deployment, please type YES below.
         Continue: ''')

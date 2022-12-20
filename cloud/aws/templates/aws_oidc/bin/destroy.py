@@ -2,12 +2,13 @@
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
-"""
-Destroy the setup
-"""
+from cloud.shared.bin.lib.print import print
 
 
 class Destroy(AwsSetupTemplate):
+    """
+    Destroy the setup
+    """
 
     def post_terraform_destroy(self):
         # when config is dev then the state is stored locally and no clean up

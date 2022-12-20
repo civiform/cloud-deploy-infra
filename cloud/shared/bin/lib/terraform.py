@@ -5,6 +5,7 @@ import shlex
 from typing import Optional
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
 
 # TODO(#2741): When using this for Azure make sure to setup backend bucket prior to calling these functions.
