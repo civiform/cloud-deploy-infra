@@ -74,7 +74,7 @@ class AwsCli:
                     "To see the task logs, follow https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system/terraform-aws-deployment#inspecting-logs\n"
                     "For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities"
                 )
-                return
+                raise Exception("service did not become healthy in expected duration")
 
             print(
                 f"  Service in state {state}. Retrying ({tries} left) in 30 seconds..."
