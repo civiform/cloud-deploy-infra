@@ -2,8 +2,8 @@ import sys
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
-from cloud.shared.bin.lib import print
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.print import print
 
 
 def run(config):
