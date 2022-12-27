@@ -285,3 +285,9 @@ variable "civiform_server_metrics_enabled" {
   description = "Whether to enable exporting server metrics on the /metrics route."
   default     = false
 }
+
+variable "feature_flag_overrides_enabled" {
+  type        = bool
+  description = "Whether feature flags can be override using /dev/feature/.../enable url."
+  default     = false
+}

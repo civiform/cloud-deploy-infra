@@ -164,5 +164,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "FEATURE_FLAG_OVERRIDES_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }

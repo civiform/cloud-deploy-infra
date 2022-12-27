@@ -325,6 +325,12 @@ variable "allow_civiform_admin_access_programs" {
   default     = false
 }
 
+variable "feature_flag_overrides_enabled" {
+  type        = bool
+  description = "Whether feature flags can be override using /dev/feature/.../enable url."
+  default     = false
+}
+
 variable "pgadmin" {
   type        = bool
   description = "Whether to depoy pgadmin or not."
