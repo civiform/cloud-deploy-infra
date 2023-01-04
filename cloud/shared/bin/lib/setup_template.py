@@ -8,6 +8,7 @@ import tempfile
 import shutil
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
 
 class SetupTemplate:

@@ -6,6 +6,7 @@ from typing import Dict
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
 
 class AwsCli:

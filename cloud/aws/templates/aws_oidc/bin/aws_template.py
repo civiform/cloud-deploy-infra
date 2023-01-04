@@ -3,6 +3,7 @@ import tempfile
 import shutil
 
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
 
 

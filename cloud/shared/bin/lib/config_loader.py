@@ -3,19 +3,20 @@ import shlex
 import os
 import re
 
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
-"""
-Config Loader
-  Handles validating and getting data from the configuration/variable files
-
-  Call load_config to get the variable definitions and corresponding env
-  variables. Will return if the config is valid and the validation errors.
-
-  Provides getters to return values from the config.
-"""
 
 
 class ConfigLoader:
+    """
+    Config Loader
+      Handles validating and getting data from the configuration/variable files
+    
+      Call load_config to get the variable definitions and corresponding env
+      variables. Will return if the config is valid and the validation errors.
+    
+      Provides getters to return values from the config.
+    """
 
     @property
     def tfvars_filename(self):

@@ -6,6 +6,7 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
 # TODO(#3116): move these to variable_definitions.json and read docs from there.
 # Map of secrets that need to be set by the user and can't be empty values.

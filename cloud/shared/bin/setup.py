@@ -5,6 +5,7 @@ from typing import List
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_setup
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib import terraform
 """
 Setup.py sets up and runs the initial terraform deployment. It's broken into
@@ -68,7 +69,7 @@ def run(config: ConfigLoader, params: List[str]):
             "\nDeployment Failed. Check Troubleshooting page for known issues:\n"
             +
             "https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system#troubleshooting\n",
-            file=sys.stderr)
+        )
         # rethrow error so that full stack trace is printed
         raise err
 
