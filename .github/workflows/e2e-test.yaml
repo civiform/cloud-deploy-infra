@@ -43,7 +43,7 @@ jobs:
         run: |
           # Must run setup scripts from this directory due to 'source' lines in the scripts.
           cd $GITHUB_WORKSPACE/civiform-deploy
-          yes yes | bin/setup --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/civiform_config_aws_oidc.sh
+          yes yes | bin/setup --config=$GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/civiform_config_aws_oidc.sh
 
       - name: Post nuke
         # Post nuke should run even if bin/setup fails. Therefore we need the
