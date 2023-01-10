@@ -19,7 +19,7 @@
 # Needs to be either:
 # - Label from https://hub.docker.com/r/civiform/civiform-cloud-deployment if USE_DOCKER=true
 # - Commit sha from https://github.com/civiform/cloud-deploy-infra if USE_DOCKER=false
-# - "latest" to use latest version of either docker image or code from the repo, 
+# - "latest" to use latest version of either docker image or code from the repo,
 #    depending on USE_DOCKER flag.
 export CIVIFORM_CLOUD_DEPLOYMENT_VERSION="latest"
 
@@ -58,8 +58,6 @@ export DOCKER_USERNAME="civiform"
 # The authentication protocal used for applicant and trusted intermediary accounts.
 # Supported values: "oidc", "saml"
 export CIVIFORM_APPLICANT_AUTH_PROTOCOL="oidc"
-
-
 
 # Deployment-specific Civiform configuration
 #################################################
@@ -112,7 +110,7 @@ export STAGING_TI_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-test-no
 export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
 
 # REQUIRED
-# The domain name for this CiviForm deployment, including the protocol. 
+# The domain name for this CiviForm deployment, including the protocol.
 # E.g. "https://civiform.seattle.gov"
 export BASE_URL="https://cloud-deploy-infra-tests.civiform.dev"
 
@@ -132,8 +130,6 @@ export CIVIFORM_TIME_ZONE_ID="America/Los_Angeles"
 # If enabled, allows exporting Prometheus server metrics over HTTP at "/metrics"
 # Defaults to false.
 export CIVIFORM_SERVER_METRICS_ENABLED=true
-
-
 
 ###########################################################################
 # Template variables for Azure. Skip if deploying to other cloud providers.
@@ -198,8 +194,6 @@ export APPLICATION_NAME=""
 # protocol. E.g. "civiform.seattle.gov"
 export CUSTOM_HOSTNAME=""
 
-
-
 #########################################################################
 # Template variables for AWS. Skip if deploying to other cloud providers.
 #########################################################################
@@ -226,8 +220,6 @@ export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:178882378957:certificate/9f50d
 # It can be useful, for example, when server continiously fails on startup: set this to 0
 # to shutdown servers while figuring out the error.
 export FARGATE_DESIRED_TASK_COUNT=1
-
-
 
 # generic-oidc Auth configuration
 #################################################
@@ -275,8 +267,6 @@ export APPLICANT_OIDC_EMAIL_ATTRIBUTE="email"
 export APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE="name"
 export APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE=""
 export APPLICANT_OIDC_LAST_NAME_ATTRIBUTE=""
-
-
 
 # ADFS and Azure AD configuration
 # More information on https://docs.civiform.us/contributor-guide/developer-guide/authentication-providers
