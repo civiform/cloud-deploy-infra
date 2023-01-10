@@ -1,0 +1,22 @@
+regions:
+  - us-east-1
+  - global
+
+account-blocklist:
+  - "664198874744"
+
+accounts:
+  "178882378957":
+    filters:
+      ACMCertificate:
+        - property: "DomainName"
+          value: "cloud-deploy-infra-tests-0.civiform.dev"
+      IAMOpenIDConnectProvider:
+        - type: contains
+          value: "oidc-provider/token.actions.githubusercontent.com"
+      IAMRole:
+        - "OrganizationAccountAccessRole"
+        - "e2e-test-runner"
+      IAMRolePolicyAttachment:
+        - "OrganizationAccountAccessRole -> AdministratorAccess"
+        - "e2e-test-runner -> AdministratorAccess"
