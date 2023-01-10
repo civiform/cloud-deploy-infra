@@ -1,12 +1,13 @@
 name: e2e-test
 on:
   schedule:
+    # Runs every day at 3:12 UTC.
     - cron: '12 3 * * *'
 permissions:
   id-token: write
   contents: read
 jobs:
-  run-e2e:
+  run-e2e-aws-oidc:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout civiform/cloud-deploy-infra
@@ -19,11 +20,10 @@ jobs:
         with:
           repository: civiform/civiform-deploy
           path: civiform-deploy
+
       - id: get-nuke
         name: Get aws-nuke
         run: |
-          # TODO(https://github.com/civiform/civiform/issues/3974): remove use of expect.
-          sudo apt install expect
           wget https://github.com/rebuy-de/aws-nuke/releases/download/v2.21.2/aws-nuke-v2.21.2-linux-amd64.tar.gz -O aws-nuke-v2.21.2-linux-amd64.tar.gz
           tar -xzf aws-nuke-v2.21.2-linux-amd64.tar.gz
           sudo mv aws-nuke-v2.21.2-linux-amd64 /aws-nuke
@@ -35,15 +35,16 @@ jobs:
           # Role in cloud-deploy-infra-tests-0 account.
           role-to-assume: arn:aws:iam::178882378957:role/e2e-test-runner
           aws-region: us-east-1
+
       - name: Pre nuke
-        run: expect $GITHUB_WORKSPACE/cloud-deploy-infra/tests/run-nuke
+        run: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/tests/nuke.yaml --no-dry-run --force --force-sleep=3
+
       - name: Run bin/setup
         run: |
           # Must run setup scripts from this directory due to 'source' lines in the scripts.
           cd $GITHUB_WORKSPACE/civiform-deploy
-          # TODO(https://github.com/civiform/civiform-deploy/pull/32): pass in absolute path via --config once merged.
-          cp $GITHUB_WORKSPACE/cloud-deploy-infra/tests/civiform_config.sh ./civiform_config.sh
-          yes yes | bin/setup
+          yes yes | bin/setup --config $GITHUB_WORKSPACE/cloud-deploy-infra/tests/civiform_config_aws_oidc.sh
+
       - name: Post nuke
         # Post nuke should run even if bin/setup fails. Therefore we need the
         # '(success() || failure())' condition: if a status check function is
@@ -51,4 +52,4 @@ jobs:
         # default:
         # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
         if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
-        run: expect $GITHUB_WORKSPACE/cloud-deploy-infra/tests/run-nuke
+        run: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/tests/nuke.yaml --no-dry-run --force --force-sleep=3

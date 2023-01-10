@@ -1,14 +1,6 @@
 #! /usr/bin/env bash
 
-# CiviForm deployment configuration file.
-#
-# Copy this file to civiform_config.sh in the same directory and edit the copy.
-#
-# cp civiform_config.example.sh civiform_config.sh
-#
-# Configuration variables must be specified in SCREAMING_SNAKE_CASE with the
-# "export" keyword preceding them. All values must be quoted as strings. There
-# should be no spaces before or after the equals sign.
+# CiviForm aws_oidc e2e test configuration file.
 
 #################################################
 # Global variables for all CiviForm deployments
@@ -112,13 +104,13 @@ export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-
 # REQUIRED
 # The domain name for this CiviForm deployment, including the protocol.
 # E.g. "https://civiform.seattle.gov"
-export BASE_URL="https://cloud-deploy-infra-tests.civiform.dev"
+export BASE_URL="https://cloud-deploy-infra-tests-0.civiform.dev"
 
 # OPTIONAL
 # When set enables demo mode for the civiform application. Should be set for
 # staging but not prod. The value is hostname without protocol and should correspond
 # BASE_URl. Example: "civiform.seattle.gov"
-export STAGING_HOSTNAME="cloud-deploy-infra-tests.civiform.dev"
+export STAGING_HOSTNAME="cloud-deploy-infra-tests-0.civiform.dev"
 
 # OPTIONAL
 # The time zone to be used when rendering any times within the CiviForm
