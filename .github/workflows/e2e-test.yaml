@@ -3,9 +3,11 @@ on:
   schedule:
     # Runs every day at 3:12 UTC.
     - cron: '12 3 * * *'
+
 permissions:
   id-token: write
   contents: read
+
 jobs:
   run-e2e-aws-oidc:
     runs-on: ubuntu-latest
@@ -15,6 +17,7 @@ jobs:
         with:
           repository: civiform/cloud-deploy-infra
           path: cloud-deploy-infra
+
       - name: Checkout civiform/civiform-deploy
         uses: actions/checkout@v3
         with:
@@ -28,6 +31,7 @@ jobs:
           tar -xzf aws-nuke-v2.21.2-linux-amd64.tar.gz
           sudo mv aws-nuke-v2.21.2-linux-amd64 /aws-nuke
           sudo chmod u+x /aws-nuke
+
       - id: get-aws-creds
         name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v1
