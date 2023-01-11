@@ -1,8 +1,10 @@
 name: e2e-test
 on:
+  # Runs every day at 3:12 UTC.
   schedule:
-    # Runs every day at 3:12 UTC.
     - cron: '12 3 * * *'
+  # Allow manually triggered runs.
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -11,6 +13,9 @@ permissions:
 jobs:
   run-e2e-aws-oidc:
     runs-on: ubuntu-latest
+    # Makes it so only one instance of this workflow can run at a time:
+    # https://docs.github.com/en/actions/using-jobs/using-concurrency
+    concurrency: run-e2e-aws-oidc
     steps:
       - name: Checkout civiform/cloud-deploy-infra
         uses: actions/checkout@v3
