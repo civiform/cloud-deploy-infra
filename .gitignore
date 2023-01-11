@@ -15,7 +15,6 @@ RUNNING_PID
 *.terraform.lock.hcl
 *.tfvars
 cloud/**/backend_vars
-*civiform_config.sh
 *_override.tf
 !*example.auto.tfvars
 terraform.tfstate**
