@@ -117,6 +117,12 @@
     "tfvar": true,
     "type": "string"
   },
+  "SENDER_EMAIL_CREATE_DOMAIN_VERIFIED_IDENTITY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "STAGING_APPLICANT_NOTIFICATION_MAILING_LIST": {
     "required": true,
     "secret": false,

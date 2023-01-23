@@ -136,6 +136,12 @@ variable "sender_email_address" {
   default     = null
 }
 
+variable "sender_email_create_domain_verified_identity" {
+  type        = string
+  description = "If a domain-verified identity should be created. If false, an email-verified identity is created."
+  default     = false
+}
+
 variable "staging_applicant_notification_mailing_list" {
   type        = string
   description = "Applicant notification mailing list for staging"

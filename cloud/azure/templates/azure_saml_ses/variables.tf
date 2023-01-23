@@ -72,6 +72,12 @@ variable "sender_email_address" {
   description = "Email address that emails will be sent from"
 }
 
+variable "sender_email_create_domain_verified_identity" {
+  type        = string
+  description = "If a domain-verified identity should be created. If false, an email-verified identity is created."
+  default     = false
+}
+
 variable "custom_hostname" {
   type        = string
   description = "custom hostname for the app to map the dns (used also for CORS)"

@@ -253,7 +253,7 @@ locals {
               "ses:*"
             ],
             "Resource" : [
-              for email in module.email_service : email.email_arn
+              module.email_service.identity_arn
             ]
           },
           {
