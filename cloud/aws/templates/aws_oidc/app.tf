@@ -252,7 +252,7 @@ locals {
             "Action" : [
               "ses:SendEmail"
             ],
-            "Resource": "*"
+            "Resource" : "*"
           },
           {
             "Effect" : "Allow",
