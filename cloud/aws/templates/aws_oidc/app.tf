@@ -250,11 +250,9 @@ locals {
           {
             "Effect" : "Allow",
             "Action" : [
-              "ses:*"
+              "ses:SendEmail"
             ],
-            "Resource" : [
-              for email in module.email_service : email.email_arn
-            ]
+            "Resource" : "*"
           },
           {
             "Effect" : "Allow",
