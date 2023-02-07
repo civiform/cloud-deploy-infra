@@ -341,3 +341,8 @@ variable "pgadmin_cidr_allowlist" {
   description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
   default     = []
 }
+variable "show_civiform_image_tag_on_landing_page" {
+  type        = bool
+  description = "Whether to show civiform version on landing page or not."
+  default     = false
+}

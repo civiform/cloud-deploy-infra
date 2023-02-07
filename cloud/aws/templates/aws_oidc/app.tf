@@ -84,13 +84,15 @@ module "civiform_server_container_def" {
     STORAGE_SERVICE_NAME = "s3"
     AWS_S3_BUCKET_NAME   = aws_s3_bucket.civiform_files_s3.id
 
-    CIVIFORM_TIME_ZONE_ID              = var.civiform_time_zone_id
-    WHITELABEL_CIVIC_ENTITY_SHORT_NAME = var.civic_entity_short_name
-    WHITELABEL_CIVIC_ENTITY_FULL_NAME  = var.civic_entity_full_name
-    WHITELABEL_SMALL_LOGO_URL          = var.civic_entity_small_logo_url
-    WHITELABEL_LOGO_WITH_NAME_URL      = var.civic_entity_logo_with_name_url
-    FAVICON_URL                        = var.favicon_url
-    SUPPORT_EMAIL_ADDRESS              = var.civic_entity_support_email_address
+    CIVIFORM_IMAGE_TAG                      = var.image_tag
+    SHOW_CIVIFORM_IMAGE_TAG_ON_LANDING_PAGE = var.show_civiform_image_tag_on_landing_page
+    CIVIFORM_TIME_ZONE_ID                   = var.civiform_time_zone_id
+    WHITELABEL_CIVIC_ENTITY_SHORT_NAME      = var.civic_entity_short_name
+    WHITELABEL_CIVIC_ENTITY_FULL_NAME       = var.civic_entity_full_name
+    WHITELABEL_SMALL_LOGO_URL               = var.civic_entity_small_logo_url
+    WHITELABEL_LOGO_WITH_NAME_URL           = var.civic_entity_logo_with_name_url
+    FAVICON_URL                             = var.favicon_url
+    SUPPORT_EMAIL_ADDRESS                   = var.civic_entity_support_email_address
 
     AWS_SES_SENDER = var.sender_email_address
     AWS_REGION     = var.aws_region
