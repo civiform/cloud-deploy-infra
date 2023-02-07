@@ -39,7 +39,7 @@ jobs:
 
       - id: get-aws-creds
         name: Authenticate to AWS
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           # Role in cloud-deploy-infra-tests-0 account.
           role-to-assume: arn:aws:iam::178882378957:role/e2e-test-runner
