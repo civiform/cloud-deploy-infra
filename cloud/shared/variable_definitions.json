@@ -170,5 +170,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "SHOW_CIVIFORM_IMAGE_TAG_ON_LANDING_PAGE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
