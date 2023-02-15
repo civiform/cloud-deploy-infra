@@ -346,3 +346,18 @@ variable "show_civiform_image_tag_on_landing_page" {
   description = "Whether to show civiform version on landing page or not."
   default     = false
 }
+variable "staging_add_noindex_meta_tag" {
+  type        = bool
+  description = "Whether to show civiform version on landing page or not."
+  default     = false
+}
+variable "staging_disable_demo_mode_logins" {
+  type        = bool
+  description = "Whether to show civiform version on landing page or not."
+  default     = false
+}
+variable "staging_disable_applicant_guest_login" {
+  type        = bool
+  description = "Whether to show civiform version on landing page or not."
+  default     = false
+}
