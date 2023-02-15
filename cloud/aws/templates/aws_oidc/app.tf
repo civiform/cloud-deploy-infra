@@ -100,6 +100,9 @@ module "civiform_server_container_def" {
     STAGING_ADMIN_LIST                        = var.staging_program_admin_notification_mailing_list
     STAGING_TI_LIST                           = var.staging_ti_notification_mailing_list
     STAGING_APPLICANT_LIST                    = var.staging_applicant_notification_mailing_list
+    STAGING_ADD_NOINDEX_META_TAG              = var.staging_add_noindex_meta_tag
+    STAGING_DISABLE_DEMO_MODE_LOGINS          = var.staging_disable_demo_mode_logins
+    STAGING_DISABLE_APPLICANT_GUEST_LOGIN     = var.staging_disable_applicant_guest_login
     APPLICANT_OIDC_PROVIDER_NAME              = var.applicant_oidc_provider_name
     CIVIFORM_APPLICANT_IDP                    = var.civiform_applicant_idp
     APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
