@@ -141,6 +141,12 @@
     "tfvar": false,
     "type": "string"
   },
+  "FEATURE_FLAG_REPORTING_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "FEATURE_FLAG_STATUS_TRACKING_ENABLED": {
     "required": false,
     "secret": false,
