@@ -367,3 +367,8 @@ variable "staging_disable_applicant_guest_login" {
   description = "Whether to disable the guest login button."
   default     = false
 }
+variable "program_eligibility_conditions_enabled" {
+  type        = bool
+  description = "Whether to enable program eligibility conditions"
+  default     = false
+}
