@@ -1,0 +1,1 @@
+{"BING": {"required": true, "secret": false, "type": "string"}, "BONG": {"required": true, "secret": false, "type": "string"}, "BONG": {"required": false, "secret": false, "type": "string"}}
