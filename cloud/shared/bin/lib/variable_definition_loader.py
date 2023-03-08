@@ -2,12 +2,12 @@ import os
 import json
 
 
-# Loads all configuration variable definition files
-#
-# Requires that:
-#   - Each variable definition file is referenced in
-#     def load_repo_variable_definitions_files():
 class VariableDefinitionLoader:
+    """ 
+    Loads all variables from a variable definition json file.
+    Validation of the data of the variable definitions should be
+    handled separately 
+    """
 
     def __init__(self, variable_definitions={}):
         self.variable_definitions: dict = variable_definitions
