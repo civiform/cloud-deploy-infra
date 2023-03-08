@@ -17,9 +17,10 @@ from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLo
 #
 #   - Variable definitions may include additional configuration based on their
 #     type.
+
 # TODO(#2887) generalize validation code to work on all config files and move 
-#       the validation into config_loader.py so validation happens during development
-#       rather than only during a github action. 
+#       validation into config_loader.py so validation happens during development
+#       rather than only when github action are run during submits. 
 class ValidateVariableDefinitions:
 
     def __init__(self, variable_definitions={}):
