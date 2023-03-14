@@ -1,6 +1,7 @@
 import unittest
 import json
 import os
+import tempfile
 
 from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
 """
@@ -33,13 +34,14 @@ class TestVariableDefinitionLoader(unittest.TestCase):
         }
 
     def test_load_valid_variable_definitions(self):   
-        self.__json_file_path_name = "./valid_vars_testfile.json"
         varDefLoader = VariableDefinitionLoader({})
-        self._write_json_file(self.__valid_variable_defs, "./valid_vars_testfile.json")
-        varDefLoader.load_definition_file("./valid_vars_testfile.json")
+
+        with tempfile.NamedTemporaryFile(mode='w') as f: 
+            self._write_json_file(self.__valid_variable_defs, f.name) 
+            varDefLoader.load_definition_file(f.name)
+
         vars = varDefLoader.get_variable_definitions()
         self.assertEqual(vars, self.__valid_variable_defs)
-        os.remove("./valid_vars_testfile.json")    
     
     def _write_json_file(self, json_content, filepath: str):        
         defs_string = json.dumps(json_content)
