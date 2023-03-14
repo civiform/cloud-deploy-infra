@@ -139,6 +139,12 @@ variable "saml_keystore_container_name" {
   default     = "saml-keystore"
 }
 
+variable "feature_flag_reporting_enabled" {
+  type        = bool
+  description = "Whether or not to enable the reporting feature"
+  default     = false
+}
+
 variable "feature_flag_status_tracking_enabled" {
   type        = bool
   description = "When set to true enable Status Tracking."

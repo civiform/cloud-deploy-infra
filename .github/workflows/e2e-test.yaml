@@ -2,7 +2,7 @@ name: e2e-test
 on:
   # Runs every day at 3:12 UTC.
   schedule:
-    - cron: '12 3 * * *'
+    - cron: "12 3 * * *"
   # Allow manually triggered runs.
   workflow_dispatch:
 
@@ -61,4 +61,8 @@ jobs:
         # default:
         # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
         if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
-        run: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3

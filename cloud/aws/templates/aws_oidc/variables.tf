@@ -301,6 +301,12 @@ variable "fargate_desired_task_count" {
   description = "Number of Civiform server tasks to run. Can be set to 0 to shutdown server."
 }
 
+variable "feature_flag_reporting_enabled" {
+  type        = bool
+  description = "Whether or not to enable the reporting feature"
+  default     = false
+}
+
 variable "feature_flag_status_tracking_enabled" {
   type        = bool
   description = "When set to true enable Status Tracking."
@@ -359,5 +365,10 @@ variable "staging_disable_demo_mode_logins" {
 variable "staging_disable_applicant_guest_login" {
   type        = bool
   description = "Whether to disable the guest login button."
+  default     = false
+}
+variable "program_eligibility_conditions_enabled" {
+  type        = bool
+  description = "Whether to enable program eligibility conditions"
   default     = false
 }
