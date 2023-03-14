@@ -84,11 +84,6 @@ class ConfigLoader:
         )
         self.configs = self.get_env_variables(self.variable_definitions)
 
-    def get_shared_variable_definitions(self):
-        variable_def_loader = VariableDefinitionLoader()
-        variable_def_loader.load_repo_variable_definitions_files()
-        return variable_def_loader.get_variable_definitions()
-
     def get_env_variables(self, variable_definitions: dict):
         configs: dict = {}
         for name in variable_definitions.keys():
