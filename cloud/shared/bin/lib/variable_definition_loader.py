@@ -12,8 +12,8 @@ class VariableDefinitionLoader:
 
     def load_definition_file(self, definition_file_path: str):
         with open(definition_file_path, "r") as file:
-            # json.loads() returns a dictionary, keeping the last 
-            # occurance and thus removes duplicates. 
+            # json.loads() returns a dictionary, keeping the last
+            # occurance and thus removes duplicates.
             # To detect them we would need to write our own parser.
             definitions = json.loads(file.read())
 
