@@ -1,24 +1,16 @@
-import os
 import json
+import os
 
 
-class VariableDefinitionLoader:
-    """ 
-    Loads all variables from a valid variable definition json file.
-    """
-
-    def __init__(self, variable_definitions={}):
-        self.variable_definitions: dict = variable_definitions
-
-    def load_definition_file(self, definition_file_path: str):
-        with open(definition_file_path, "r") as file:
-            # json.loads() returns a dictionary, keeping the last
-            # occurance and thus removes duplicates.
-            # To detect them we would need to write our own parser.
-            definitions = json.loads(file.read())
-
-            for name, definition in definitions.items():
-                self.variable_definitions[name] = definition
-
-    def get_variable_definitions(self) -> dict:
-        return self.variable_definitions
+def load_variables(definition_file_path: str) -> dict:
+    """Returns all definitions in a variable definitions file."""
+    out = {}
+    with open(definition_file_path) as f:
+        variable_definitions = json.load(f)
+        for name, definition in variable_definitions.items():
+            if name in out:
+                raise RuntimeError(
+                    f"Duplicate variable name: {name} at {definition_file_path}"
+                )
+            out[name] = definition
+    return out

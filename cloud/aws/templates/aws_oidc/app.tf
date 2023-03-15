@@ -73,7 +73,7 @@ module "civiform_server_container_def" {
     }
   ]
 
-  map_environment = {
+  map_environment = merge({
     PORT = var.port
 
     DB_JDBC_STRING = "jdbc:postgresql://${aws_db_instance.civiform.address}:${aws_db_instance.civiform.port}/postgres?ssl=true&sslmode=require"
@@ -131,7 +131,7 @@ module "civiform_server_container_def" {
     CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
     CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
     FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
-  }
+  }, var.civiform_server_environment_variables)
 
   port_mappings = [
     {

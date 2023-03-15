@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
+from cloud.shared.bin.lib.variable_definition_loader import load_variables
 
 # Loads all configuration variable definition files and validates each
 # definition for correctness. Exercised by the accompanying test file
@@ -27,8 +27,6 @@ class ValidateVariableDefinitions:
         self.variable_definitions = variable_definitions
 
     def load_repo_variable_definitions_files(self):
-        variable_def_loader = VariableDefinitionLoader(
-            self.variable_definitions)
         # As more variable definition files are added for each cloud provider,
         # add their paths here.
         cwd = os.getcwd()
@@ -38,10 +36,10 @@ class ValidateVariableDefinitions:
             f"{cwd}/cloud/azure/templates/azure_saml_ses/variable_definitions.json",
         ]
 
+        vars = {}
         for path in definition_file_paths:
-            variable_def_loader.load_definition_file(path)
-        self.variable_definitions = variable_def_loader.get_variable_definitions(
-        )
+            vars.update(load_variables(path))
+        self.variable_definitions = vars
 
     def get_validation_errors(self):
         all_errors = {}

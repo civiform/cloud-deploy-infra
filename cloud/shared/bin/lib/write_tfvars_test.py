@@ -32,6 +32,23 @@ class TestWriteTfVars(unittest.TestCase):
         with open(self.fake_tfvars_filename, "r") as tf_vars:
             self.assertEqual(tf_vars.read(), '')
 
+    def test_writes_files_with_civiform_server_environment_variables(self):
+        config_loader = TfVarWriter(self.fake_tfvars_filename)
+        config_loader.write_variables(
+            {
+                "test": "true",
+                "civiform_server_environment_variables":
+                    {
+                        "MY_VAR": "Is cool",
+                        "FEATURE_ENABLED": "false"
+                    }
+            })
+        with open(self.fake_tfvars_filename, "r") as tf_vars:
+            self.assertEqual(
+                tf_vars.read(),
+                'test="true"\nciviform_server_environment_variables = {\n  "MY_VAR"="Is cool"\n  "FEATURE_ENABLED"="false"\n}\n'
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
