@@ -23,11 +23,11 @@ class ConfigParser:
         print(f"Loading config from {config_file}")
 
         with open(config_file) as config_file:
-            print(f"\n\n\n\n\n")
             for line in config_file:
                 # Ignore empty lines and comments
                 if (line.strip() and not line.startswith("#")):
                     export_string ="export "
+                    # expect every remaining lane
                     if not line.startswith(export_string):
                         print("Error, Invalid line found. The config file should contain only exported system variables in the format\"export VARIABLE_NAME=variable_value\"")
                    
@@ -47,19 +47,14 @@ class ConfigParser:
                     print (var_value)
                     config_values[var_name] = var_value    
 
-        print("\n\n\n config values in config parser:")  
-        print(config_values)           
         return config_values
     
     def strip_quotes(self, string_to_strip):
-        print(f"STRINGS: {string_to_strip}")
         stripped_string = string_to_strip
         if string_to_strip.startswith("\""):
             stripped_string = stripped_string[1:]
-            print(f"strip front: {stripped_string}" )
         if string_to_strip.endswith("\""):
             stripped_string = stripped_string[:len(stripped_string)-1]
-            print(f"strip end: {stripped_string}" )
         return stripped_string
             
 

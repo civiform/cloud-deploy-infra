@@ -81,7 +81,6 @@ class ConfigLoader:
         variable_def_loader.load_definition_file(template_definitions_file_path)
         self.variable_definitions = variable_def_loader.get_variable_definitions()
 
-
     def _load_config(self, config_file):
         config_parser = ConfigParser()
         self.configs = config_parser.parse_config(config_file)
