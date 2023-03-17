@@ -53,9 +53,9 @@ class ConfigParser:
     
     def strip_quotes(self, string_to_strip):
         print(f"STRINGS: {string_to_strip}")
-        stripped_string = ""
+        stripped_string = string_to_strip
         if string_to_strip.startswith("\""):
-            stripped_string = string_to_strip[1:]
+            stripped_string = stripped_string[1:]
             print(f"strip front: {stripped_string}" )
         if string_to_strip.endswith("\""):
             stripped_string = stripped_string[:len(stripped_string)-1]
