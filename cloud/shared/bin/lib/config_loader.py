@@ -51,6 +51,7 @@ class ConfigLoader:
 
     def load_config(self, config_file):
         self._load_config(config_file)
+        self._load_variable_definitions()
         return self.validate_config()
 
     # TODO(jhummel), remove this when the deploy system does not use env
@@ -66,6 +67,20 @@ class ConfigLoader:
         print (config)
         for key, value in config.items():
             os.environ[key] = value
+
+    def _load_variable_definitions():
+         # get the shared variable definitions
+        variable_def_loader = VariableDefinitionLoader()
+        cwd = os.getcwd()
+        definition_file_path = os.path.join(
+            cwd, "cloud", "shared", "variable_definitions.json")
+        variable_def_loader.load_definition_file(definition_file_path)
+        shared_definitions = variable_def_loader.get_variable_definitions()
+
+        template_definitions_file_path = os.path.join(
+            self.get_template_dir(), "variable_definitions.json")
+        variable_def_loader.load_definition_file(template_definitions_file_path)
+        self.variable_definitions = variable_def_loader.get_variable_definitions()
 
 
     def _load_config(self, config_file):
