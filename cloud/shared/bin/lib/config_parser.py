@@ -33,7 +33,8 @@ class ConfigParser:
                     # remove comments on the line and give a warning if none comment text is found
                     if not len(key_value_and_comments) == 1 and not key_value_and_comments[1].startswith("#"):
                         print(f"Warning: Unexpected string after {key_value_and_comments[0]} string will be ignored")
-                        key_and_value = key_value_and_comments[0].split("=")
+                        
+                    key_and_value = key_value_and_comments[0].split("=")
                 
                     var_name = key_and_value[0]
                     var_value = self.strip_quotes(key_and_value[1])
