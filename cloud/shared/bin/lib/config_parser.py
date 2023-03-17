@@ -13,7 +13,7 @@ class ConfigParser:
     
     def parse_config(self, config_file):
         config_values: dict = {}
-        print("PARSING")
+        print(f"PARSING {config_file}")
 
         with open("./civiform_config.sh") as config_file:
             for line in config_file:
