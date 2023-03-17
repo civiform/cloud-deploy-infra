@@ -17,10 +17,10 @@ class ConfigParser:
 
         if not os.path.exists(config_file):
             exit(f"Cannot find file {config_file}")
-            
+
         print(f"Getting config from {config_file}")
 
-        with open("./civiform_config.sh") as config_file:
+        with open(config_file) as config_file:
             for line in config_file:
                 print(line)
                 # Ignore empty lines and comments
