@@ -23,6 +23,7 @@ class ConfigParser:
         print(f"Loading config from {config_file}")
 
         with open(config_file) as config_file:
+            print(f"\n\n\n\n\n")
             for line in config_file:
                 # Ignore empty lines and comments
                 if (line.strip() and not line.startswith("#")):
@@ -49,12 +50,15 @@ class ConfigParser:
         return config_values
     
     def strip_quotes(self, string_to_strip):
+        print(f"STRINGS: {string_to_strip}")
         stripped_string = ""
         if string_to_strip.startswith("\""):
             stripped_string = string_to_strip[1:]
+            print(f"strip front: {stripped_string}" )
         if string_to_strip.endswith("\""):
             stripped_string = stripped_string[:len(stripped_string)-1]
-        print(f"\n\n\n\n\nSTRINGS: {string_to_strip}, {stripped_string}")
+            print(f"strip end: {stripped_string}" )
+
         return stripped_string
             
 
