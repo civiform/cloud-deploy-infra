@@ -68,7 +68,7 @@ class ConfigLoader:
         for key, value in config.items():
             os.environ[key] = value
 
-    def _load_variable_definitions():
+    def _load_variable_definitions(self):
          # get the shared variable definitions
         variable_def_loader = VariableDefinitionLoader()
         cwd = os.getcwd()
