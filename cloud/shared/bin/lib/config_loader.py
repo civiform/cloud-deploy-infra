@@ -60,9 +60,8 @@ class ConfigLoader:
     # used to be written in bash)
     def _export_env_variables(self, config):
         '''
-            Accepts a map of env variable names and values and exports those 
-          1. Export all variables from the config into clean environment
-          2. Set values in current environment
+            Accepts a map of env variable names and values and exports them
+            as environment variables 
         '''
         print (config)
         for key, value in config.items():

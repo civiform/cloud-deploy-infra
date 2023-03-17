@@ -60,7 +60,6 @@ class ConfigParser:
         if string_to_strip.endswith("\""):
             stripped_string = stripped_string[:len(stripped_string)-1]
             print(f"strip end: {stripped_string}" )
-
         return stripped_string
             
 
