@@ -3,12 +3,16 @@ import os
 
 class ConfigParser:
     '''
-       ConfigMigrator reads an old configuration file in the format (.sh)
-       and converts it into two new styly config files (.env), which separate
-       the configuration values into server config values and local deploy
-       system config values.
+       ConfigParser reads a configuration file in the format (.sh) into a 
+       dictionary that contains key value pairs that define env variables 
+       and their value
+       
+       This class serves as an intermediate step while we are migrating away 
+       from .sh, which set env variables that we use to configure the system
+       towards .env files which configuration values are read from directly.
 
-       Once all civic entities have migrated, this class should be removed
+       Once all civic entities have migrated to the.env format, this class 
+       should be removed
     '''
     
     def parse_config(self, config_file):
@@ -50,11 +54,9 @@ class ConfigParser:
             stripped_string = string_to_strip[1:]
         if string_to_strip.endswith("\""):
             stripped_string = stripped_string[:len(stripped_string)-1]
+        print(f"\n\n\n\n\nSTRINGS: {string_to_strip}, {stripped_string}")
         return stripped_string
             
-        
-        return stripped_string
-
 
     
 
