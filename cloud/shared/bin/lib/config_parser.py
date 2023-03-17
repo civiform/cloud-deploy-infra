@@ -36,10 +36,9 @@ class ConfigParser:
                         print(f"Warning: Unexpected string after {key_and_value} will be ignored")
                         continue
                 
-                    key = key_and_value[0]
-                    
-                    
-                    config_values[key_and_value[0]] = key_and_value[1]    
+                    var_name = key_and_value[0]
+                    var_value = self.strip_quotes(key_and_value[1])
+                    config_values[var_name] = var_value    
           
         print(config_values)           
         return config_values
