@@ -64,7 +64,7 @@ class ConfigLoader:
           2. Set values in current environment
         '''
         print (config)
-        for key, value in config:
+        for key, value in config.items():
             os.environ[key] = value
 
 
