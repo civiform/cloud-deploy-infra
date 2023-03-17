@@ -3,6 +3,7 @@ import shlex
 import os
 import re
 
+from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
 
@@ -52,49 +53,36 @@ class ConfigLoader:
         self._load_config(config_file)
         return self.validate_config()
 
-    def _get_config_values_from_sh_file(self, config_file):
-        ## 1. Export all variables from the config into clean environment
-        ## 2. Set values in current environment
-        if not os.path.exists(config_file):
-            exit(f"Cannot find file {config_file}")
-        print(f"Getting config from {config_file}")
-        command = shlex.split(f'env -i bash -c "source {config_file} && env"')
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE)
-        for line in proc.stdout:
-            (key, _, value) = line.decode().partition("=")
-            os.environ[key] = value.strip()
-        proc.communicate()
+    # TODO(jhummel), remove this when the deploy system does not use env
+    # variables directly anymore. Currently this is still required because the env variables which 
+    # are used by the local deploy system are read directly in various places (legacy because the system
+    # used to be written in bash)
+    def _export_env_variables(self, config):
+        '''
+            Accepts a map of env variable names and values and exports those 
+          1. Export all variables from the config into clean environment
+          2. Set values in current environment
+        '''
+        for key, value in config:
+            os.environ[key] = value
+
 
     def _load_config(self, config_file):
-        self._get_config_values_from_sh_file(config_file)
-
-        # get the shared variable definitions
-        variable_def_loader = VariableDefinitionLoader()
-        cwd = os.getcwd()
-        definition_file_path = os.path.join(
-            cwd, "cloud", "shared", "variable_definitions.json")
-        variable_def_loader.load_definition_file(definition_file_path)
-        shared_definitions = variable_def_loader.get_variable_definitions()
-        self.configs = self.get_env_variables(shared_definitions)
-
-        template_definitions_file_path = os.path.join(
-            self.get_template_dir(), "variable_definitions.json")
-        variable_def_loader.load_definition_file(template_definitions_file_path)
-        self.variable_definitions = variable_def_loader.get_variable_definitions(
-        )
-        self.configs = self.get_env_variables(self.variable_definitions)
+        config_parser = ConfigParser()
+        self.configs = config_parser.parse_config
+        print(self.configs)
+        # TODO, remove when the deploy system does not use env
+        # variables directly anymore
+        self._export_env_variables(self.configs)
 
     def get_shared_variable_definitions(self):
         variable_def_loader = VariableDefinitionLoader()
         variable_def_loader.load_repo_variable_definitions_files()
         return variable_def_loader.get_variable_definitions()
 
-    def get_env_variables(self, variable_definitions: dict):
-        configs: dict = {}
-        for name in variable_definitions.keys():
-            configs[name] = os.environ.get(name, None)
-        return configs
-
+    # TODO(jhummel) Here we probably still want to validate only the same vars 
+    # as before, but in the longer run it could check if they are all listed in the 
+    # var definition
     def _validate_config(self, variable_definitions: dict, configs: dict):
         validation_errors = []
 
