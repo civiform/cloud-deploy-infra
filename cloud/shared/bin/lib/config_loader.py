@@ -85,7 +85,6 @@ class ConfigLoader:
 
     def _load_config(self, config_file):
         config_parser = ConfigParser()
-        print("START PARSING?")
         self.configs = config_parser.parse_config(config_file)
         print("self.config")
         print(self.configs)
