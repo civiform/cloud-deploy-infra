@@ -27,11 +27,13 @@ class ConfigParser:
                         print("Error, Invalid line found. The config file should contain only exported system variables in the format\"export VARIABLE_NAME=variable_value\"")
                    
                     # cut off the export statement
-                    key_and_value = line[len(export_string):].strip().split("=")
-                    if not len(key_and_value) == 2:
+                    key_value_and_comments = line[len(export_string):].strip().split(" ")
+                    key_and_value = {}
 
-                        print(f"Warning: Unexpected string after {key_and_value} will be ignored")
-                        continue
+                    # remove comments on the line and give a warning if none comment text is found
+                    if not len(key_value_and_comments) == 1 and not key_value_and_comments[1].startswith("#"):
+                        print(f"Warning: Unexpected string after {key_value_and_comments[0]} string will be ignored")
+                        key_and_value = key_value_and_comments[0].split("=")
                 
                     var_name = key_and_value[0]
                     var_value = self.strip_quotes(key_and_value[1])
