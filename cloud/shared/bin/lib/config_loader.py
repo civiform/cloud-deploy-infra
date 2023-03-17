@@ -63,13 +63,16 @@ class ConfigLoader:
           1. Export all variables from the config into clean environment
           2. Set values in current environment
         '''
+        print (config)
         for key, value in config:
             os.environ[key] = value
 
 
     def _load_config(self, config_file):
         config_parser = ConfigParser()
-        self.configs = config_parser.parse_config
+        print("START PARSING?")
+        self.configs = config_parser.parse_config(config_file)
+        print("self.config")
         print(self.configs)
         # TODO, remove when the deploy system does not use env
         # variables directly anymore
