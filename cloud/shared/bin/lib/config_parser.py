@@ -42,6 +42,7 @@ class ConfigParser:
                     key_and_value = key_value_and_comments[0].split("=")
                 
                     var_name = key_and_value[0]
+                    print(var_name)
                     var_value = self.strip_quotes(key_and_value[1])
                     config_values[var_name] = var_value    
 
