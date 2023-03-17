@@ -44,6 +44,7 @@ class ConfigParser:
                     var_name = key_and_value[0]
                     print(var_name)
                     var_value = self.strip_quotes(key_and_value[1])
+                    print (var_value)
                     config_values[var_name] = var_value    
 
         print("\n\n\n config values in config parser:")  
