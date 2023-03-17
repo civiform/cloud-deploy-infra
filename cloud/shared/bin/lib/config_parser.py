@@ -13,16 +13,13 @@ class ConfigParser:
     
     def parse_config(self, config_file):
         config_values: dict = {}
-        print(f"PARSING {config_file}")
-
         if not os.path.exists(config_file):
             exit(f"Cannot find file {config_file}")
 
-        print(f"Getting config from {config_file}")
+        print(f"Loading config from {config_file}")
 
         with open(config_file) as config_file:
             for line in config_file:
-                print(line)
                 # Ignore empty lines and comments
                 if (line.strip() and not line.startswith("#")):
                     export_string ="export "
@@ -39,7 +36,8 @@ class ConfigParser:
                     var_name = key_and_value[0]
                     var_value = self.strip_quotes(key_and_value[1])
                     config_values[var_name] = var_value    
-          
+
+        print("\n\n\n config values in config parser:")  
         print(config_values)           
         return config_values
     
