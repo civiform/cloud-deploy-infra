@@ -55,7 +55,7 @@ class ConfigLoader:
         return self.validate_config()
 
     # TODO(jhummel), remove this when the deploy system does not use env
-    # variables directly anymore. Currently this is still required because the env variables which 
+    # variables directly anymore. Currently this is still required because the env variables which
     # are used by the local deploy system are read directly in various places (legacy because the system
     # used to be written in bash)
     def _export_env_variables(self, config):
@@ -63,12 +63,12 @@ class ConfigLoader:
             Accepts a map of env variable names and values and exports them
             as environment variables 
         '''
-        print (config)
+        print(config)
         for key, value in config.items():
             os.environ[key] = value
 
     def _load_variable_definitions(self):
-         # get the shared variable definitions
+        # get the shared variable definitions
         variable_def_loader = VariableDefinitionLoader()
         cwd = os.getcwd()
         definition_file_path = os.path.join(
@@ -79,7 +79,8 @@ class ConfigLoader:
         template_definitions_file_path = os.path.join(
             self.get_template_dir(), "variable_definitions.json")
         variable_def_loader.load_definition_file(template_definitions_file_path)
-        self.variable_definitions = variable_def_loader.get_variable_definitions()
+        self.variable_definitions = variable_def_loader.get_variable_definitions(
+        )
 
     def _load_config(self, config_file):
         config_parser = ConfigParser()
@@ -95,8 +96,8 @@ class ConfigLoader:
         variable_def_loader.load_repo_variable_definitions_files()
         return variable_def_loader.get_variable_definitions()
 
-    # TODO(jhummel) Here we probably still want to validate only the same vars 
-    # as before, but in the longer run it could check if they are all listed in the 
+    # TODO(jhummel) Here we probably still want to validate only the same vars
+    # as before, but in the longer run it could check if they are all listed in the
     # var definition
     def _validate_config(self, variable_definitions: dict, configs: dict):
         validation_errors = []

@@ -8,42 +8,51 @@ from cloud.shared.bin.lib.config_parser import ConfigParser
  To run the tests: PYTHONPATH="${PYTHONPATH}:${pwd}" python3 cloud/shared/bin/lib/config_parser_test.py
 """
 
-class TestConfigLoader(unittest.TestCase):
+
+class TestConfigParser(unittest.TestCase):
 
     __valid_config_string = """
-# Comment line with random symbols ':"
+# Comment line with random symbols ':"#%()
 # More comments
 export ENV_VAR="env-var"
 
 # Another comment line with random symbols ':"
 # More comments
-export SECOND_ENV_VAR="env-var-2"
+export SECOND_ENV_VAR="env-var-2" # inline comment
 """
-    __randow_extra_line = "this should not parse(not a comment or export)"
+    __random_extra_line = "random extra line"
 
-    __invalid_config_string_1 = """
-    """
-
-    def test_parse_valid_config(self):
-        with tempfile.NamedTemporaryFile(mode='w') as config_file:
-            config_file.write(self.__valid_config_string)
-            config_parser = ConfigParser()
-            config = config_parser.parse_config(config_file.name)
-            self.assertEqual({}, config)
-            self.assertEqual(False, True)
+    __expected_error_message = f"""Error, Invalid line found:
+{__random_extra_line}
+The config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"""
 
     def test_parse_valid_config(self):
-        with tempfile.NamedTemporaryFile(mode='w') as config_file:
-            config_file.write(self.__valid_config_string)
-            config_file.write(self.__randow_extra_line)
-            config_parser = ConfigParser()
-            config = config_parser.parse_config(config_file.name)
-            self.assertEqual({}, config)
+        config = self.__parse_config_from_string(self.__valid_config_string)
+        self.assertEqual(
+            {
+                'ENV_VAR': 'env-var',
+                'SECOND_ENV_VAR': 'env-var-2'
+            }, config)
+
+    def test_parse_invalid_config(self):
+        invalid_config_string = self.__valid_config_string + self.__random_extra_line
+        try:
+            config = self.__parse_config_from_string(invalid_config_string)
+        except ValueError as error:
+            self.assertEqual(self.__expected_error_message, error.args[0])
 
     def test_strip_quotes(self):
         config_parser = ConfigParser()
         config_parser.strip_quotes("\"dingle dongle")
         config_parser.strip_quotes("\"dingle dongle\"")
+
+    def __parse_config_from_string(self, config_file_content):
+        with tempfile.NamedTemporaryFile(mode='w') as config_file:
+            with open(config_file.name, "w") as f:
+                f.write(config_file_content)
+            config_parser = ConfigParser()
+            return config_parser.parse_config(config_file.name)
+
 
 if __name__ == "__main__":
     unittest.main()
