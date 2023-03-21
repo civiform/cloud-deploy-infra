@@ -10,7 +10,7 @@ from cloud.shared.bin.lib.config_parser import ConfigParser
 
 class TestConfigLoader(unittest.TestCase):
 
-    def test_validate_config_for_not_including_required(self):
+    def test_parse_valid_config(self):
        config_parser = ConfigParser()
        config_parser.parse_config("/Users/jhummel/CiviForm/cloud-deploy-infra/civiform_config.sh")
 
