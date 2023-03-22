@@ -1,5 +1,6 @@
 import unittest
 import tempfile
+import warnings
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 """
@@ -18,13 +19,18 @@ export ENV_VAR="env-var"
 
 # Another comment line with random symbols ':"
 # More comments
-export SECOND_ENV_VAR="env-var-2" # inline comment
+export SECOND_ENV_VAR="env-var-2"
 """
     __random_extra_line = "random extra line"
+
+    __env_var_with_hash = "export ENV_VAR_3 = 23  # inline comment"
 
     __expected_error_message = f"""Error, Invalid line found:
 {__random_extra_line}
 The config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"""
+
+    __expected_warning = f"""'#' found in env variable definition: 'export ENV_VAR_3 = 23  # inline comment'. 
+Inline comments are not allowed and all characters, including '#' will be considered part of the value."""
 
     def test_parse_valid_config(self):
         config = self.__parse_config_from_string(self.__valid_config_string)
@@ -34,12 +40,24 @@ The config file should contain only exported system variables in the format: exp
                 'SECOND_ENV_VAR': 'env-var-2'
             }, config)
 
-    def test_parse_invalid_config(self):
+    def test_parse_config_with_invalid_extra_line_throws_error(self):
         invalid_config_string = self.__valid_config_string + self.__random_extra_line
         try:
             config = self.__parse_config_from_string(invalid_config_string)
         except ValueError as error:
             self.assertEqual(self.__expected_error_message, error.args[0])
+    
+    def test_parse_config_with_inline_comment_raises_warning(self):
+        config_string = self.__valid_config_string + self.__env_var_with_hash 
+        try:
+            config = self.__parse_config_from_string(config_string)
+        except UserWarning as warning:
+            print("EXPECTED")
+            print(self.__expected_warning)
+
+            print("ACTUAL")
+            print(warning.args[0])
+            self.assertEqual(self.__expected_warning, warning.args[0])
 
     def test_strip_quotes(self):
         config_parser = ConfigParser()

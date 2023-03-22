@@ -26,30 +26,29 @@ class ConfigParser:
             for line in config_file:
                 # Ignore empty lines and comments
                 if (line.strip() and not line.startswith("#")):
+
+                    # expect every remaining line to start with "export"  
+                    # extract the key value pairs without the "export"
                     export_string = "export "
-                    # expect every remaining lane
                     if not line.startswith(export_string):
                         raise ValueError(
                             f"Error, Invalid line found:\n{line}\nThe config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"
                         )
-                    #
-                    # cut off the export statement
-                    key_value_and_comments = line[len(export_string):].strip(
-                    ).split(" ")
-                    key_and_value = {}
+                    key_and_value = line[len(export_string):].strip(
+                    ).split("=", 1)
 
-                    # remove comments on the line and give a warning if none comment text is found
-                    if not len(
-                            key_value_and_comments
-                    ) == 1 and not key_value_and_comments[1].startswith("#"):
-                        print(
-                            f"Warning: Unexpected string after {key_value_and_comments[0]} string will be ignored"
-                        )
-
-                    key_and_value = key_value_and_comments[0].split("=")
 
                     var_name = key_and_value[0]
+                    print(var_name)
                     var_value = self.strip_quotes(key_and_value[1])
+                    print(var_value)
+
+                    count_hash = var_value.count('#')  
+                    if count_hash != 0:  
+                        raise UserWarning(
+                            f"'#' found in env variable definition: '{line}'. \nInline comments are not allowed and all characters, including '#' will be considered part of the value."
+                        )
+
                     config_values[var_name] = var_value
 
         return config_values
