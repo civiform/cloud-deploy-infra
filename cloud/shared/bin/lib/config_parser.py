@@ -41,7 +41,7 @@ class ConfigParser:
 
                     # strip out in line comments and remove quotes and blanks
                     value = key_and_value_with_comments[1].split("#", 1)[0]
-                    formatted_value = self.strip_squotes(value.strip()).strip()
+                    formatted_value = self.strip_quotes(value.strip()).strip()
             
                     config_values[var_name] = formatted_value
 
