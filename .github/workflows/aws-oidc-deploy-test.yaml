@@ -47,7 +47,8 @@ jobs:
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run setup with latest tag
         run: |
-          echo 'export APP_PREFIX="$(git rev-parse --short HEAD)"' >> civiform_config.sh
+          export TEXT_CONFIG_CONTENT = export APP_PREFIX="$(git rev-parse --short HEAD)"
+          echo $TEXT_CONFIG_CONTENT >> civiform_config.sh
           export IMAGE_TAG="${LATEST_SNAPSHOT_TAG}"
           cloud/shared/bin/setup
           exit $?
