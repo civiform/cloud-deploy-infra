@@ -19,7 +19,7 @@ export ENV_VAR="env-var"
 
 # Another comment line with random symbols ':"
 # More comments
-export SECOND_ENV_VAR="env-var-2"
+export SECOND_ENV_VAR="env-var-2" #inline comment
 """
     __random_extra_line = "random extra line"
 
@@ -45,14 +45,7 @@ Inline comments are not allowed and all characters, including '#' will be consid
         try:
             config = self.__parse_config_from_string(invalid_config_string)
         except ValueError as error:
-            self.assertEqual(self.__expected_error_message, error.args[0])
-
-    def test_parse_config_with_inline_comment_raises_warning(self):
-        config_string = self.__valid_config_string + self.__env_var_with_hash
-        try:
-            config = self.__parse_config_from_string(config_string)
-        except UserWarning as warning:
-            self.assertEqual(self.__expected_warning, warning.args[0])
+            self.assertEqual(self.__expected_error_message, error.args[0])       
 
     def test_strip_quotes(self):
         config_parser = ConfigParser()
@@ -65,7 +58,6 @@ Inline comments are not allowed and all characters, including '#' will be consid
                 f.write(config_file_content)
             config_parser = ConfigParser()
             return config_parser.parse_config(config_file.name)
-
 
 if __name__ == "__main__":
     unittest.main()
