@@ -34,19 +34,16 @@ class ConfigParser:
                             f"Error, Invalid line found:\n{line}\nThe config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"
                         )
                     # extract the key value pairs without the "export"
-                    key_and_value = line[len(export_string):].strip().split(
+                    key_and_value_with_comments = line[len(export_string):].strip().split(
                         "=", 1)
+                    
+                    var_name = key_and_value_with_comments[0].strip()
 
-                    var_name = key_and_value[0]
-                    var_value = self.strip_quotes(key_and_value[1])
-
-                    count_hash = var_value.count('#')
-                    if count_hash != 0:
-                        raise UserWarning(
-                            f"'#' found in env variable definition: '{line}'. \nInline comments are not allowed and all characters, including '#' will be considered part of the value."
-                        )
-
-                    config_values[var_name] = var_value
+                    # strip out in line comments and remove quotes and blanks
+                    value = key_and_value_with_comments[1].split("#", 1)[0]
+                    formatted_value = self.stripquotes(value.strip()).strip()
+            
+                    config_values[var_name] = formatted_value
 
         return config_values
 
