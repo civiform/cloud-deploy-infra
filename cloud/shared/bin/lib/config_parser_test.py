@@ -46,17 +46,12 @@ Inline comments are not allowed and all characters, including '#' will be consid
             config = self.__parse_config_from_string(invalid_config_string)
         except ValueError as error:
             self.assertEqual(self.__expected_error_message, error.args[0])
-    
+
     def test_parse_config_with_inline_comment_raises_warning(self):
-        config_string = self.__valid_config_string + self.__env_var_with_hash 
+        config_string = self.__valid_config_string + self.__env_var_with_hash
         try:
             config = self.__parse_config_from_string(config_string)
         except UserWarning as warning:
-            print("EXPECTED")
-            print(self.__expected_warning)
-
-            print("ACTUAL")
-            print(warning.args[0])
             self.assertEqual(self.__expected_warning, warning.args[0])
 
     def test_strip_quotes(self):

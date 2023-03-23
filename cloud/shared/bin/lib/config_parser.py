@@ -20,31 +20,28 @@ class ConfigParser:
         if not os.path.exists(config_file):
             exit(f"Cannot find file {config_file}")
 
-        print(f"Loading config from {config_file}")
+        print(f"Parsing config from {config_file}")
 
         with open(config_file) as config_file:
             for line in config_file:
                 # Ignore empty lines and comments
                 if (line.strip() and not line.startswith("#")):
 
-                    # expect every remaining line to start with "export"  
-                    # extract the key value pairs without the "export"
+                    # expect every remaining line to start with "export"
                     export_string = "export "
                     if not line.startswith(export_string):
                         raise ValueError(
                             f"Error, Invalid line found:\n{line}\nThe config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"
                         )
-                    key_and_value = line[len(export_string):].strip(
-                    ).split("=", 1)
-
+                    # extract the key value pairs without the "export"
+                    key_and_value = line[len(export_string):].strip().split(
+                        "=", 1)
 
                     var_name = key_and_value[0]
-                    print(var_name)
                     var_value = self.strip_quotes(key_and_value[1])
-                    print(var_value)
 
-                    count_hash = var_value.count('#')  
-                    if count_hash != 0:  
+                    count_hash = var_value.count('#')
+                    if count_hash != 0:
                         raise UserWarning(
                             f"'#' found in env variable definition: '{line}'. \nInline comments are not allowed and all characters, including '#' will be considered part of the value."
                         )
