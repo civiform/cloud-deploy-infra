@@ -5,14 +5,10 @@ class ConfigParser:
     '''
        ConfigParser reads a configuration file in the format (.sh) into a 
        dictionary that contains key value pairs that define env variables 
-       and their value
+       and their value.
        
-       This class serves as an intermediate step while we are migrating away 
-       from .sh, which set env variables that we use to configure the system
-       towards .env files which configuration values are read from directly.
-
-       Once all civic entities have migrated to the.env format, this class 
-       should be removed
+       TODO(#4293) Continue the migration by accepting an .env file instead
+       of an .sh file and providing migration steps to civic entities.
     '''
 
     def parse_config(self, config_file):
@@ -34,15 +30,16 @@ class ConfigParser:
                             f"Error, Invalid line found:\n{line}\nThe config file should contain only exported system variables in the format: export VARIABLE_NAME=variable_value"
                         )
                     # extract the key value pairs without the "export"
-                    key_and_value_with_comments = line[len(export_string):].strip().split(
-                        "=", 1)
-                    
+                    key_and_value_with_comments = line[len(export_string
+                                                          ):].strip().split(
+                                                              "=", 1)
+
                     var_name = key_and_value_with_comments[0].strip()
 
                     # strip out in line comments and remove quotes and blanks
                     value = key_and_value_with_comments[1].split("#", 1)[0]
                     formatted_value = self.strip_quotes(value.strip()).strip()
-            
+
                     config_values[var_name] = formatted_value
 
         return config_values

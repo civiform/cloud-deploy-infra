@@ -53,17 +53,6 @@ class ConfigLoader:
         self._load_variable_definitions()
         return self.validate_config()
 
-    # TODO(#4293), remove this when the local deploy system does not read values from env
-    # variables anymore. Currently some env variables are read from local deploy code 
-    # (legacy because the system used to be written in bash)
-    def _export_env_variables(self, config):
-        '''
-            Accepts a map of env variable names and values and exports them
-            as environment variables 
-        '''
-        for key, value in config.items():
-            os.environ[key] = value
-
     def _load_variable_definitions(self):
         # get the shared variable definitions
         variable_def_loader = VariableDefinitionLoader()
@@ -84,12 +73,23 @@ class ConfigLoader:
         self.configs = config_parser.parse_config(config_file)
         self._export_env_variables(self.configs)
 
-    def get_shared_variable_definitions(self):
+    def _get_shared_variable_definitions(self):
         variable_def_loader = VariableDefinitionLoader()
         variable_def_loader.load_repo_variable_definitions_files()
         return variable_def_loader.get_variable_definitions()
 
-    # TODO(#4293) In the future we should ensure that all variables are 
+    # TODO(#4293), remove this when the local deploy system does not read values from env
+    # variables anymore. Currently some env variables are read from local deploy code
+    # (legacy because the system used to be written in bash)
+    def _export_env_variables(self, config):
+        '''
+            Accepts a map of env variable names and values and exports them
+            as environment variables 
+        '''
+        for key, value in config.items():
+            os.environ[key] = value
+
+    # TODO(#4293) In the future we should ensure that all variables are
     # in the variable defintions files.
     def _validate_config(self, variable_definitions: dict, configs: dict):
         validation_errors = []
@@ -118,7 +118,7 @@ class ConfigLoader:
                 # trying to validate an actual configuration, we can assume that
                 # this will always be set if value_regex is provided.
                 # There is currently a presumbit check (validate_variable_definitions)
-                # but no code that does the check at runtime to catch isses 
+                # but no code that does the check at runtime to catch isses
                 # during development.
                 validation_error_message = definition.get(
                     "value_regex_error_message", None)

@@ -45,7 +45,7 @@ Inline comments are not allowed and all characters, including '#' will be consid
         try:
             config = self.__parse_config_from_string(invalid_config_string)
         except ValueError as error:
-            self.assertEqual(self.__expected_error_message, error.args[0])       
+            self.assertEqual(self.__expected_error_message, error.args[0])
 
     def test_strip_quotes(self):
         config_parser = ConfigParser()
@@ -58,6 +58,7 @@ Inline comments are not allowed and all characters, including '#' will be consid
                 f.write(config_file_content)
             config_parser = ConfigParser()
             return config_parser.parse_config(config_file.name)
+
 
 if __name__ == "__main__":
     unittest.main()
