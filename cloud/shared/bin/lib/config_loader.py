@@ -4,7 +4,6 @@ import os
 import re
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
-from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
 
 
@@ -54,16 +53,14 @@ class ConfigLoader:
         self._load_variable_definitions()
         return self.validate_config()
 
-    # TODO(jhummel), remove this when the deploy system does not use env
-    # variables directly anymore. Currently this is still required because the env variables which
-    # are used by the local deploy system are read directly in various places (legacy because the system
-    # used to be written in bash)
+    # TODO(#4293), remove this when the local deploy system does not read values from env
+    # variables anymore. Currently some env variables are read from local deploy code 
+    # (legacy because the system used to be written in bash)
     def _export_env_variables(self, config):
         '''
             Accepts a map of env variable names and values and exports them
             as environment variables 
         '''
-        print(config)
         for key, value in config.items():
             os.environ[key] = value
 
@@ -85,10 +82,6 @@ class ConfigLoader:
     def _load_config(self, config_file):
         config_parser = ConfigParser()
         self.configs = config_parser.parse_config(config_file)
-        print("self.config")
-        print(self.configs)
-        # TODO, remove when the deploy system does not use env
-        # variables directly anymore
         self._export_env_variables(self.configs)
 
     def get_shared_variable_definitions(self):
@@ -96,9 +89,8 @@ class ConfigLoader:
         variable_def_loader.load_repo_variable_definitions_files()
         return variable_def_loader.get_variable_definitions()
 
-    # TODO(jhummel) Here we probably still want to validate only the same vars
-    # as before, but in the longer run it could check if they are all listed in the
-    # var definition
+    # TODO(#4293) In the future we should ensure that all variables are 
+    # in the variable defintions files.
     def _validate_config(self, variable_definitions: dict, configs: dict):
         validation_errors = []
 
@@ -125,6 +117,9 @@ class ConfigLoader:
                 # TODO(#2887): If we validate variable definitions prior to
                 # trying to validate an actual configuration, we can assume that
                 # this will always be set if value_regex is provided.
+                # There is currently a presumbit check (validate_variable_definitions)
+                # but no code that does the check at runtime to catch isses 
+                # during development.
                 validation_error_message = definition.get(
                     "value_regex_error_message", None)
                 if not validation_error_message:
