@@ -19,7 +19,7 @@ export ENV_VAR="env-var"
 
 # Another comment line with random symbols ':"
 # More comments
-export SECOND_ENV_VAR="env-var-2" #inline comment
+export SECOND_ENV_VAR="env-var-2#2" #inline comment
 """
     __random_extra_line = "random extra line"
 
@@ -37,7 +37,7 @@ Inline comments are not allowed and all characters, including '#' will be consid
         self.assertEqual(
             {
                 'ENV_VAR': 'env-var',
-                'SECOND_ENV_VAR': 'env-var-2'
+                'SECOND_ENV_VAR': 'env-var-2#2'
             }, config)
 
     def test_parse_config_with_invalid_extra_line_throws_error(self):

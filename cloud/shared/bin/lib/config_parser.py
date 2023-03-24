@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class ConfigParser:
@@ -37,7 +38,7 @@ class ConfigParser:
                     var_name = key_and_value_with_comments[0].strip()
 
                     # strip out in line comments and remove quotes and blanks
-                    value = key_and_value_with_comments[1].split("#", 1)[0]
+                    value = re.split(r'\s+#', key_and_value_with_comments[1])[0]
                     formatted_value = self.strip_quotes(value.strip()).strip()
 
                     config_values[var_name] = formatted_value
