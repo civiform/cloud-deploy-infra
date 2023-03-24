@@ -37,7 +37,7 @@ jobs:
           #  Grab the config from the staging deploy repo to confirm
           #  the changes work with actual data
           curl https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/aws_staging_civiform_config.sh > civiform_config.sh
-          echo 'CIVIFORM_MODE="test"' >> civiform_config.sh
+          echo 'export CIVIFORM_MODE="test"' >> civiform_config.sh
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run deploy with latest tag
         run: |
@@ -47,7 +47,8 @@ jobs:
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run setup with latest tag
         run: |
-          echo 'APP_PREFIX="$(git rev-parse --short HEAD)"' >> civiform_config.sh
+          export TEST_CONFIG_CONTENT="export APP_PREFIX="$(git rev-parse --short HEAD)
+          echo $TEST_CONFIG_CONTENT >> civiform_config.sh
           export IMAGE_TAG="${LATEST_SNAPSHOT_TAG}"
           cloud/shared/bin/setup
           exit $?

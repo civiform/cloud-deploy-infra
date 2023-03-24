@@ -3,7 +3,7 @@ import shlex
 import os
 import re
 
-from cloud.shared.bin.lib.print import print
+from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
 
 
@@ -50,24 +50,10 @@ class ConfigLoader:
 
     def load_config(self, config_file):
         self._load_config(config_file)
+        self._load_variable_definitions()
         return self.validate_config()
 
-    def _get_config_values_from_sh_file(self, config_file):
-        ## 1. Export all variables from the config into clean environment
-        ## 2. Set values in current environment
-        if not os.path.exists(config_file):
-            exit(f"Cannot find file {config_file}")
-        print(f"Getting config from {config_file}")
-        command = shlex.split(f'env -i bash -c "source {config_file} && env"')
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE)
-        for line in proc.stdout:
-            (key, _, value) = line.decode().partition("=")
-            os.environ[key] = value.strip()
-        proc.communicate()
-
-    def _load_config(self, config_file):
-        self._get_config_values_from_sh_file(config_file)
-
+    def _load_variable_definitions(self):
         # get the shared variable definitions
         variable_def_loader = VariableDefinitionLoader()
         cwd = os.getcwd()
@@ -75,21 +61,36 @@ class ConfigLoader:
             cwd, "cloud", "shared", "variable_definitions.json")
         variable_def_loader.load_definition_file(definition_file_path)
         shared_definitions = variable_def_loader.get_variable_definitions()
-        self.configs = self.get_env_variables(shared_definitions)
 
         template_definitions_file_path = os.path.join(
             self.get_template_dir(), "variable_definitions.json")
         variable_def_loader.load_definition_file(template_definitions_file_path)
         self.variable_definitions = variable_def_loader.get_variable_definitions(
         )
-        self.configs = self.get_env_variables(self.variable_definitions)
 
-    def get_env_variables(self, variable_definitions: dict):
-        configs: dict = {}
-        for name in variable_definitions.keys():
-            configs[name] = os.environ.get(name, None)
-        return configs
+    def _load_config(self, config_file):
+        config_parser = ConfigParser()
+        self.configs = config_parser.parse_config(config_file)
+        self._export_env_variables(self.configs)
 
+    def _get_shared_variable_definitions(self):
+        variable_def_loader = VariableDefinitionLoader()
+        variable_def_loader.load_repo_variable_definitions_files()
+        return variable_def_loader.get_variable_definitions()
+
+    # TODO(#4293), remove this when the local deploy system does not read values from env
+    # variables anymore. Currently some env variables are read from local deploy code
+    # (legacy because the system used to be written in bash)
+    def _export_env_variables(self, config):
+        '''
+            Accepts a map of env variable names and values and exports them
+            as environment variables 
+        '''
+        for key, value in config.items():
+            os.environ[key] = value
+
+    # TODO(#4293) In the future we should ensure that all variables are
+    # in the variable defintions files.
     def _validate_config(self, variable_definitions: dict, configs: dict):
         validation_errors = []
 
@@ -116,6 +117,9 @@ class ConfigLoader:
                 # TODO(#2887): If we validate variable definitions prior to
                 # trying to validate an actual configuration, we can assume that
                 # this will always be set if value_regex is provided.
+                # There is currently a presumbit check (validate_variable_definitions)
+                # but no code that does the check at runtime to catch isses
+                # during development.
                 validation_error_message = definition.get(
                     "value_regex_error_message", None)
                 if not validation_error_message:
