@@ -206,5 +206,17 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "string"
+  },
+  "COMMON_INTAKE_MORE_RESOURCES_LINK_HREF": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "string"
   }
 }

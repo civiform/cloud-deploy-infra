@@ -372,3 +372,13 @@ variable "program_eligibility_conditions_enabled" {
   description = "Whether to enable program eligibility conditions"
   default     = false
 }
+variable "common_intake_more_resources_link_text" {
+  type        = string
+  description = "The text for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
+  default     = "Access Arkansas"
+}
+variable "common_intake_more_resources_link_href" {
+  type        = string
+  description = "The HREF for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
+  default     = "https://access.arkansas.gov/Learn/Home"
+}
