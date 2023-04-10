@@ -55,8 +55,9 @@ class ConfigLoader:
         """Returns a map containing key value pairs from all entries in the config file.
         """
         config_parser = ConfigParser()
-        self._config_fields = config_parser.parse_config(config_file)
-        self._export_env_variables(self._config_fields)
+        config_fields = config_parser.parse_config(config_file)
+        self._export_env_variables(config_fields)
+        return config_fields
 
     # TODO(https://github.com/civiform/civiform/issues/4293): remove this when
     # the local deploy system does not read values from env variables anymore.
@@ -135,7 +136,7 @@ class ConfigLoader:
         return errors
 
 
-    def _validate_infra_variables(infra_variable_definitions: dict, config_fields: dict) -> list[str]:
+    def _validate_infra_variables(self, infra_variable_definitions: dict, config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in infra_variable_definitions.
         """
@@ -178,13 +179,13 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _validate_civiform_server_env_vars(env_var_docs: dict, config_fields: dict) -> list[str]:
+    def _validate_civiform_server_env_vars(self, env_var_docs: dict, config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in env_var_docs.
         """
         validation_errors = []
 
-        for name, variable in civiform_server_env_var_definitions.items():
+        for name, variable in env_var_docs.items():
             # TODO: current support for setting an index-list variables is a
             # comma-separated string. If we support setting like VAR.0, VAR.1,
             # we need update searching though config_fields to support that
@@ -313,6 +314,3 @@ class ConfigLoader:
         if template_dir is None or not os.path.exists(template_dir):
             exit(f"Could not find template directory {template_dir}")
         return template_dir
-
-config_loader = ConfigLoader()
-validation_errors = config_loader.load_config("/Users/jhummel/Civiform/civiform-deploy/civiform_config.sh")        
