@@ -3,6 +3,9 @@ import os
 import re
 import urllib.error
 import urllib.request
+import json
+import csv
+import array
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
@@ -44,19 +47,83 @@ class ConfigLoader:
 
 
     def load_config(self, config_file):
-        self._config_fields = self._load_config_fields(config_file)
+
+        all_vars = {}
+
+        self._load_config_fields(config_file)
+        # print(list(self._config_fields.keys()).sort())
+        config_fields_keys = list(self._config_fields.keys())
+        #print("\n\n\n\n &&&& civiform config fields:")
+        #print(sorted_config_fields)
+
         self._infra_variable_definitions = self._load_infra_variables()
-        self._civiform_server_env_var_docs = self._load_civiform_server_env_vars(
-        )
+        infra_variable_definitions_keys = list(self._infra_variable_definitions.keys())
+        # print("\n\n\n\n infra variable definitions:")
+        # print (sorted_infra_variable_definitions)
+
+        terraform_variables = list(self.get_terraform_variables().keys())
+        # print("\n\n\nterraform_variables:")
+        # print(terraform_variables)
+
+
+        sorted_civiform_server_variables = ['ADFS_ADDITIONAL_SCOPES', 'ADFS_CLIENT_ID', 'ADFS_DISCOVERY_URI', 'ADFS_GLOBAL_ADMIN_GROUP', 'ADFS_SECRET', 'AD_GROUPS_ATTRIBUTE_NAME', 'ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS', 'APPLICANT_OIDC_ADDITIONAL_SCOPES', 'APPLICANT_OIDC_CLIENT_ID', 'APPLICANT_OIDC_CLIENT_SECRET', 'APPLICANT_OIDC_DISCOVERY_URI', 'APPLICANT_OIDC_EMAIL_ATTRIBUTE', 'APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE', 'APPLICANT_OIDC_LAST_NAME_ATTRIBUTE', 'APPLICANT_OIDC_LOCALE_ATTRIBUTE', 'APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE', 'APPLICANT_OIDC_OVERRIDE_LOGOUT_URL', 'APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM', 'APPLICANT_OIDC_PROVIDER_LOGOUT', 'APPLICANT_OIDC_PROVIDER_NAME', 'APPLICANT_OIDC_RESPONSE_MODE', 'APPLICANT_OIDC_RESPONSE_TYPE', 'APPLICANT_REGISTER_URI', 'AWS_REGION', 'AWS_S3_BUCKET_NAME', 'AWS_S3_FILE_LIMIT_MB', 'AWS_SES_SENDER', 'AZURE_LOCAL_CONNECTION_STRING', 'AZURE_STORAGE_ACCOUNT_CONTAINER', 'AZURE_STORAGE_ACCOUNT_NAME', 'BASE_URL', 'CF_OPTIONAL_QUESTIONS', 'CIVIFORM_ADMIN_REPORTING_UI_ENABLED', 'CIVIFORM_API_APPLICATIONS_LIST_MAX_PAGE_SIZE', 'CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET', 'CIVIFORM_API_SECRET_SALT', 'CIVIFORM_APPLICANT_IDP', 'CIVIFORM_IMAGE_TAG', 'CIVIFORM_SERVER_METRICS_ENABLED', 'CIVIFORM_SUPPORTED_LANGUAGES', 'CIVIFORM_TIME_ZONE_ID', 'DATABASE_APPLY_DESTRUCTIVE_CHANGES', 'DATABASE_CONNECTION_POOL_SIZE', 'DB_JDBC_STRING', 'DB_PASSWORD', 'DB_USERNAME', 'DURABLE_JOBS_JOB_TIMEOUT_MINUTES', 'DURABLE_JOBS_POLL_INTERVAL_SECONDS', 'DURABLE_JOBS_THREAD_POOL_SIZE', 'ESRI_ADDRESS_CORRECTION_ENABLED', 'ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ATTRIBUTES', 'ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ENABLED', 'ESRI_ADDRESS_SERVICE_AREA_VALIDATION_IDS', 'ESRI_ADDRESS_SERVICE_AREA_VALIDATION_LABELS', 'ESRI_ADDRESS_SERVICE_AREA_VALIDATION_URLS', 'ESRI_EXTERNAL_CALL_TRIES', 'ESRI_FIND_ADDRESS_CANDIDATES_URL', 'FAVICON_URL', 'FEATURE_FLAG_OVERRIDES_ENABLED', 'IDCS_CLIENT_ID', 'IDCS_DISCOVERY_URI', 'IDCS_SECRET', 'INTAKE_FORM_ENABLED', 'IT_EMAIL_ADDRESS', 'LOGIN_GOV_ACR_VALUE', 'LOGIN_GOV_ADDITIONAL_SCOPES', 'LOGIN_GOV_CLIENT_ID', 'LOGIN_GOV_DISCOVERY_URI', 'LOGIN_RADIUS_API_KEY', 'LOGIN_RADIUS_KEYSTORE_NAME', 'LOGIN_RADIUS_KEYSTORE_PASS', 'LOGIN_RADIUS_METADATA_URI', 'LOGIN_RADIUS_PRIVATE_KEY_PASS', 'LOGIN_RADIUS_SAML_APP_NAME', 'MEASUREMENT_ID', 'NONGATED_ELIGIBILITY_ENABLED', 'PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED', 'PROGRAM_READ_ONLY_VIEW_ENABLED', 'SECRET_KEY', 'SHOW_CIVIFORM_IMAGE_TAG_ON_LANDING_PAGE', 'STAGING_ADD_NOINDEX_META_TAG', 'STAGING_ADMIN_LIST', 'STAGING_APPLICANT_LIST', 'STAGING_DISABLE_APPLICANT_GUEST_LOGIN', 'STAGING_DISABLE_DEMO_MODE_LOGINS', 'STAGING_HOSTNAME', 'STAGING_TI_LIST', 'STORAGE_SERVICE_NAME', 'SUPPORT_EMAIL_ADDRESS', 'WHITELABEL_CIVIC_ENTITY_FULL_NAME', 'WHITELABEL_CIVIC_ENTITY_SHORT_NAME', 'WHITELABEL_LOGO_WITH_NAME_URL', 'WHITELABEL_SMALL_LOGO_URL']
+        #print (sorted_civiform_server_variables)            
+
+        for var in config_fields_keys:
+            if not (var in all_vars):
+                all_vars[var] = [None] * 4
+            all_vars[var][0] = "civiform_config"
+
+        for var in infra_variable_definitions_keys:
+            if not (var in all_vars):
+                all_vars[var] = [None] * 4
+            all_vars[var][1] ="variable_definitions"
+
+        for var in terraform_variables:
+            if not (var in all_vars):
+                all_vars[var] = [None] * 4
+            all_vars[var][2] ="terraform_variables"
+
+        for var in sorted_civiform_server_variables:
+            if not (var in all_vars):
+                all_vars[var] = [None] * 4
+            all_vars[var][3] = "server_variables"
+
+        sorted_all_vars = dict(sorted(all_vars.items(), key=lambda x: x[0]))
+
+     # Open the CSV file for writing
+        with open('output.csv', 'w', newline='') as csv_file:
+            # Create a CSV writer object
+            writer = csv.writer(csv_file)
+
+            # Write the data to the CSV file
+            for key, value in sorted_all_vars.items():
+                keys_and_values = []
+                keys_and_values.append(key)
+                for item in value:
+                    keys_and_values.append(item)
+
+                print(keys_and_values)
+                writer.writerow(keys_and_values)
+                #print(key)
+                #print(value)
+
+
+
+
+
+
 
         return self.validate_config()
 
     def _load_config_fields(self, config_file):
         """Returns a map containing key value pairs from all entries in the config file.
         """
+        print("civiform config file path:")
+        print(config_file)
         config_parser = ConfigParser()
         self._config_fields = config_parser.parse_config(config_file)
-        self._export_env_variables(self.configs)
+        self._export_env_variables(self._config_fields)
 
     # TODO(https://github.com/civiform/civiform/issues/4293): remove this when
     # the local deploy system does not read values from env variables anymore.
@@ -78,9 +145,11 @@ class ConfigLoader:
         shared_vars = load_variables(
             os.path.join(
                 os.getcwd(), "cloud", "shared", "variable_definitions.json"))
-        template_vars = load_variables(
-            os.path.join(self.get_template_dir(), "variable_definitions.json"))
-        return shared_vars | template_vars
+        template_vars_aws = load_variables(
+            os.path.join(self.get_template_dir_aws(), "variable_definitions.json"))
+        template_vars_azure = load_variables(
+            os.path.join(self.get_template_dir_azure(), "variable_definitions.json"))
+        return shared_vars | template_vars_aws | template_vars_azure
 
     def _load_civiform_server_env_vars(self) -> dict:
         """Returns environment variables in
@@ -105,12 +174,18 @@ class ConfigLoader:
 
         # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
         civiform_version = self.get_civiform_version()
-        url = f"https://raw.githubusercontent.com/civiform/civiform/{civiform_version}/server/conf/env-var-docs.json"
-        try:
-            with urllib.request.urlopen(url) as f:
-                docs = f.read()
-        except urllib.error.URLError as e:
-            exit("Could not download {url}: {e}")
+        # url = f"https://raw.githubusercontent.com/civiform/civiform/{civiform_version}/server/conf/env-var-docs.json"
+        # try:
+        #     with urllib.request.urlopen(url) as f:
+        #         docs = f.read()
+        # except urllib.error.URLError as e:
+        #     exit("Could not download {url}: {e}")
+
+        with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json") as f:
+            docs = f.read
+
+        print("docs")
+        print(docs)
 
 
         out = {}
@@ -122,7 +197,7 @@ class ConfigLoader:
         if len(errors) != 0:
             # Should never happen because we ensure env-var-docs.json file
             # is valid before allowing changes to be committed.
-            raise RuntimeError(f"{url} is not valid: {errors}")
+            raise RuntimeError(f"url is not valid: {errors}")
         return out
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
@@ -135,7 +210,7 @@ class ConfigLoader:
         return errors
 
 
-    def _validate_infra_variables(infra_variable_definitions: dict, config_fields: dict) -> list[str]:
+    def _validate_infra_variables(self, infra_variable_definitions: dict, config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in infra_variable_definitions.
         """
@@ -178,13 +253,17 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _validate_civiform_server_env_vars(env_var_docs: dict, config_fields: dict) -> list[str]:
+    def _validate_civiform_server_env_vars(self, env_var_docs: dict, config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in env_var_docs.
         """
         validation_errors = []
 
-        for name, variable in civiform_server_env_var_definitions.items():
+        print("env var docs in _validate_civiform_server_env_vars:")
+        print(env_var_docs)
+
+
+        for name, variable in env_var_docs.items():
             # TODO: current support for setting an index-list variables is a
             # comma-separated string. If we support setting like VAR.0, VAR.1,
             # we need update searching though config_fields to support that
@@ -308,8 +387,18 @@ class ConfigLoader:
             exit("CIVIFORM_VERSION is required to be set in the config file")
         return v
 
-    def get_template_dir(self):
-        template_dir = self._config_fields.get("TERRAFORM_TEMPLATE_DIR")
+    def get_template_dir_aws(self):
+        template_dir = "cloud/aws/templates/aws_oidc"
         if template_dir is None or not os.path.exists(template_dir):
             exit(f"Could not find template directory {template_dir}")
         return template_dir
+    
+    def get_template_dir_azure(self):
+        template_dir = "cloud/azure/templates/azure_saml_ses"
+        if template_dir is None or not os.path.exists(template_dir):
+            exit(f"Could not find template directory {template_dir}")
+        return template_dir
+    
+
+config_loader = ConfigLoader()
+validation_errors = config_loader.load_config("/Users/jhummel/Civiform/civiform-deploy/civiform_config.sh")        
