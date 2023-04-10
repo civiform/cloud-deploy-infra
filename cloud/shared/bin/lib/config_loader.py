@@ -3,6 +3,7 @@ import os
 import re
 import urllib.error
 import urllib.request
+import typing
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
@@ -104,27 +105,35 @@ class ConfigLoader:
             )
             return {}
 
-        # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
-        civiform_version = self.get_civiform_version()
-        url = f"https://raw.githubusercontent.com/civiform/civiform/{civiform_version}/server/conf/env-var-docs.json"
-        try:
-            with urllib.request.urlopen(url) as f:
-                docs = f.read()
-        except urllib.error.URLError as e:
-            exit("Could not download {url}: {e}")
+        # # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
+        # civiform_version = self.get_civiform_version()
+        # url = f"https://raw.githubusercontent.com/civiform/civiform/{civiform_version}/server/conf/env-var-docs.json"
+        # try:
+        #     with urllib.request.urlopen(url) as f:
+        #         docs = f.read()
+        # except urllib.error.URLError as e:
+        #     exit(f"Could not download {url}: {e}")    
+
+        with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json", 'r') as f:
+            docs: typing.TextIO = f
+            #docs = f.read
+
+            # print("docs")
+            # print(docs)
+            # print(type(docs))
 
 
-        out = {}
-        def record_var(node):
-            if isinstance(node.details, env_var_docs_parser.Variable):
-                out[node.name] = node.details
+            out = {}
+            def record_var(node):
+                if isinstance(node.details, env_var_docs_parser.Variable):
+                    out[node.name] = node.details
 
-        errors = env_var_docs_parser.visit(docs, record_var)
-        if len(errors) != 0:
-            # Should never happen because we ensure env-var-docs.json file
-            # is valid before allowing changes to be committed.
-            raise RuntimeError(f"{url} is not valid: {errors}")
-        return out
+            errors = env_var_docs_parser.visit(docs, record_var)
+            if len(errors) != 0:
+                # Should never happen because we ensure env-var-docs.json file
+                # is valid before allowing changes to be committed.
+                raise RuntimeError(f"{url} is not valid: {errors}")
+            return out
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
     # that every variable in civiform_config.sh is a valid documented variable.
@@ -241,6 +250,8 @@ class ConfigLoader:
             self, config_fields: dict, infra_variable_definitions: dict,
             civiform_server_env_var_definitions: dict):
         out = {}
+
+        # TODO(#4612) 
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
@@ -305,6 +316,7 @@ class ConfigLoader:
 
     def get_civiform_version(self):
         v = self._config_fields.get("CIVIFORM_VERSION")
+        print(v)
         if v is None:
             exit("CIVIFORM_VERSION is required to be set in the config file")
         return v
