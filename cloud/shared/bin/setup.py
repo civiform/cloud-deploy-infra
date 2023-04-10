@@ -49,7 +49,7 @@ def run(config: ConfigLoader, params: List[str]):
         # Post Run Setup Tasks (if needed)
         ###############################################################################
         if template_setup.requires_post_terraform_setup():
-            print("Starting port-terraform setup")
+            print("Starting post-terraform setup")
             template_setup.post_terraform_setup()
 
         subprocess.run(
