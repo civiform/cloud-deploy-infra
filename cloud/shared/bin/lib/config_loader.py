@@ -56,7 +56,7 @@ class ConfigLoader:
         """
         config_parser = ConfigParser()
         self._config_fields = config_parser.parse_config(config_file)
-        self._export_env_variables(self.configs)
+        self._export_env_variables(self._config_fields)
 
     # TODO(https://github.com/civiform/civiform/issues/4293): remove this when
     # the local deploy system does not read values from env variables anymore.
@@ -313,3 +313,6 @@ class ConfigLoader:
         if template_dir is None or not os.path.exists(template_dir):
             exit(f"Could not find template directory {template_dir}")
         return template_dir
+
+config_loader = ConfigLoader()
+validation_errors = config_loader.load_config("/Users/jhummel/Civiform/civiform-deploy/civiform_config.sh")        
