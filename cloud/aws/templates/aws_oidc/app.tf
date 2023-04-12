@@ -31,7 +31,7 @@ module "aws_scraper_logs" {
 
 module "civiform_server_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.58.1"
+  version = "0.58.2"
 
   container_name               = "${var.app_prefix}-civiform"
   container_image              = "${var.civiform_image_repo}:${var.image_tag}"
@@ -105,16 +105,13 @@ module "civiform_server_container_def" {
     APPLICANT_OIDC_LOGOUT_CLIENT_PARAM        = var.applicant_oidc_logout_client_param
     
     APPLICANT_OIDC_DISCOVERY_URI              = var.applicant_oidc_discovery_uri
-    ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
-    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
-    PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED    = var.program_eligibility_conditions_enabled
 
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
-    CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
-    FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
     
+    CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
+    CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
+   
     # TODO: The key value pairs from here downwards are also covered in the 
     # civiform_server_environment_variables. They should be removed when auto generation
     # via env-var-docs is fully enabled. This should then also allow us to remove the terraform
@@ -136,7 +133,18 @@ module "civiform_server_container_def" {
     APPLICANT_OIDC_LAST_NAME_ATTRIBUTE        = var.applicant_oidc_last_name_attribute
     ADFS_DISCOVERY_URI                        = var.adfs_discovery_uri
     ADFS_ADDITIONAL_SCOPES                    = var.adfs_additional_scopes
+    ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
     AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
+
+    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
+    PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED    = var.program_eligibility_conditions_enabled
+
+    COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
+    COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
+
+    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
+    CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
+    FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
   }, var.civiform_server_environment_variables)
 
   port_mappings = [
@@ -180,7 +188,7 @@ module "civiform_server_container_def" {
 
 module "civiform_metrics_scraper_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.58.1"
+  version = "0.58.2"
 
   container_name               = "${var.app_prefix}-metrics-scraper"
   container_image              = var.scraper_image
