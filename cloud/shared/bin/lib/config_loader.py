@@ -103,7 +103,7 @@ class ConfigLoader:
                 for item in value:
                     keys_and_values.append(item)
 
-                print(keys_and_values)
+                # print(keys_and_values)
                 writer.writerow(keys_and_values)
                 #print(key)
                 #print(value)
@@ -184,8 +184,8 @@ class ConfigLoader:
         with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json") as f:
             docs = f.read
 
-        print("docs")
-        print(docs)
+        # print("docs")
+        # print(docs)
 
 
         out = {}
@@ -320,11 +320,17 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
         for name, definition in infra_variable_definitions.items():
+            print(name)
             if not definition.get("tfvar", False):
+                print("\nskipping variable definition that is not tfvar")
+                print(name)
+                print(definition)
                 continue
 
             if name in config_fields:
                 out[name] = config_fields[name]
+            else:
+                out[name] = ""
 
         if len(civiform_server_env_var_definitions) != 0:
             env_vars = {}
