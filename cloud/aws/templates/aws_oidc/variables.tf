@@ -342,43 +342,57 @@ variable "pgadmin" {
   description = "Whether to depoy pgadmin or not."
   default     = false
 }
+
 variable "pgadmin_cidr_allowlist" {
   type        = list(string)
   description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
   default     = []
 }
+
 variable "show_civiform_image_tag_on_landing_page" {
   type        = bool
   description = "Whether to show civiform version on landing page or not."
   default     = false
 }
+
 variable "staging_add_noindex_meta_tag" {
   type        = bool
   description = "Whether to add a robots=noindex meta tag, which causes search engines to not list the website."
   default     = false
 }
+
 variable "staging_disable_demo_mode_logins" {
   type        = bool
   description = "Whether to disable the demo mode login buttons."
   default     = false
 }
+
 variable "staging_disable_applicant_guest_login" {
   type        = bool
   description = "Whether to disable the guest login button."
   default     = false
 }
+
 variable "program_eligibility_conditions_enabled" {
   type        = bool
   description = "Whether to enable program eligibility conditions"
   default     = false
 }
+
 variable "common_intake_more_resources_link_text" {
   type        = string
   description = "The text for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
   default     = "Access Arkansas"
 }
+
 variable "common_intake_more_resources_link_href" {
   type        = string
   description = "The HREF for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
   default     = "https://access.arkansas.gov/Learn/Home"
+}
+
+variable "database_apply_destructive_changes" {
+  type        = bool
+  description = "If true, allows server rollbacks that include destructive database evolutions."
+  default     = false
 }

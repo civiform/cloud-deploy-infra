@@ -124,6 +124,7 @@ module "civiform_server_container_def" {
     ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
     PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED    = var.program_eligibility_conditions_enabled
+    DATABASE_APPLY_DESTRUCTIVE_CHANGES        = var.database_apply_destructive_changes
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href

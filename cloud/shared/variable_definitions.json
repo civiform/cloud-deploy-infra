@@ -218,5 +218,11 @@
     "secret": false,
     "tfvar": false,
     "type": "string"
+  },
+  "DATABASE_APPLY_DESTRUCTIVE_CHANGES": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "bool"
   }
 }
