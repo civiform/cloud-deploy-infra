@@ -105,17 +105,27 @@ class ConfigLoader:
             )
             return {}
 
-        # # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
-        # civiform_version = self.get_civiform_version()
-        # url = f"https://raw.githubusercontent.com/civiform/civiform/{civiform_version}/server/conf/env-var-docs.json"
-        # try:
-        #     with urllib.request.urlopen(url) as f:
-        #         docs = f.read()
-        # except urllib.error.URLError as e:
-        #     exit(f"Could not download {url}: {e}")    
+        # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
+        civiform_version = self.get_civiform_version()
+        
+        # TODO(#)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
+        # the risk of backwards compatibility issues, a risk remains though. 
+        if not civiform_version=="latest":
+            print (
+                "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
+            )
+            return {}
 
-        with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json", 'r') as f:
-            docs: typing.TextIO = f
+        url = f"https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
+        
+        try:
+            with urllib.request.urlopen(url) as f:
+                docs = f.read()
+        except urllib.error.URLError as e:
+            exit(f"Could not download {url}: {e}")    
+
+        # with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json", 'r') as f:
+        #     docs: typing.TextIO = f
             #docs = f.read
 
             # print("docs")
