@@ -88,15 +88,18 @@ class ConfigLoader:
         """Returns environment variables in
         https://github.com/civiform/civiform/tree/main/server/conf/env-var-docs.json.
 
-        This function relies on the env_var_docs module
+        
+        This function is currently disabled because it relies on the env_var_docs module
         (https://github.com/civiform/civiform/tree/main/env-var-docs/parser-package)
-        being installed. The scripts in civiform/civiform-deploy are
-        responsible for ensure the module is installed. If the module is not
+        being installed. If the module is not
         available for import, this function does nothing and returns an empty
         map.
 
         _config_fields() MUST be called before calling this function.
         """
+
+        print("Loading civiform server variables")
+        
         try:
             env_var_docs_parser = importlib.import_module("env_var_docs.parser")
         except ModuleNotFoundError:
@@ -123,15 +126,6 @@ class ConfigLoader:
                 docs = f.read()
         except urllib.error.URLError as e:
             exit(f"Could not download {url}: {e}")    
-
-        # with open("/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/lib/env-var-docs.json", 'r') as f:
-        #     docs: typing.TextIO = f
-            #docs = f.read
-
-            # print("docs")
-            # print(docs)
-            # print(type(docs))
-
 
             out = {}
             def record_var(node):
