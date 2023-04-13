@@ -43,7 +43,6 @@ class ConfigLoader:
         server environment variables from the infra variable definition files.
         """
 
-
     def load_config(self, config_file):
         self._config_fields = self._load_config_fields(config_file)
         self._infra_variable_definitions = self._load_infra_variables()
@@ -99,7 +98,7 @@ class ConfigLoader:
         """
 
         print("Loading civiform server variables")
-        
+
         try:
             env_var_docs_parser = importlib.import_module("env_var_docs.parser")
         except ModuleNotFoundError:
@@ -110,24 +109,25 @@ class ConfigLoader:
 
         # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
         civiform_version = self.get_civiform_version()
-        
+
         # TODO(#)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
-        # the risk of backwards compatibility issues, a risk remains though. 
-        if not civiform_version=="latest":
-            print (
+        # the risk of backwards compatibility issues, a risk remains though.
+        if not civiform_version == "latest":
+            print(
                 "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
             )
             return {}
 
         url = f"https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
-        
+
         try:
             with urllib.request.urlopen(url) as f:
                 docs = f.read()
         except urllib.error.URLError as e:
-            exit(f"Could not download {url}: {e}")    
+            exit(f"Could not download {url}: {e}")
 
             out = {}
+
             def record_var(node):
                 if isinstance(node.details, env_var_docs_parser.Variable):
                     out[node.name] = node.details
@@ -144,12 +144,17 @@ class ConfigLoader:
     # This would catch typos.
     def validate_config(self):
         errors = []
-        errors.extend(self._validate_infra_variables(self._infra_variable_definitions, self._config_fields))
-        errors.extend(self._validate_civiform_server_env_vars(self._civiform_server_env_var_docs, self._config_fields))
+        errors.extend(
+            self._validate_infra_variables(
+                self._infra_variable_definitions, self._config_fields))
+        errors.extend(
+            self._validate_civiform_server_env_vars(
+                self._civiform_server_env_var_docs, self._config_fields))
         return errors
 
-
-    def _validate_infra_variables(self, infra_variable_definitions: dict, config_fields: dict) -> list[str]:
+    def _validate_infra_variables(
+            self, infra_variable_definitions: dict,
+            config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in infra_variable_definitions.
         """
@@ -192,7 +197,8 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _validate_civiform_server_env_vars(self, env_var_docs: dict, config_fields: dict) -> list[str]:
+    def _validate_civiform_server_env_vars(
+            self, env_var_docs: dict, config_fields: dict) -> list[str]:
         """Returns any validation errors for fields in config_fields that have
         definitions in env_var_docs.
         """
@@ -244,7 +250,6 @@ class ConfigLoader:
 
         return validation_errors
 
-
     def get_terraform_variables(self):
         return self._get_terraform_variables(
             self._config_fields, self._infra_variable_definitions,
@@ -255,7 +260,7 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
 
-        # TODO(#4612) 
+        # TODO(#4612)
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
