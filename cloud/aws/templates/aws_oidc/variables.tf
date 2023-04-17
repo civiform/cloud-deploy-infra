@@ -372,6 +372,16 @@ variable "program_eligibility_conditions_enabled" {
   description = "Whether to enable program eligibility conditions"
   default     = false
 }
+variable "intake_form_enabled" {
+  type        = bool
+  description = "Whether to enable the intake form feature."
+  default     = false
+}
+variable "nongated_eligibility_enabled" {
+  type        = bool
+  description = "Whether to enable the non-gating eligibility feature."
+  default     = false
+}
 variable "common_intake_more_resources_link_text" {
   type        = string
   description = "The text for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
