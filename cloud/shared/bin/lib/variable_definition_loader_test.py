@@ -3,7 +3,7 @@ import json
 import os
 import tempfile
 
-from cloud.shared.bin.lib.variable_definition_loader import load_variables
+from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 """
 Tests the loading of configuration variables from a json file.
 
@@ -36,7 +36,7 @@ class TestLoadVariables(unittest.TestCase):
     def test_load_valid_variable_definitions(self):
         with tempfile.NamedTemporaryFile(mode='w') as f:
             self._write_json_file(self.__valid_variable_defs, f.name)
-            vars = load_variables(f.name)
+            vars = load_variables_definitions(f.name)
             self.assertEqual(vars, self.__valid_variable_defs)
 
     def _write_json_file(self, json_content, filepath: str):

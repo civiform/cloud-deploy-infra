@@ -111,7 +111,8 @@ module "civiform_server_container_def" {
     
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-   
+
+    # Add all variables that are also listed in env-var-docs.json in the civiform repository below this line.
     # TODO: The key value pairs from here downwards are also covered in the 
     # civiform_server_environment_variables. They should be removed when auto generation
     # via env-var-docs is fully enabled. This should then also allow us to remove the terraform

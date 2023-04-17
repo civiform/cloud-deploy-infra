@@ -4,10 +4,12 @@ import re
 import urllib.error
 import urllib.request
 import typing
+import ssl
+import io
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.variable_definition_loader import load_variables
+from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 
 
 class ConfigLoader:
@@ -22,8 +24,8 @@ class ConfigLoader:
 
     def __init__(self):
         self._config_fields = {}
-        """Fields set in the civiform_config.sh file. Each field may or may not
-        be a known configuration option.
+        """Configuration fields passed to this deployment via civiform_config.sh file. 
+        Each field may or may not be a known configuration option.
         """
 
         self._civiform_server_env_var_docs = {}
@@ -33,14 +35,16 @@ class ConfigLoader:
         """
 
         self._infra_variable_definitions = {}
-        """Additional configuration options declared by the cloud deploy system:
+        """Additional configuration options declared by the cloud deploy system in the
+        variable definition files:
 
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/shared/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
 
-        TODO(https://github.com/civiform/civiform/issues/4293): remove CiviForm
-        server environment variables from the infra variable definition files.
+        TODO(https://github.com/civiform/civiform/issues/4293): Currently this also includes
+        the env variables that are defined in env-var-docs and passed to the server. 
+        Remove CiviForm them when other required changes are completed.
         """
 
     def load_config(self, config_file):
@@ -73,13 +77,11 @@ class ConfigLoader:
     def _load_infra_variables(self) -> dict:
         """Returns variable definitions in the shared and cloud-specific
         variable_definitions.json files.
-
-        _config_fields() MUST be called before calling this function.
         """
-        shared_vars = load_variables(
+        shared_vars = load_variables_definitions(
             os.path.join(
                 os.getcwd(), "cloud", "shared", "variable_definitions.json"))
-        template_vars = load_variables(
+        template_vars = load_variables_definitions(
             os.path.join(self.get_template_dir(), "variable_definitions.json"))
         return shared_vars | template_vars
 
@@ -87,17 +89,14 @@ class ConfigLoader:
         """Returns environment variables in
         https://github.com/civiform/civiform/tree/main/server/conf/env-var-docs.json.
 
-        
-        This function is currently disabled because it relies on the env_var_docs module
+        TODO(#4612) Enable the reading of server variables. This function is currently 
+        disabled because it relies on the env_var_docs module
         (https://github.com/civiform/civiform/tree/main/env-var-docs/parser-package)
-        being installed. If the module is not
-        available for import, this function does nothing and returns an empty
-        map.
+        being installed. If the module is not available for import, this function 
+        does nothing and returns an empty map.
 
-        _config_fields() MUST be called before calling this function.
+        _load_config_fields() MUST be called before calling this function.
         """
-
-        print("Loading civiform server variables")
 
         try:
             env_var_docs_parser = importlib.import_module("env_var_docs.parser")
@@ -106,38 +105,65 @@ class ConfigLoader:
                 "env_var_docs package not installed, disabling dynamic civiform server environment variable forwarding"
             )
             return {}
-
+        
         # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
         civiform_version = self.get_civiform_version()
 
-        # TODO(#)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
-        # the risk of backwards compatibility issues, a risk remains though.
+        # TODO(#4612)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
+        # the risk of backwards compatibility issues, a risk remains because env-var-docs.json could have been edited
+        # since the last release of the civiform image.
         if not civiform_version == "latest":
             print(
                 "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
             )
             return {}
 
+        # Download the certificate
+        cert = ssl.get_server_certificate(('raw.githubusercontent.com', 443))
+
+        # Save the certificate to a file
+        with open('github.crt', 'w') as f:
+            f.write(cert)
+
+        # Add the certificate to your trusted certificates
+        ssl_context = ssl.create_default_context()
+        ssl_context.load_verify_locations('github.crt')
+
+        # Use the SSL context to make the request
+
+        # TODO(jhummel) confirm if disabling ssl is ok.
+        # python -m pip install certifi     -> Requirement already satisfied: certifi in /Users/jhummel/CiviForm/civiform/env-var-docs/venv/lib/python3.11/site-packages (2022.12.7)
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+        
         url = f"https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
 
         try:
             with urllib.request.urlopen(url) as f:
-                docs = f.read()
+                env_var_docs_bytes = f.read()
         except urllib.error.URLError as e:
             exit(f"Could not download {url}: {e}")
 
-            out = {}
+        # convert the bytes to a string and create a TextIO object
+        env_var_docs_text = env_var_docs_bytes.decode("utf-8")
+        env_var_docs = io.StringIO(env_var_docs_text)
 
-            def record_var(node):
-                if isinstance(node.details, env_var_docs_parser.Variable):
-                    out[node.name] = node.details
+        out = {}
 
-            errors = env_var_docs_parser.visit(docs, record_var)
-            if len(errors) != 0:
-                # Should never happen because we ensure env-var-docs.json file
-                # is valid before allowing changes to be committed.
-                raise RuntimeError(f"{url} is not valid: {errors}")
-            return out
+        def record_var(node):
+            if isinstance(node.details, env_var_docs_parser.Variable):
+                out[node.name] = node.details
+                print("***********")
+                print(node.details)
+
+        errors = env_var_docs_parser.visit(env_var_docs, record_var)
+        if len(errors) != 0:
+            # Should never happen because we ensure env-var-docs.json file
+            # is valid before allowing changes to be committed.
+            raise RuntimeError(f"{url} is not valid: {errors}")
+        print("\n\nout")
+        print(out)
+        return out
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
     # that every variable in civiform_config.sh is a valid documented variable.
@@ -164,7 +190,8 @@ class ConfigLoader:
             config_value = config_fields.get(name)
 
             if config_value is None:
-                if definition.get("required", False):
+                is_required = definition.get("required", False)
+                if is_required:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
@@ -205,12 +232,13 @@ class ConfigLoader:
         validation_errors = []
 
         for name, variable in env_var_docs.items():
-            # TODO: current support for setting an index-list variables is a
-            # comma-separated string. If we support setting like VAR.0, VAR.1,
-            # we need update searching though config_fields to support that
-            # because the civiform_server_env_var_definitions name is VAR.
             config_value = config_fields.get(name)
 
+            # TODO(jummel) test that this is doing what is expected to (not crashing)
+
+            # TODO(#4612) Extend env-var-docs to include the required field, use the 
+            # variable_definitions.json files as the source for the values. env_var_docs does 
+            # not currently include required field Therefore this code will never run. 
             if config_value is None:
                 if variable.required:
                     validation_errors.append(
@@ -238,7 +266,7 @@ class ConfigLoader:
                     int(config_value)
                 except ValueError as e:
                     validation_errors.append(
-                        "f'{name}' is required to be an integer: {e}")
+                        f"'{name}' is required to be an integer: {e}")
                     continue
 
             if variable.type == "bool":
@@ -247,6 +275,12 @@ class ConfigLoader:
                         f"'{name}' is required to be either 'true' or 'false', got {config_value}"
                     )
                     continue
+
+            # TODO(#4612): Add support for validation of items in an index-list. 
+            # An Index-list variables VAR is represented as a comma-separated string.
+            # Individual fields in VAR can NOT currently be set the same way as on the 
+            # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
+            # be required, but validation should be supported 
 
         return validation_errors
 
@@ -260,7 +294,10 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
 
-        # TODO(#4612)
+        # TODO(#4612) When server variables are not duplicated in the infra
+        # variables anymore, we need to support the tfvars field in env-var-docs.json
+        # instead. Alternative we may find that all server variables can be considered
+        # "tfvar"s by default.
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
@@ -268,18 +305,23 @@ class ConfigLoader:
             if name in config_fields:
                 out[name] = config_fields[name]
 
+        # TODO(#4612) Ensure that auto generation of server variables is enabled across
+        # all deployment mentods (Azure,the containerized AWS deployment, the deployment 
+        # that uses checkout) otherwise index lists are not supported consistently.
         if len(civiform_server_env_var_definitions) != 0:
             env_vars = {}
             for name, variable in civiform_server_env_var_definitions.items():
                 if name in config_fields:
                     if variable.type == "index-list":
                         i = -1
-                        for item in value.split(","):
+                        for item in config_fields[name].split(","):
                             i += 1
                             env_vars[f"{name}.{i}"] = item.strip()
                     else:
                         env_vars[name] = config_fields[name]
             out["civiform_server_environment_variables"] = env_vars
+
+     #TODO(jhummel) output the variables here. It looks like we are never using server vars unless they are an index list
 
         return out
 
@@ -323,6 +365,8 @@ class ConfigLoader:
     def get_base_url(self):
         return self._config_fields.get("BASE_URL")
 
+    # TODO() Make the configuration option required as part of the validation
+    # instead of manually checking for it here.
     def get_civiform_version(self):
         v = self._config_fields.get("CIVIFORM_VERSION")
         print(v)

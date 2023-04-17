@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from cloud.shared.bin.lib.variable_definition_loader import load_variables
+from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 
 # Loads all configuration variable definition files and validates each
 # definition for correctness. Exercised by the accompanying test file
@@ -38,7 +38,7 @@ class ValidateVariableDefinitions:
 
         vars = {}
         for path in definition_file_paths:
-            vars.update(load_variables(path))
+            vars.update(load_variables_definitions(path))
         self.variable_definitions = vars
 
     def get_validation_errors(self):
