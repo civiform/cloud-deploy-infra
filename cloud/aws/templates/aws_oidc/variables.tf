@@ -383,7 +383,6 @@ variable "nongated_eligibility_enabled" {
   default     = false
 }
 variable "common_intake_more_resources_link_text" {
-variable "common_intake_more_resources_link_text" {
   type        = string
   description = "The text for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
   default     = "Access Arkansas"
