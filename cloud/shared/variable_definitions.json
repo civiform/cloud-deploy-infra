@@ -207,6 +207,18 @@
     "tfvar": true,
     "type": "bool"
   },
+  "INTAKE_FORM_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "NONGATED_ELIGIBLITY_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT": {
     "required": false,
     "secret": false,
