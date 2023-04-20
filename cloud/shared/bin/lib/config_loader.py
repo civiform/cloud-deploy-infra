@@ -13,6 +13,7 @@ from cloud.shared.bin.lib.variable_definition_loader import load_variables_defin
 
 CIVIFORM_SERVER_VARIABLES_KEY = "civiform_server_environment_variables"
 
+
 class ConfigLoader:
     """Handles validating and getting data from the configuration/variable
     files.
@@ -45,7 +46,7 @@ class ConfigLoader:
 
         TODO(https://github.com/civiform/civiform/issues/4293): Currently this also includes
         the env variables that are defined in env-var-docs and passed to the server. 
-        Remove CiviForm them when other required changes are completed.
+        Remove them when other required changes are completed.
         """
 
     def load_config(self, config_file):
@@ -106,7 +107,7 @@ class ConfigLoader:
                 "env_var_docs package not installed, disabling dynamic civiform server environment variable forwarding"
             )
             return {}
-        
+
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
         env_var_docs = self._download_env_var_docs(self.get_civiform_version())
@@ -123,13 +124,14 @@ class ConfigLoader:
         if len(errors) != 0:
             # Should never happen because we ensure env-var-docs.json file
             # is valid before allowing changes to be committed.
-            raise RuntimeError(f"the downloaded env-var-docs file is not valid: {errors}")
+            raise RuntimeError(
+                f"the downloaded env-var-docs file is not valid: {errors}")
         return out
-    
+
     def _download_env_var_docs(self, civiform_version: str):
         """ 
-            Downloads the env-var-docs.json from the civiform git repository if there is a version that corresponds to the
-            civiform version of this deployment. The env-var-docs.json defines all server variables. 
+        Downloads the env-var-docs.json from the civiform git repository if there is a version that corresponds to the
+        civiform version of this deployment. The env-var-docs.json defines all server variables. 
         """
         # TODO(#4612)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
         # the risk of backwards compatibility issues, a risk remains because env-var-docs.json could have been edited
@@ -147,7 +149,6 @@ class ConfigLoader:
                 env_var_docs_bytes = f.read()
         except urllib.error.URLError as e:
             exit(f"Could not download {url}: {e}")
-                # convert the bytes to a string and create a TextIO object
         env_var_docs_text = env_var_docs_bytes.decode("utf-8")
         env_var_docs = io.StringIO(env_var_docs_text)
         return env_var_docs
@@ -169,8 +170,8 @@ class ConfigLoader:
             self, infra_variable_definitions: dict,
             config_fields: dict) -> list[str]:
         """
-            Returns any validation errors for fields in config_fields that have
-            definitions in infra_variable_definitions.
+        Returns any validation errors for fields in config_fields that have
+        definitions in infra_variable_definitions.
         """
         validation_errors = []
 
@@ -215,20 +216,17 @@ class ConfigLoader:
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> list[str]:
         """
-            Returns any validation errors for fields in config_fields that have
-            definitions in env_var_docs.
+        Returns any validation errors for fields in config_fields that have
+        definitions in env_var_docs.
         """
         validation_errors = []
 
         for name, variable in env_var_docs.items():
             config_value = config_fields.get(name)
-    
 
-            # TODO(jummel) test that this is doing what is expected to (not crashing)
-
-            # TODO(#4612) Extend env-var-docs to include the required field, use the 
-            # variable_definitions.json files as the source for the values. env_var_docs does 
-            # not currently include required field Therefore this code will never run. 
+            # TODO(#4612) Extend env-var-docs to include the required field, use the
+            # variable_definitions.json files as the source for the values. env_var_docs does
+            # not currently include required field. Therefore this code will never run.
             if config_value is None:
                 if variable.required:
                     validation_errors.append(
@@ -266,9 +264,9 @@ class ConfigLoader:
                     )
                     continue
 
-            # TODO(#4612): Add support for validation of items in an index-list. 
+            # TODO(#4612): Add support for validation of items in an index-list.
             # An Index-list variables VAR is represented as a comma-separated string.
-            # Individual fields in VAR can NOT currently be set the same way as on the 
+            # Individual fields in VAR can NOT currently be set the same way as on the
             # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
             # be required, but validation should be supported.
 
@@ -290,13 +288,10 @@ class ConfigLoader:
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
-            
+
             if name in config_fields:
                 out[name] = config_fields[name]
 
-        # TODO(#4612) Ensure that auto generation of server variables is enabled across
-        # all deployment methods (Azure,the containerized AWS deployment, the deployment 
-        # that uses checkout) otherwise index lists are not supported consistently.
         if len(civiform_server_env_var_definitions) != 0:
             env_vars = {}
             for name, variable in civiform_server_env_var_definitions.items():
@@ -308,7 +303,7 @@ class ConfigLoader:
                             env_vars[f"{name}.{i}"] = item.strip()
                     else:
                         env_vars[name] = config_fields[name]
-            
+
             # Infra and server variables are merged before being passed through
             # terraform, which means that, if a variable is in both, values in the server variables
             # take prescedence over infra variables.

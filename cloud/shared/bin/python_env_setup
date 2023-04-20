@@ -27,7 +27,7 @@ function initialize_python_env() {
         python3 -m venv .venv
     fi
 
-    ls .venv/bin/activate
+    # source the activate script (. is more portable between shells than source)
     . .venv/bin/activate
 
     #Check if the requirement file is already met.
@@ -53,5 +53,3 @@ function remove_python_env() {
     fi
 }
 
-echo "PATH:"
-echo $PATH

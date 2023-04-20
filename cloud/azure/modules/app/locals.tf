@@ -1,7 +1,7 @@
 locals {
   # The hard-coded zero indexes here are necessary to access the fqdn from the record set associated with it
   # because the private_dns_zone_configs and record_sets blocks expose lists, even if we only have one dns zone
-  # and record set configured. 
+  # and record set configured.
   postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
@@ -12,8 +12,6 @@ locals {
   aws_secret_access_token         = "aws-secret-access-token"
   aws_access_key_id               = "aws-access-key-id"
 
-  # TODO(#4612) pass the server variables through here directly like for AWS and remove the terraform variables 
-  # that thereby become obsolete. There are some variables which are azure only which also need to be covered.
   app_settings = merge({
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     PORT                                = 9000
@@ -68,11 +66,11 @@ locals {
     CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
     FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
 
-    # TODO: The key value pairs from here downwards are also covered in the 
-    # civiform_server_environment_variables. They should be removed when auto generation
-    # via env-var-docs is fully enabled. This should then also allow us to remove the terraform
-    # variables.There is also a range of server side variables, which are passed through above, 
-    # but they are currently not auto generated because they are not in the variable definitions
+    # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
+
+    # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
+    # duplicates in the civiform_server_environment_variables map. 
+    
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
     STAGING_HOSTNAME = "placeholder"
@@ -81,13 +79,16 @@ locals {
     FAVICON_URL                               = var.favicon_url
     AWS_REGION                                = var.aws_region
     CIVIFORM_APPLICANT_IDP                    = var.civiform_applicant_idp
+    
     ADFS_DISCOVERY_URI                        = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
     # kept as such (set to empty string, rather than undefined).
     # This allows for the default to include atallclaims and for
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
+    
     AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
+    
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
     LOGIN_RADIUS_METADATA_URI     = var.login_radius_metadata_uri
