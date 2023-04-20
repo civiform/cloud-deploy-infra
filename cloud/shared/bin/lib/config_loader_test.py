@@ -5,8 +5,16 @@ import unittest.mock
 import importlib
 import subprocess
 import os
+import typing
+import mock_env_var_docs_parser
 
+from unittest.mock import MagicMock, patch
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.config_loader import CIVIFORM_SERVER_VARIABLES_KEY
+from mock_env_var_docs_parser import Variable
+from urllib.request import urlopen
+
+
 """
 Tests for the ConfigLoader, calls the I/O methods to match the actual
 experience of running the class.
@@ -44,80 +52,6 @@ class TestConfigLoader(unittest.TestCase):
 
         self.assertEqual(
             config_loader.validate_config(), ["'Bar' is required but not set"])
-        
-    #def test_just_setup():
-        
-        # script_path = "path/to/script"
-        # requirements_file = "/path/to/requirements.txt"
-
-        # os.system(f'source {script_path} && initialize_python_env {requirements_file}')
-
-
-        # script_path = "/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/python_dependencies"
-        # requirements_file = "/Users/jhummel/Civiform/cloud-deploy-infra/cloud/requirements.txt"
-
-        # output_file =os.popen(f'source {script_path}')
-        # output = output_file.read()
-        # print(output)
-
-        # os.system(f'source {script_path}')
-        # os.system(-1)
-        # os.system(f'initialize_python_env {requirements_file}')
-
-
-        # Run the script in the current process using the source command
-        #subprocess.call(f'source {script_path} && initialize_python_env {requirements_file}', shell=True)
-
-        
-
-    #     # Define the path to your Bash script and the function you want to call
-    #     script_path = "/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/python_dependencies"
-    #     function_name = "initialize_python_env"
-    #     function_name_2 = "remove_python_env"
-
-    #     # Define the arguments you want to pass to the function
-    #     arg1 = "/Users/jhummel/Civiform/cloud-deploy-infra/cloud/requirements.txt"
-
-    #     # Construct the command to execute the script and call the function
-    #     command = f"source {script_path} && {function_name} {arg1}"
-
-    #     # Execute the command as a subprocess and capture its output
-    #     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    #     output, errors = process.communicate()
-
-    #     # Print the output and errors
-    #     print("Output:", output.decode())
-    #    # print("Errors:", errors.decode())
-
-    #     # Wait for the subprocess to finish running
-    #     process.wait()
-
-
-        # Print the output
-        #print(output)
-
-        # source_script = 'source /path/to/script'
-        # my_function = 'my_function /path/to/requirements.txt'
-        # ouptu = subprocess.call(source_script, shell= True)
-        # print("output")
-        # print(output)
-        # output1 = subprocess.call(my_function, shell= True)
-        # print(output1)
-
-
-        # source_script = 'source /Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/python_dependencies'
-        # initialize_python_env = 'initialize_python_env /Users/jhummel/Civiform/cloud-deploy-infra/cloud/requirements.txt'
-        # output = subprocess.call(source_script, shell= True)
-        # print("output")
-        # print(output)
-        # output1 = subprocess.call(initialize_python_env, shell= True)
-        # print(output1)
-
-        # enable_env_var_docs_parser
-        # print("Parser installed?")
-        # self.assertEqual(True, import_env_var_docs_parser())
-        # disable_env_var_docs_parser
-        # self.assertEqual(False, import_env_var_docs_parser())
 
 
     def test_validate_config_for_incorrect_enum__in_infra_variable(self):
@@ -220,7 +154,6 @@ class TestConfigLoader(unittest.TestCase):
         self.assertEqual(config_loader.validate_config(), [])
 
     # TODO  (jhummel)
-    # - test by installing package etc.
     # - a config gets loaded correctly
     # - env-var-docs gets loaded correctly
     # - infra variables get loaded correctly
@@ -228,180 +161,215 @@ class TestConfigLoader(unittest.TestCase):
     # - terraform variables work for index list
     # - terraform variables work for server variables
 
-    def test_validate_correct_values_in_config__for_server_variables(self):
-        env_var_docs_parser = import_env_var_docs_parser()
+    @patch('importlib.import_module')
+    def test_validate_correct_values_in_config__for_server_variables(self, mock_import_module):
+        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
 
-        if not env_var_docs_parser == None:
-            config_fields = {"FOO_0": "somenumbers123", 
-                             "FOO_1": "true",
-                             "FOO_2": "value1",
-                             "FOO_3": "grey", 
-                             "FOO_4": "24"}            
-            civiform_server_env_vars = {} 
+        config_fields = {"FOO_0": "somenumbers123", 
+                            "FOO_1": "true",
+                            "FOO_2": "value1",
+                            "FOO_3": "grey", 
+                            "FOO_4": "24"}            
+        civiform_server_env_vars = {} 
 
-            # See comments on the specifics we pass correct values for
-            civiform_server_env_vars["FOO_0"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              # normal string
-                required=False, 
-                values=None,                # with no specified values
-                regex=None,                 # or regex to check
-                regex_tests=None)
-            civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='bool',                # boolean, needs boolean value
-                required=True,              # and required -> has to be present
-                values=None, 
-                regex=None, 
-                regex_tests=None)
-            civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              # string 
-                required=True, 
-                values="value1, value2",    # with specific values
-                regex=None, 
-                regex_tests=None)
-            civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              # string 
-                required=True, 
-                values=None,
-                regex="gr(a|e)y",                 # that matches a regex
-                regex_tests=None)
-            civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='int',                 # int has to be int value
-                required=True, 
-                values=None, 
-                regex=None, 
-                regex_tests=None)
+        # See comments on the specifics we pass correct values for
+        civiform_server_env_vars["FOO_0"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              # normal string
+            required=False, 
+            values=None,                # with no specified values
+            regex=None,                 # or regex to check
+            regex_tests=None)
+        civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='bool',                # boolean, needs boolean value
+            required=True,              # and required -> has to be present
+            values=None, 
+            regex=None, 
+            regex_tests=None)
+        civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              # string 
+            required=True, 
+            values="value1, value2",    # with specific values
+            regex=None, 
+            regex_tests=None)
+        civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              # string 
+            required=True, 
+            values=None,
+            regex="gr(a|e)y",                 # that matches a regex
+            regex_tests=None)
+        civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='int',                 # int has to be int value
+            required=True, 
+            values=None, 
+            regex=None, 
+            regex_tests=None)
 
-            config_loader = ConfigLoader()
-            validation_errors = config_loader._validate_civiform_server_env_vars(civiform_server_env_vars, config_fields)
-            self.assertEqual([], validation_errors)
+        config_loader = ConfigLoader()
+        validation_errors = config_loader._validate_civiform_server_env_vars(civiform_server_env_vars, config_fields)
+        self.assertEqual([], validation_errors)
     
-    #TODO(jhummel) enable the test
-    def test_validate_incorrect_values_in_config__for_server_variables(self):
-        env_var_docs_parser = import_env_var_docs_parser()
+    @patch('importlib.import_module')
+    def test_validate_incorrect_values_in_config__for_server_variables(self, mock_import_module):
+        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
+        #env_var_docs_parser = importlib.import_module("env_var_docs.parser")
 
-        if not env_var_docs_parser == None:
-            config_fields = {"FOO_1": "none_boolean_string",
-                             "FOO_2": "value3",
-                             "FOO_3": "gry", 
-                             "FOO_4": "none_int_string"}            
-            civiform_server_env_vars = {} 
+        config_fields = {"FOO_1": "none_boolean_string",
+                            "FOO_2": "value3",
+                            "FOO_3": "gry", 
+                            "FOO_4": "none_int_string"}            
+        civiform_server_env_vars = {} 
 
-            # See comments on the specifics we pass correct values for
-            civiform_server_env_vars["FOO_0"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              
-                required=True,              # Required but missing in values
-                values=None,                
-                regex=None,                 
-                regex_tests=None)
-            civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='bool',                # Boolean, but value is other
-                required=True,     
-                values=None, 
-                regex=None, 
-                regex_tests=None)
-            civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              # string 
-                required=True, 
-                values="value1, value2",    # does not stick to specific values
-                regex=None, 
-                regex_tests=None)
-            civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='string',              # string 
-                required=True, 
-                values=None,
-                regex="gr(a|e)y",           # does not matche regex
-                regex_tests=None)
-            civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='int',                 # int has, but is not int value
-                required=True, 
-                values=None, 
-                regex=None, 
-                regex_tests=None)
+        # See comments on the specifics we pass correct values for
+        civiform_server_env_vars["FOO_0"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              
+            required=True,              # Required but missing in values
+            values=None,                
+            regex=None,                 
+            regex_tests=None)
+        civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='bool',                # Boolean, but value is other
+            required=True,     
+            values=None, 
+            regex=None, 
+            regex_tests=None)
+        civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              # string 
+            required=True, 
+            values="value1, value2",    # does not stick to specific values
+            regex=None, 
+            regex_tests=None)
+        civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              # string 
+            required=True, 
+            values=None,
+            regex="gr(a|e)y",           # does not matche regex
+            regex_tests=None)
+        civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='int',                 # int has, but is not int value
+            required=True, 
+            values=None, 
+            regex=None, 
+            regex_tests=None)
 
-            config_loader = ConfigLoader()
-            validation_errors = config_loader._validate_civiform_server_env_vars(civiform_server_env_vars, config_fields)
-            self.assertEqual(["'FOO_0' is required but not set", 
-                              "'FOO_1' is required to be either 'true' or 'false', got none_boolean_string", 
-                              "'FOO_2': 'value3' is not a valid value. Valid values are value1, value2", 
-                              "'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'", 
-                              "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'"],
-                              validation_errors)
+        config_loader = ConfigLoader()
+        validation_errors = config_loader._validate_civiform_server_env_vars(civiform_server_env_vars, config_fields)
+        self.assertEqual(["'FOO_0' is required but not set", 
+                            "'FOO_1' is required to be either 'true' or 'false', got none_boolean_string", 
+                            "'FOO_2': 'value3' is not a valid value. Valid values are value1, value2", 
+                            "'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'", 
+                            "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'"],
+                            validation_errors)
 
-    def test_get_terraform_variables():
-        env_var_docs_parser = import_env_var_docs_parser()
-        if not env_var_docs_parser == None:
-            config_loader = ConfigLoader()
+    @patch('importlib.import_module')
+    def test_get_terraform_variables(self, mock_import_module):
+        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
+        config_loader = ConfigLoader()
 
-            defs = {
-                "FOO_0": {
-                    "required": True,
-                    "secret": False,
-                    "tfvar": False,
-                    "type": "string"
-                },
-                "FOO_1": {
-                    "required": True,
-                    "secret": False,
-                    "tfvar": True, 
-                    "type": "string"
-                },
-            }
-            config_loader._infra_variable_definitions = defs
+        defs = {
+            "FOO_0": {
+                "required": True,
+                "secret": False,
+                "tfvar": False,
+                "type": "string"
+            },
+            "FOO_1": {
+                "required": True,
+                "secret": False,
+                "tfvar": True, 
+                "type": "string"
+            },
+        }
+        config_loader._infra_variable_definitions = defs
 
-            config_loader._civiform_server_env_var_docs = {} 
-            config_loader._civiform_server_env_var_docs["FOO_2"] = env_var_docs_parser.Variable(
-                description='description', 
-                type='index-list',              
-                required=True,
-                values=None,                
-                regex=None,                 
-                regex_tests=None)
+        config_loader._civiform_server_env_var_docs = {} 
+        config_loader._civiform_server_env_var_docs["FOO_0"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='index-list',              
+            required=True,
+            values=None,                
+            regex=None,                 
+            regex_tests=None)
+        config_loader._civiform_server_env_var_docs["FOO_1"] = env_var_docs_parser.Variable(
+            description='description', 
+            type='string',              
+            required=True,
+            values=None,                
+            regex=None,                 
+            regex_tests=None)
+        config_loader._config_fields = config_fields = {"FOO_0": "item0, item1, item2",
+                            "FOO_1": "normal string"}   
             
-            
-            config_loader._config_fields =
-            config_loader._civiform_server_env_var_docs = 
-            config_loader.get_terraform_variables()
-            
-            
+        terraform_vars = config_loader.get_terraform_variables()
+        self.assertEqual(2, len(terraform_vars))
+        self.assertEqual(terraform_vars["FOO_1"], "normal string")
+
+        server_vars = terraform_vars[CIVIFORM_SERVER_VARIABLES_KEY]
+        self.assertEqual(server_vars["FOO_1"], "normal string")
+        self.assertEqual(server_vars["FOO_0.0"],"item0")
+        self.assertEqual(server_vars["FOO_0.1"],"item1")
+        self.assertEqual(server_vars["FOO_0.2"],"item2")
+
+    def test_load_civiform_server_env_vars_empty_if_env_var_docs_package_not_present(self):
+        # Skip mocking out the presence of the env var docs package (see other tests)
+        config_loader = ConfigLoader()
+        server_vars = config_loader._load_civiform_server_env_vars()
+        # Because the package is not present, no server variables were loaded
+        self.assertEqual(server_vars, {})
+
+    @patch('importlib.import_module')
+    def test_load_civiform_server_env_vars(self, mock_import_module):
+        print("TEST")
+        config_loader = ConfigLoader()
+        config_loader._config_fields = {"CIVIFORM_VERSION": "latest"}        
+
+        # Instead of downloading the env_var_docs from github, mock out the download call
+        def mock_download_env_var_docs():
+            env_var_docs = io.StringIO(
+                '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
+            )
+            return env_var_docs
+        
+        with patch('cloud.shared.bin.lib.config_loader.ConfigLoader._download_env_var_docs', side_effect=mock_download_env_var_docs):
+            mock_env_var_docs_parser.mock_out_env_var_docs_package_install(self,mock_import_module)
+            env_var_docs = config_loader._load_civiform_server_env_vars()
+            # Assert that the python module that enables the variable auto generation is downloaded
+            mock_import_module.assert_called_with('env_var_docs.parser')
+            self.assertEqual({'test-variable-node': Variable(description='description', type='string', required=False, values=[], regex='', regex_tests=[])}, env_var_docs)
+
+    @patch('urllib.request.urlopen')
+    def test_urlopen_mock(self, mock_urlopen):
+        config_loader = ConfigLoader()
+
+        f = io.StringIO(
+            '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }')
+        
+        url = 'https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json'
+        mock_urlopen.return_value.read.return_value = b'env var docs download called'
+        config_loader._download_env_var_docs()
+
+        self.assertEqual(response.read(), b'env var docs download called')
+
+
+    def test_download_env_var_docs():
+         def mock_open_url(url: str):
+             url
+         with patch('urllib.request.urlopen', side_effect=mock_download_env_var_docs):
         
 
-
-
-#TODO(jhummel) make path portable
-def enable_env_var_docs_parser():
-    script_path = '/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/python_dependencies'
-    function_name = 'python_dependencies::initialize_python_env'
-    result = subprocess.run([script_path, function_name], shell=True, capture_output=True)
-    yield
-    assert result.returncode == 0
-
-#TODO(jhummel) make path portable
-def disable_env_var_docs_parser():
-    script_path = '/Users/jhummel/Civiform/cloud-deploy-infra/cloud/shared/bin/python_dependencies'
-    function_name = 'python_dependencies::remove_python_env'
-    result = subprocess.run([script_path, function_name], shell=True, capture_output=True)
-    yield
-    assert result.returncode == 0
-    
-
-def import_env_var_docs_parser():
-    try:
-        env_var_docs_parser = importlib.import_module("env_var_docs.parser")
-        return env_var_docs_parser
-    except ModuleNotFoundError:
-            return None
-
-
+def import_env_var_docs_parser(self, mock_import_module):
+    mock_import_module_2 = mock_env_var_docs_parser.mock_out_env_var_docs_package_install(self,mock_import_module)
+    env_var_docs_parser = importlib.import_module("env_var_docs.parser")
+    return env_var_docs_parser
 
 if __name__ == "__main__":
     unittest.main()

@@ -11,6 +11,8 @@
 # https://pip.pypa.io/en/stable/user_guide/#requirements-files
 function initialize_python_env() {
 
+    echo "initializing python env from script"
+
     local requirements_file_path=$1
 
     # Check if there are any requirements to install
@@ -25,7 +27,8 @@ function initialize_python_env() {
         python3 -m venv .venv
     fi
 
-    source .venv/bin/activate
+    ls .venv/bin/activate
+    . .venv/bin/activate
 
     #Check if the requirement file is already met.
     if [[ ! $(pip3 freeze | diff "$requirements_file_path" -) ]]; then
@@ -49,3 +52,6 @@ function remove_python_env() {
         echo "No .env folder found, skipping removal of Python virtual environment."
     fi
 }
+
+echo "PATH:"
+echo $PATH

@@ -11,6 +11,7 @@ from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 
+CIVIFORM_SERVER_VARIABLES_KEY = "civiform_server_environment_variables"
 
 class ConfigLoader:
     """Handles validating and getting data from the configuration/variable
@@ -118,6 +119,22 @@ class ConfigLoader:
             )
             return {}
 
+        env_var_docs = self._download_env_var_docs()
+
+        out = {}
+
+        def record_var(node):
+            if isinstance(node.details, env_var_docs_parser.Variable):
+                out[node.name] = node.details
+                
+        errors = env_var_docs_parser.visit(env_var_docs, record_var)
+        if len(errors) != 0:
+            # Should never happen because we ensure env-var-docs.json file
+            # is valid before allowing changes to be committed.
+            raise RuntimeError(f"the downloaded env-var-docs file is not valid: {errors}")
+        return out
+    
+    def _download_env_var_docs(self):
         # Download the certificate
         cert = ssl.get_server_certificate(('raw.githubusercontent.com', 443))
 
@@ -134,36 +151,18 @@ class ConfigLoader:
         # TODO(jhummel) confirm if disabling ssl is ok.
         # python -m pip install certifi     -> Requirement already satisfied: certifi in /Users/jhummel/CiviForm/civiform/env-var-docs/venv/lib/python3.11/site-packages (2022.12.7)
         ssl._create_default_https_context = ssl._create_unverified_context
-
         
-        url = f"https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
+        url = "https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
 
         try:
             with urllib.request.urlopen(url) as f:
                 env_var_docs_bytes = f.read()
         except urllib.error.URLError as e:
             exit(f"Could not download {url}: {e}")
-
-        # convert the bytes to a string and create a TextIO object
+                # convert the bytes to a string and create a TextIO object
         env_var_docs_text = env_var_docs_bytes.decode("utf-8")
         env_var_docs = io.StringIO(env_var_docs_text)
-
-        out = {}
-
-        def record_var(node):
-            if isinstance(node.details, env_var_docs_parser.Variable):
-                out[node.name] = node.details
-                print("***********")
-                print(node.details)
-
-        errors = env_var_docs_parser.visit(env_var_docs, record_var)
-        if len(errors) != 0:
-            # Should never happen because we ensure env-var-docs.json file
-            # is valid before allowing changes to be committed.
-            raise RuntimeError(f"{url} is not valid: {errors}")
-        print("\n\nout")
-        print(out)
-        return out
+        return env_var_docs
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
     # that every variable in civiform_config.sh is a valid documented variable.
@@ -233,6 +232,7 @@ class ConfigLoader:
 
         for name, variable in env_var_docs.items():
             config_value = config_fields.get(name)
+    
 
             # TODO(jummel) test that this is doing what is expected to (not crashing)
 
@@ -301,7 +301,7 @@ class ConfigLoader:
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
-
+            
             if name in config_fields:
                 out[name] = config_fields[name]
 
@@ -319,7 +319,11 @@ class ConfigLoader:
                             env_vars[f"{name}.{i}"] = item.strip()
                     else:
                         env_vars[name] = config_fields[name]
-            out["civiform_server_environment_variables"] = env_vars
+            
+            # Infra and server variables are merged before being passed through
+            # terraform, which means that, if a variable is in both, values in the server variables
+            # take prescedence over infra variables.
+            out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
 
      #TODO(jhummel) output the variables here. It looks like we are never using server vars unless they are an index list
 

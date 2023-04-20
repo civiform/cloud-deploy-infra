@@ -34,4 +34,4 @@ terraform_plan
 **/pom.xml
 **/gh-release-token.txt
 
-venv/
+.venv/
