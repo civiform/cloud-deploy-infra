@@ -107,26 +107,18 @@ class ConfigLoader:
             )
             return {}
         
-        # Download the env-var-docs.json version that corresponds with CIVIFORM_VERSION.
-        civiform_version = self.get_civiform_version()
-
-        # TODO(#4612)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
-        # the risk of backwards compatibility issues, a risk remains because env-var-docs.json could have been edited
-        # since the last release of the civiform image.
-        if not civiform_version == "latest":
-            print(
-                "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
-            )
+        # Download the env-var-docs.json if there is a version that corresponds to the
+        # civiform version of this deployment.
+        env_var_docs = self._download_env_var_docs(self.get_civiform_version())
+        if env_var_docs is None:
             return {}
-
-        env_var_docs = self._download_env_var_docs()
 
         out = {}
 
         def record_var(node):
             if isinstance(node.details, env_var_docs_parser.Variable):
                 out[node.name] = node.details
-                
+
         errors = env_var_docs_parser.visit(env_var_docs, record_var)
         if len(errors) != 0:
             # Should never happen because we ensure env-var-docs.json file
@@ -134,24 +126,20 @@ class ConfigLoader:
             raise RuntimeError(f"the downloaded env-var-docs file is not valid: {errors}")
         return out
     
-    def _download_env_var_docs(self):
-        # Download the certificate
-        cert = ssl.get_server_certificate(('raw.githubusercontent.com', 443))
+    def _download_env_var_docs(self, civiform_version: str):
+        """ 
+            Downloads the env-var-docs.json from the civiform git repository if there is a version that corresponds to the
+            civiform version of this deployment. The env-var-docs.json defines all server variables. 
+        """
+        # TODO(#4612)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
+        # the risk of backwards compatibility issues, a risk remains because env-var-docs.json could have been edited
+        # since the last release of the civiform image.
+        if not civiform_version == "latest":
+            print(
+                "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
+            )
+            return None
 
-        # Save the certificate to a file
-        with open('github.crt', 'w') as f:
-            f.write(cert)
-
-        # Add the certificate to your trusted certificates
-        ssl_context = ssl.create_default_context()
-        ssl_context.load_verify_locations('github.crt')
-
-        # Use the SSL context to make the request
-
-        # TODO(jhummel) confirm if disabling ssl is ok.
-        # python -m pip install certifi     -> Requirement already satisfied: certifi in /Users/jhummel/CiviForm/civiform/env-var-docs/venv/lib/python3.11/site-packages (2022.12.7)
-        ssl._create_default_https_context = ssl._create_unverified_context
-        
         url = "https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
 
         try:
@@ -180,8 +168,9 @@ class ConfigLoader:
     def _validate_infra_variables(
             self, infra_variable_definitions: dict,
             config_fields: dict) -> list[str]:
-        """Returns any validation errors for fields in config_fields that have
-        definitions in infra_variable_definitions.
+        """
+            Returns any validation errors for fields in config_fields that have
+            definitions in infra_variable_definitions.
         """
         validation_errors = []
 
@@ -225,8 +214,9 @@ class ConfigLoader:
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> list[str]:
-        """Returns any validation errors for fields in config_fields that have
-        definitions in env_var_docs.
+        """
+            Returns any validation errors for fields in config_fields that have
+            definitions in env_var_docs.
         """
         validation_errors = []
 
@@ -280,7 +270,7 @@ class ConfigLoader:
             # An Index-list variables VAR is represented as a comma-separated string.
             # Individual fields in VAR can NOT currently be set the same way as on the 
             # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
-            # be required, but validation should be supported 
+            # be required, but validation should be supported.
 
         return validation_errors
 
@@ -295,9 +285,8 @@ class ConfigLoader:
         out = {}
 
         # TODO(#4612) When server variables are not duplicated in the infra
-        # variables anymore, we need to support the tfvars field in env-var-docs.json
-        # instead. Alternative we may find that all server variables can be considered
-        # "tfvar"s by default.
+        # variables anymore: support the tfvars field in env-var-docs.json
+        # instead or make all server variables "tfvar"s by default.
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
@@ -306,7 +295,7 @@ class ConfigLoader:
                 out[name] = config_fields[name]
 
         # TODO(#4612) Ensure that auto generation of server variables is enabled across
-        # all deployment mentods (Azure,the containerized AWS deployment, the deployment 
+        # all deployment methods (Azure,the containerized AWS deployment, the deployment 
         # that uses checkout) otherwise index lists are not supported consistently.
         if len(civiform_server_env_var_definitions) != 0:
             env_vars = {}
@@ -324,8 +313,6 @@ class ConfigLoader:
             # terraform, which means that, if a variable is in both, values in the server variables
             # take prescedence over infra variables.
             out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
-
-     #TODO(jhummel) output the variables here. It looks like we are never using server vars unless they are an index list
 
         return out
 
@@ -373,7 +360,6 @@ class ConfigLoader:
     # instead of manually checking for it here.
     def get_civiform_version(self):
         v = self._config_fields.get("CIVIFORM_VERSION")
-        print(v)
         if v is None:
             exit("CIVIFORM_VERSION is required to be set in the config file")
         return v

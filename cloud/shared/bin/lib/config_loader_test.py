@@ -7,12 +7,15 @@ import subprocess
 import os
 import typing
 import mock_env_var_docs_parser
+import http.client
 
 from unittest.mock import MagicMock, patch
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.config_loader import CIVIFORM_SERVER_VARIABLES_KEY
 from mock_env_var_docs_parser import Variable
 from urllib.request import urlopen
+from mock_env_var_docs_parser import import_mock_env_var_docs_parser
+from mock_env_var_docs_parser import install_mock_env_var_docs_package
 
 
 """
@@ -163,7 +166,7 @@ class TestConfigLoader(unittest.TestCase):
 
     @patch('importlib.import_module')
     def test_validate_correct_values_in_config__for_server_variables(self, mock_import_module):
-        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
+        env_var_docs_parser = import_mock_env_var_docs_parser(self, mock_import_module)
 
         config_fields = {"FOO_0": "somenumbers123", 
                             "FOO_1": "true",
@@ -215,8 +218,7 @@ class TestConfigLoader(unittest.TestCase):
     
     @patch('importlib.import_module')
     def test_validate_incorrect_values_in_config__for_server_variables(self, mock_import_module):
-        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
-        #env_var_docs_parser = importlib.import_module("env_var_docs.parser")
+        env_var_docs_parser = import_mock_env_var_docs_parser(self, mock_import_module)
 
         config_fields = {"FOO_1": "none_boolean_string",
                             "FOO_2": "value3",
@@ -272,7 +274,7 @@ class TestConfigLoader(unittest.TestCase):
 
     @patch('importlib.import_module')
     def test_get_terraform_variables(self, mock_import_module):
-        env_var_docs_parser = import_env_var_docs_parser(self, mock_import_module)
+        env_var_docs_parser = import_mock_env_var_docs_parser(self, mock_import_module)
         config_loader = ConfigLoader()
 
         defs = {
@@ -328,7 +330,6 @@ class TestConfigLoader(unittest.TestCase):
 
     @patch('importlib.import_module')
     def test_load_civiform_server_env_vars(self, mock_import_module):
-        print("TEST")
         config_loader = ConfigLoader()
         config_loader._config_fields = {"CIVIFORM_VERSION": "latest"}        
 
@@ -340,36 +341,22 @@ class TestConfigLoader(unittest.TestCase):
             return env_var_docs
         
         with patch('cloud.shared.bin.lib.config_loader.ConfigLoader._download_env_var_docs', side_effect=mock_download_env_var_docs):
-            mock_env_var_docs_parser.mock_out_env_var_docs_package_install(self,mock_import_module)
+            install_mock_env_var_docs_package(self,mock_import_module)
             env_var_docs = config_loader._load_civiform_server_env_vars()
             # Assert that the python module that enables the variable auto generation is downloaded
             mock_import_module.assert_called_with('env_var_docs.parser')
             self.assertEqual({'test-variable-node': Variable(description='description', type='string', required=False, values=[], regex='', regex_tests=[])}, env_var_docs)
 
     @patch('urllib.request.urlopen')
-    def test_urlopen_mock(self, mock_urlopen):
+    def test_download_env_var_docs(self, mock_urlopen):
         config_loader = ConfigLoader()
 
-        f = io.StringIO(
-            '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }')
-        
-        url = 'https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json'
-        mock_urlopen.return_value.read.return_value = b'env var docs download called'
-        config_loader._download_env_var_docs()
+        mock_response = io.BytesIO(b'{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }')
+        mock_urlopen.return_value.__enter__.return_value = mock_response
 
-        self.assertEqual(response.read(), b'env var docs download called')
-
-
-    def test_download_env_var_docs():
-         def mock_open_url(url: str):
-             url
-         with patch('urllib.request.urlopen', side_effect=mock_download_env_var_docs):
-        
-
-def import_env_var_docs_parser(self, mock_import_module):
-    mock_import_module_2 = mock_env_var_docs_parser.mock_out_env_var_docs_package_install(self,mock_import_module)
-    env_var_docs_parser = importlib.import_module("env_var_docs.parser")
-    return env_var_docs_parser
+        expected = '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
+        env_var_docs = config_loader._download_env_var_docs()
+        self.assertEqual(env_var_docs.getvalue(), expected)
 
 if __name__ == "__main__":
     unittest.main()

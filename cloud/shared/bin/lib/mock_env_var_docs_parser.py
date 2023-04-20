@@ -1,30 +1,36 @@
-""""""   
+"""
+This file provides helper code used for mocking out env-var-docs.parser
+code for testing.
+
+The env-var-docs.parser package is defined in a package in the civiform.
+repository. For autogeneration of server variables the package is 
+downloaded and installed dynamically.
+
+To avoid dependencies on the env-var-docs.parser package and the dynamic 
+download and installation, the content of this file is a collection of 
+replacements for the actual code, which can be used for mocking out the
+missing package in tests. 
+
+See https://github.com/civiform/civiform/blob/main/env-var-docs/parser-package/src/env_var_docs/parser.py
+for the code that the below code replaces.
+"""   
 import dataclasses
 import typing
+import importlib
 
 from unittest.mock import MagicMock
 
-
-
 @dataclasses.dataclass
 class RegexTest:
-    """A test case for a Variable's regex.
-
-    See parser-package/README.md for the expected JSON structure.
-    """
+    """Replaces the Regex class in env_var_docs/parser.py """
 
     val: str
-    """Value to test regex on."""
-
     should_match: bool
-    """If the regex should match val."""
 
 @dataclasses.dataclass
 class Variable:
-    """An environment variable referenced in application.conf.
+    """Replaces the Variable class in env_var_docs/parser.py """
 
-    See parser-package/README.md for the expected JSON structure.
-    """
     description: str
     type: str
     required: bool
@@ -34,32 +40,19 @@ class Variable:
 
 @dataclasses.dataclass
 class NodeParseError:
-    """Invalid fields in the environment documentation file are reported
-    through a NodeParseError. A field is invalid if it can not be successfully
-    parsed as a Group or a Variable.
-    """
+    """Replaces the NodeParseError class in env_var_docs/parser.py """
 
     path: str
-    """The JSON path of the invalid object."""
 
 @dataclasses.dataclass
 class Node:
-    """A node within an environment variable documentation file.
-
-    An environment variable documentation file is a JSON object that has
-    object-typed fields. Valid object values are either a Group or Variable.
-    """
+    """Replaces the Node class in env_var_docs/parser.py """
 
     name: str
-    """The group name or variable name. The JSON field key is the name."""
-
     details: Variable
-    """The group details or variable details."""
 
-
-
-# Create a mock version of the env_var_docs.parser module
-def mock_out_env_var_docs_package_install(self, mock_import_module):
+def install_mock_env_var_docs_package(self, mock_import_module):
+    """ Create a mock version of the env_var_docs.parser module."""
     mock_parser = MagicMock()
     mock_parser.Variable = Variable  # Replace with your custom Variable class
     mock_parser.NodeParseError = NodeParseError
@@ -71,4 +64,11 @@ def mock_out_env_var_docs_package_install(self, mock_import_module):
         return []
     mock_parser.visit.side_effect = visit_mock
     mock_import_module.return_value = mock_parser
+
+
+def import_mock_env_var_docs_parser(self, mock_import_module):
+    """ Create a mock version of the env_var_docs.parser module and import the module"""
+    mock_import_module_2 = install_mock_env_var_docs_package(self,mock_import_module)
+    env_var_docs_parser = importlib.import_module("env_var_docs.parser")
+    return env_var_docs_parser
 
