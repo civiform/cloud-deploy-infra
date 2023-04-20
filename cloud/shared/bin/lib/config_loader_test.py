@@ -6,7 +6,7 @@ import importlib
 import subprocess
 import os
 import typing
-import mock_env_var_docs_parser
+import cloud.shared.bin.lib.mock_env_var_docs_parser
 import http.client
 
 from unittest.mock import MagicMock, patch
