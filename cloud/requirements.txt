@@ -1,1 +1,0 @@
-env-var-docs @ git+https://github.com/civiform/civiform.git@3af899747eee36c2cd05892a0067dd5843b923f3#subdirectory=env-var-docs/parser-package
