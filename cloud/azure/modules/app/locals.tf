@@ -70,30 +70,30 @@ locals {
 
     # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
     # duplicates in the civiform_server_environment_variables map. 
-    
+
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
-    STAGING_HOSTNAME = "placeholder"
-    BASE_URL         = "placeholder"
-    CIVIFORM_TIME_ZONE_ID                     = var.civiform_time_zone_id  
-    FAVICON_URL                               = var.favicon_url
-    AWS_REGION                                = var.aws_region
-    CIVIFORM_APPLICANT_IDP                    = var.civiform_applicant_idp
-    
-    ADFS_DISCOVERY_URI                        = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    STAGING_HOSTNAME       = "placeholder"
+    BASE_URL               = "placeholder"
+    CIVIFORM_TIME_ZONE_ID  = var.civiform_time_zone_id
+    FAVICON_URL            = var.favicon_url
+    AWS_REGION             = var.aws_region
+    CIVIFORM_APPLICANT_IDP = var.civiform_applicant_idp
+
+    ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
     # kept as such (set to empty string, rather than undefined).
     # This allows for the default to include atallclaims and for
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
-    
-    AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
-    
+
+    AD_GROUPS_ATTRIBUTE_NAME = var.ad_groups_attribute_name
+
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
-    LOGIN_RADIUS_METADATA_URI     = var.login_radius_metadata_uri
-    LOGIN_RADIUS_API_KEY          = var.login_radius_api_key
-    LOGIN_RADIUS_SAML_APP_NAME    = var.login_radius_saml_app_name
+    LOGIN_RADIUS_METADATA_URI  = var.login_radius_metadata_uri
+    LOGIN_RADIUS_API_KEY       = var.login_radius_api_key
+    LOGIN_RADIUS_SAML_APP_NAME = var.login_radius_saml_app_name
   }, var.civiform_server_environment_variables)
   adfs_client_id     = "adfs-client-id"
   adfs_discovery_uri = "adfs-discovery-uri"

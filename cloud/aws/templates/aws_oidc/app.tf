@@ -83,22 +83,22 @@ module "civiform_server_container_def" {
 
     CIVIFORM_VERSION                        = var.image_tag
     SHOW_CIVIFORM_IMAGE_TAG_ON_LANDING_PAGE = var.show_civiform_image_tag_on_landing_page
-    
-    WHITELABEL_CIVIC_ENTITY_SHORT_NAME      = var.civic_entity_short_name
-    WHITELABEL_CIVIC_ENTITY_FULL_NAME       = var.civic_entity_full_name
-    WHITELABEL_SMALL_LOGO_URL               = var.civic_entity_small_logo_url
-    WHITELABEL_LOGO_WITH_NAME_URL           = var.civic_entity_logo_with_name_url
-    
-    SUPPORT_EMAIL_ADDRESS                   = var.civic_entity_support_email_address
-    AWS_SES_SENDER = var.sender_email_address
-    
-    STAGING_ADMIN_LIST                        = var.staging_program_admin_notification_mailing_list
-    STAGING_TI_LIST                           = var.staging_ti_notification_mailing_list
-    STAGING_APPLICANT_LIST                    = var.staging_applicant_notification_mailing_list
-    STAGING_ADD_NOINDEX_META_TAG              = var.staging_add_noindex_meta_tag
-    STAGING_DISABLE_DEMO_MODE_LOGINS          = var.staging_disable_demo_mode_logins
-    STAGING_DISABLE_APPLICANT_GUEST_LOGIN     = var.staging_disable_applicant_guest_login 
-    
+
+    WHITELABEL_CIVIC_ENTITY_SHORT_NAME = var.civic_entity_short_name
+    WHITELABEL_CIVIC_ENTITY_FULL_NAME  = var.civic_entity_full_name
+    WHITELABEL_SMALL_LOGO_URL          = var.civic_entity_small_logo_url
+    WHITELABEL_LOGO_WITH_NAME_URL      = var.civic_entity_logo_with_name_url
+
+    SUPPORT_EMAIL_ADDRESS = var.civic_entity_support_email_address
+    AWS_SES_SENDER        = var.sender_email_address
+
+    STAGING_ADMIN_LIST                    = var.staging_program_admin_notification_mailing_list
+    STAGING_TI_LIST                       = var.staging_ti_notification_mailing_list
+    STAGING_APPLICANT_LIST                = var.staging_applicant_notification_mailing_list
+    STAGING_ADD_NOINDEX_META_TAG          = var.staging_add_noindex_meta_tag
+    STAGING_DISABLE_DEMO_MODE_LOGINS      = var.staging_disable_demo_mode_logins
+    STAGING_DISABLE_APPLICANT_GUEST_LOGIN = var.staging_disable_applicant_guest_login
+
     APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
     APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
     APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param
@@ -107,7 +107,7 @@ module "civiform_server_container_def" {
 
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-    
+
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
 
@@ -115,37 +115,37 @@ module "civiform_server_container_def" {
 
     # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
     # duplicates in the civiform_server_environment_variables map. 
-    STAGING_HOSTNAME = var.staging_hostname
-    BASE_URL         = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
-    CIVIFORM_TIME_ZONE_ID                   = var.civiform_time_zone_id  
-    FAVICON_URL                             = var.favicon_url
-    AWS_REGION     = var.aws_region
-    CIVIFORM_APPLICANT_IDP                    = var.civiform_applicant_idp
-    APPLICANT_OIDC_PROVIDER_NAME              = var.applicant_oidc_provider_name
-    APPLICANT_OIDC_RESPONSE_MODE              = var.applicant_oidc_response_mode
-    APPLICANT_OIDC_RESPONSE_TYPE              = var.applicant_oidc_response_type
-    APPLICANT_OIDC_ADDITIONAL_SCOPES          = var.applicant_oidc_additional_scopes
-    APPLICANT_OIDC_LOCALE_ATTRIBUTE           = var.applicant_oidc_locale_attribute
-    APPLICANT_OIDC_EMAIL_ATTRIBUTE            = var.applicant_oidc_email_attribute
-    APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE       = var.applicant_oidc_first_name_attribute
-    APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE      = var.applicant_oidc_middle_name_attribute
-    APPLICANT_OIDC_LAST_NAME_ATTRIBUTE        = var.applicant_oidc_last_name_attribute
-    ADFS_DISCOVERY_URI                        = var.adfs_discovery_uri
-    ADFS_ADDITIONAL_SCOPES                    = var.adfs_additional_scopes
-    ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
-    AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
+    STAGING_HOSTNAME                     = var.staging_hostname
+    BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
+    CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
+    FAVICON_URL                          = var.favicon_url
+    AWS_REGION                           = var.aws_region
+    CIVIFORM_APPLICANT_IDP               = var.civiform_applicant_idp
+    APPLICANT_OIDC_PROVIDER_NAME         = var.applicant_oidc_provider_name
+    APPLICANT_OIDC_RESPONSE_MODE         = var.applicant_oidc_response_mode
+    APPLICANT_OIDC_RESPONSE_TYPE         = var.applicant_oidc_response_type
+    APPLICANT_OIDC_ADDITIONAL_SCOPES     = var.applicant_oidc_additional_scopes
+    APPLICANT_OIDC_LOCALE_ATTRIBUTE      = var.applicant_oidc_locale_attribute
+    APPLICANT_OIDC_EMAIL_ATTRIBUTE       = var.applicant_oidc_email_attribute
+    APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE  = var.applicant_oidc_first_name_attribute
+    APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE = var.applicant_oidc_middle_name_attribute
+    APPLICANT_OIDC_LAST_NAME_ATTRIBUTE   = var.applicant_oidc_last_name_attribute
+    ADFS_DISCOVERY_URI                   = var.adfs_discovery_uri
+    ADFS_ADDITIONAL_SCOPES               = var.adfs_additional_scopes
+    ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
+    AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name
 
-    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
-    PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED    = var.program_eligibility_conditions_enabled
-    INTAKE_FORM_ENABLED                       = var.intake_form_enabled
-    NONGATED_ELIGIBILITY_ENABLED              = var.nongated_eligibility_enabled
+    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs
+    PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED = var.program_eligibility_conditions_enabled
+    INTAKE_FORM_ENABLED                    = var.intake_form_enabled
+    NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
 
-    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
-    CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
-    FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
+    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET = var.civiform_api_keys_ban_global_subnet
+    CIVIFORM_SERVER_METRICS_ENABLED     = var.civiform_server_metrics_enabled
+    FEATURE_FLAG_OVERRIDES_ENABLED      = var.feature_flag_overrides_enabled
   }, var.civiform_server_environment_variables)
 
   port_mappings = [
