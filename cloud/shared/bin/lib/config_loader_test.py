@@ -1,20 +1,21 @@
-import unittest
-import io
-import sys
-import unittest.mock
-import importlib
-import subprocess
-import os
-import typing
 import http.client
-
+import importlib
+import io
+import os
+import subprocess
+import sys
+import typing
+import unittest
+import unittest.mock
 from unittest.mock import MagicMock, patch
-from cloud.shared.bin.lib.config_loader import ConfigLoader
-from cloud.shared.bin.lib.config_loader import CIVIFORM_SERVER_VARIABLES_KEY
-from cloud.shared.bin.lib.mock_env_var_docs_parser import Variable
 from urllib.request import urlopen
-from cloud.shared.bin.lib.mock_env_var_docs_parser import import_mock_env_var_docs_parser
-from cloud.shared.bin.lib.mock_env_var_docs_parser import install_mock_env_var_docs_package
+
+from cloud.shared.bin.lib.config_loader import (CIVIFORM_SERVER_VARIABLES_KEY,
+                                                ConfigLoader)
+from cloud.shared.bin.lib.mock_env_var_docs_parser import (
+    Variable, import_mock_env_var_docs_parser,
+    install_mock_env_var_docs_package)
+
 """
 Tests for the ConfigLoader, calls the I/O methods to match the actual
 experience of running the class.

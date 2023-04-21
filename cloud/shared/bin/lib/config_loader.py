@@ -1,16 +1,17 @@
 import importlib
+import io
 import os
 import re
+import ssl
+import typing
 import urllib.error
 import urllib.request
-import typing
-import ssl
-import io
-
 from typing import List
+
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
+from cloud.shared.bin.lib.variable_definition_loader import \
+    load_variables_definitions
 
 CIVIFORM_SERVER_VARIABLES_KEY = "civiform_server_environment_variables"
 

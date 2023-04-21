@@ -15,9 +15,8 @@ For the code that the below code replaces, see:
 https://github.com/civiform/civiform/blob/main/env-var-docs/parser-package/src/env_var_docs/parser.py
 """
 import dataclasses
-import typing
 import importlib
-
+import typing
 from unittest.mock import MagicMock
 
 
