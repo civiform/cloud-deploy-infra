@@ -20,6 +20,7 @@ import importlib
 
 from unittest.mock import MagicMock
 
+
 @dataclasses.dataclass
 class RegexTest:
     """Replaces the Regex class in env_var_docs/parser.py """

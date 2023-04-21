@@ -7,6 +7,7 @@ import typing
 import ssl
 import io
 
+from typing import List
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
@@ -168,7 +169,7 @@ class ConfigLoader:
 
     def _validate_infra_variables(
             self, infra_variable_definitions: dict,
-            config_fields: dict) -> list[str]:
+            config_fields: dict) -> List[str]:
         """
         Returns any validation errors for fields in config_fields that have
         definitions in infra_variable_definitions.

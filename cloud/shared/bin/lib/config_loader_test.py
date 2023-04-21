@@ -21,6 +21,8 @@ experience of running the class.
 
 To run the tests: PYTHONPATH="${PYTHONPATH}:${pwd}" python3 cloud/shared/bin/lib/config_loader_test.py
 """
+
+
 class TestConfigLoader(unittest.TestCase):
 
     def test_validate_config_for_not_including_variable_required__in_infra_variable_definition(
