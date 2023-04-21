@@ -215,7 +215,7 @@ class ConfigLoader:
         return validation_errors
 
     def _validate_civiform_server_env_vars(
-            self, env_var_docs: dict, config_fields: dict) -> list[str]:
+            self, env_var_docs: dict, config_fields: dict) -> List[str]:
         """
         Returns any validation errors for fields in config_fields that have
         definitions in env_var_docs.
