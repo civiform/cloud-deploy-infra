@@ -353,7 +353,7 @@ class TestConfigLoader(unittest.TestCase):
         config_loader._config_fields = {"CIVIFORM_VERSION": "latest"}
 
         # Instead of downloading the env_var_docs from github, mock out the download call
-        def mock_download_env_var_docs():
+        def mock_download_env_var_docs(civiform_version: str):
             env_var_docs = io.StringIO(
                 '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
             )
