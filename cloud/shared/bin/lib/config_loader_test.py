@@ -10,12 +10,11 @@ import unittest.mock
 from unittest.mock import MagicMock, patch
 from urllib.request import urlopen
 
-from cloud.shared.bin.lib.config_loader import (CIVIFORM_SERVER_VARIABLES_KEY,
-                                                ConfigLoader)
+from cloud.shared.bin.lib.config_loader import (
+    CIVIFORM_SERVER_VARIABLES_KEY, ConfigLoader)
 from cloud.shared.bin.lib.mock_env_var_docs_parser import (
     Variable, import_mock_env_var_docs_parser,
     install_mock_env_var_docs_package)
-
 """
 Tests for the ConfigLoader, calls the I/O methods to match the actual
 experience of running the class.
