@@ -9,8 +9,8 @@ import typing
 import http.client
 
 from unittest.mock import MagicMock, patch
-from cloud.shared.bin.lib.config_loader import ConfigLoader
-from cloud.shared.bin.lib.config_loader import CIVIFORM_SERVER_VARIABLES_KEY
+from config_loader import ConfigLoader
+from config_loader import CIVIFORM_SERVER_VARIABLES_KEY
 from mock_env_var_docs_parser import Variable
 from urllib.request import urlopen
 from mock_env_var_docs_parser import import_mock_env_var_docs_parser
@@ -387,7 +387,7 @@ class TestConfigLoader(unittest.TestCase):
         mock_urlopen.return_value.__enter__.return_value = mock_response
 
         expected = '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
-        env_var_docs = config_loader._download_env_var_docs()
+        env_var_docs = config_loader._download_env_var_docs("latest")
         self.assertEqual(env_var_docs.getvalue(), expected)
 
 
