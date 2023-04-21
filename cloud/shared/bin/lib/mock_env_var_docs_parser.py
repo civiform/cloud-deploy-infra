@@ -17,7 +17,7 @@ https://github.com/civiform/civiform/blob/main/env-var-docs/parser-package/src/e
 import dataclasses
 import importlib
 import typing
-from typing import List
+from typing import List, Union
 from unittest.mock import MagicMock
 
 @dataclasses.dataclass
@@ -35,9 +35,9 @@ class Variable:
     description: str
     type: str
     required: bool
-    values: List[str] | None
-    regex: str | None
-    regex_tests: List[RegexTest] | None
+    values: Union[List[str], None] = None
+    regex: Union[str, None] = None
+    regex_tests: Union[List[RegexTest], None] = None
 
 
 @dataclasses.dataclass
