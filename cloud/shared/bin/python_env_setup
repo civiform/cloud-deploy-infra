@@ -1,0 +1,54 @@
+#! /usr/bin/env bash
+# The purpose of this script is to allow using python code that is defined in
+# other repositories. The current main use case is the usage of the env-var-docs
+# parser, which is defined in the civiform repository. It is used in the cloud-deploy
+# infra repository to auto generate variables that are passed to the server.
+
+# Initializes a python virtual environment(venv) and installs required dependencies.
+# Takes an argument that specifies the path to the requirements.txt file,
+# which contains a list of python packages to be installed in the venv.
+# For more details about requirement files see:
+# https://pip.pypa.io/en/stable/user_guide/#requirements-files
+function initialize_python_env() {
+
+  echo "initializing python env from script"
+
+  local requirements_file_path=$1
+
+  # Check if there are any requirements to install
+  if [[ ! -f "$requirements_file_path" ]]; then
+    echo "Requirements file $requirements_file_path does not exist, python setup skipped"
+    return
+  fi
+
+  # Create a virtual environment if it doesn't exist yet
+  if [[ ! -d .venv ]]; then
+    echo ".venv directory not found, creating and installing dependencies..."
+    python3 -m venv .venv
+  fi
+
+  # source the activate script (. is more portable between shells than source)
+  . .venv/bin/activate
+
+  #Check if the requirement file is already met.
+  if [[ ! $(pip3 freeze | diff "$requirements_file_path" -) ]]; then
+    echo ".venv directory found with necessary dependencies installed"
+    return
+  else
+    echo "installing python dependencies in .venv ..."
+    pip3 install -r "$requirements_file_path"
+    return
+  fi
+}
+
+# Remove the python virtual environment. This will also remove all python
+# packages that were previously installed in the environment.
+function remove_python_env() {
+  if [[ -d .venv ]]; then
+    echo "Deactivating and removing python virtual environment and dependencies intalled inside it by removing .env folder"
+    deactivate
+    rm -r .venv
+  else
+    echo "No .env folder found, skipping removal of Python virtual environment."
+  fi
+}

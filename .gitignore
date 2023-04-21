@@ -33,3 +33,5 @@ terraform_plan
 **/metals.sbt
 **/pom.xml
 **/gh-release-token.txt
+
+.venv/
