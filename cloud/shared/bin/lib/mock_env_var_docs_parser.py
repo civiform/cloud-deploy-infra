@@ -17,8 +17,8 @@ https://github.com/civiform/civiform/blob/main/env-var-docs/parser-package/src/e
 import dataclasses
 import importlib
 import typing
+from typing import List
 from unittest.mock import MagicMock
-
 
 @dataclasses.dataclass
 class RegexTest:
@@ -35,9 +35,9 @@ class Variable:
     description: str
     type: str
     required: bool
-    values: list[str] | None
+    values: List[str] | None
     regex: str | None
-    regex_tests: list[RegexTest] | None
+    regex_tests: List[RegexTest] | None
 
 
 @dataclasses.dataclass
@@ -65,7 +65,7 @@ def install_mock_env_var_docs_package(self, mock_import_module):
 
     def visit_mock(
             file: typing.TextIO,
-            callable: typing.Callable[[Node], None]) -> list[NodeParseError]:
+            callable: typing.Callable[[Node], None]) -> List[NodeParseError]:
         node = Node(
             "test-variable-node",
             Variable("description", "string", False, [], "", []))
