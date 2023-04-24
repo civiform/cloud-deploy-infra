@@ -1,9 +1,8 @@
 #! /usr/bin/env bash
 #
 # The purpose of this script is to dynamically enable python packages.
-# The current main use case is the usage of the env-var-docs parser, which is defined 
-# in the civiform repository. 
-
+# The current main use case is the usage of the env-var-docs parser, which is defined
+# in the civiform repository.
 
 # Initializes a python virtual environment(venv) and installs required dependencies.
 # Takes an argument that specifies the path to the requirements.txt file,
@@ -53,4 +52,3 @@ function remove_python_env() {
     echo "No .env folder found, skipping removal of Python virtual environment."
   fi
 }
-
