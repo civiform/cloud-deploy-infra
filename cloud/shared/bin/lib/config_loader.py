@@ -44,14 +44,14 @@ class ConfigLoader:
 
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/shared/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
-        - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
+        - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/azure/templates/azure_saml_ses/variable_definitions.json
 
         TODO(https://github.com/civiform/civiform/issues/4293): Currently this also includes
         the env variables that are defined in env-var-docs and passed to the server. 
         Remove them when other required changes are completed.
         """
 
-    def load_config(self, config_file):
+    def load_config(self, config_file: str):
         self._config_fields = self._load_config_fields(config_file)
         self._infra_variable_definitions = self._load_infra_variables()
         self._civiform_server_env_var_docs = self._load_civiform_server_env_vars(
@@ -59,7 +59,7 @@ class ConfigLoader:
 
         return self.validate_config()
 
-    def _load_config_fields(self, config_file):
+    def _load_config_fields(self, config_file: str):
         """Returns a map containing key value pairs from all entries in the config file.
         """
         config_parser = ConfigParser()
@@ -71,9 +71,9 @@ class ConfigLoader:
     # the local deploy system does not read values from env variables anymore.
     # Currently some env variables are read from local deploy code (legacy
     # because the system used to be written in bash)
-    def _export_env_variables(self, config):
+    def _export_env_variables(self, config: dict):
         """Accepts a map of env variable names and values and exports them as
-        environment variables .
+        environment variables.
         """
         for key, value in config.items():
             os.environ[key] = value
@@ -294,7 +294,7 @@ class ConfigLoader:
             if name in config_fields:
                 out[name] = config_fields[name]
 
-        if len(civiform_server_env_var_definitions) != 0:
+        if civiform_server_env_var_definitions:
             env_vars = {}
             for name, variable in civiform_server_env_var_definitions.items():
                 if name in config_fields:
@@ -308,7 +308,7 @@ class ConfigLoader:
 
             # Infra and server variables are merged before being passed through
             # terraform, which means that, if a variable is in both, values in the server variables
-            # take prescedence over infra variables.
+            # take precedence over infra variables. Once #4612 is completed, this should never happen.
             out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
 
         return out

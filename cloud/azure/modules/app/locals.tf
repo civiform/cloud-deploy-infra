@@ -68,7 +68,7 @@ locals {
 
     # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
 
-    # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
+    # TODO(#4612) Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
     # duplicates in the civiform_server_environment_variables map. 
 
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform

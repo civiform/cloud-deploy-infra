@@ -154,14 +154,6 @@ class TestConfigLoader(unittest.TestCase):
 
         self.assertEqual(config_loader.validate_config(), [])
 
-    # TODO  (jhummel)
-    # - a config gets loaded correctly
-    # - env-var-docs gets loaded correctly
-    # - infra variables get loaded correctly
-    # - validation of server variables is done correctly
-    # - terraform variables work for index list
-    # - terraform variables work for server variables
-
     @patch('importlib.import_module')
     def test_validate_correct_values_in_config__for_server_variables(
             self, mock_import_module):
@@ -169,7 +161,7 @@ class TestConfigLoader(unittest.TestCase):
             self, mock_import_module)
 
         config_fields = {
-            "FOO_0": "somenumbers123",
+            "FOO_0": "somenumbers123",ß
             "FOO_1": "true",
             "FOO_2": "value1",
             "FOO_3": "grey",
