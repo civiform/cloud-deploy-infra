@@ -161,7 +161,7 @@ class TestConfigLoader(unittest.TestCase):
             self, mock_import_module)
 
         config_fields = {
-            "FOO_0": "somenumbers123",ß
+            "FOO_0": "somenumbers123",
             "FOO_1": "true",
             "FOO_2": "value1",
             "FOO_3": "grey",
