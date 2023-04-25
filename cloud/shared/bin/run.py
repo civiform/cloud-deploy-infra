@@ -33,7 +33,6 @@ def main():
         default='civiform_config.sh',
         help='Path to CiviForm deployment config file.')
 
-    get_commit_hash_for_release()
 
     args = parser.parse_args()
     if args.tag:
@@ -43,6 +42,7 @@ def main():
         print(f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
+    get_commit_hash_for_release()
 
     os.environ['TF_VAR_FILENAME'] = "setup.auto.tfvars"
     os.environ['BACKEND_VARS_FILENAME'] = 'backend_vars'
@@ -76,9 +76,9 @@ def main():
             exit(f'Command {cmd} not found.')
         command_module.run(config, params)
 
-    def validate_tag(tag):
-        if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
-            return True
+def validate_tag(tag):
+    if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
+        return True
 
     print(
         f'''
@@ -97,12 +97,12 @@ def main():
     resp = input()
     return resp.lower().strip() == 'yes'
 
-def get_commit_hash_for_release(self):
+def get_commit_hash_for_release():
 
     # Set the API endpoint and release tag
     owner = 'civiform'
     repo = 'civiform'
-    tag = 'v1.0.0'
+    tag = 'v1.23.0'
     api_url = 'https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}'
 
     #TODO(jhummel) replace the personal access token with a production usable one.
@@ -114,9 +114,21 @@ def get_commit_hash_for_release(self):
 
     # Parse the response
     if response.status_code == 200:
+
+        data = response.json()
+        commit_sha = data["commit"]["sha"]
+        print("\nSHA_!")
+        print(f"Commit SHA for release: {commit_sha}")
+            
+        data = response.json()
+        tarball_url = data["tarball_url"]
+        commit_sha = tarball_url.split("/")[-1].split("-")[1]
+        print(f"Commit SHA for release : {commit_sha}")
+        print("")
         release_data = json.loads(response.text or response.content)
         commit_sha = release_data['target_commitish']
         print('The commit SHA for release {} is {}'.format(tag, commit_sha))
+        print(release_data)
     else:
         print('Error: Failed to get release details. Status code: {}'.format(response.status_code))
 
