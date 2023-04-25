@@ -115,16 +115,16 @@ def get_commit_hash_for_release():
     # Parse the response
     if response.status_code == 200:
 
-        data = response.json()
-        commit_sha = data["commit"]["sha"]
-        print("\nSHA_!")
-        print(f"Commit SHA for release: {commit_sha}")
+        # data = response.json()
+        # commit_sha = data["commit"]["sha"]
+        # print("\nSHA_!")
+        # print(f"Commit SHA for release: {commit_sha}")
             
-        data = response.json()
-        tarball_url = data["tarball_url"]
-        commit_sha = tarball_url.split("/")[-1].split("-")[1]
-        print(f"Commit SHA for release : {commit_sha}")
-        print("")
+        # data = response.json()
+        # tarball_url = data["tarball_url"]
+        # commit_sha = tarball_url.split("/")[-1].split("-")[1]
+        # print(f"Commit SHA for release : {commit_sha}")
+        # print("")
         release_data = json.loads(response.text or response.content)
         commit_sha = release_data['target_commitish']
         print('The commit SHA for release {} is {}'.format(tag, commit_sha))
