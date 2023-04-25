@@ -6,6 +6,9 @@ import os
 import sys
 import importlib
 import re
+#todo check if requests needs to be installed via pip manually
+import requests
+import json
 
 # Need to add current directory to PYTHONPATH if this script is run directly.
 sys.path.append(os.getcwd())
@@ -29,6 +32,8 @@ def main():
         '--config',
         default='civiform_config.sh',
         help='Path to CiviForm deployment config file.')
+
+    get_commit_hash_for_release()
 
     args = parser.parse_args()
     if args.tag:
@@ -71,10 +76,9 @@ def main():
             exit(f'Command {cmd} not found.')
         command_module.run(config, params)
 
-
-def validate_tag(tag):
-    if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
-        return True
+    def validate_tag(tag):
+        if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
+            return True
 
     print(
         f'''
@@ -92,6 +96,29 @@ def validate_tag(tag):
         Continue: ''')
     resp = input()
     return resp.lower().strip() == 'yes'
+
+def get_commit_hash_for_release(self):
+
+    # Set the API endpoint and release tag
+    owner = 'civiform'
+    repo = 'civiform'
+    tag = 'v1.0.0'
+    api_url = 'https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}'
+
+    #TODO(jhummel) replace the personal access token with a production usable one.
+    # Set the authorization headers
+    headers = {'Authorization': 'Bearer ' + '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'}
+
+    # Make the API call
+    response = requests.get(api_url.format(owner=owner, repo=repo, tag=tag), headers=headers)
+
+    # Parse the response
+    if response.status_code == 200:
+        release_data = json.loads(response.text or response.content)
+        commit_sha = release_data['target_commitish']
+        print('The commit SHA for release {} is {}'.format(tag, commit_sha))
+    else:
+        print('Error: Failed to get release details. Status code: {}'.format(response.status_code))
 
 
 def normalize_tag(tag):
