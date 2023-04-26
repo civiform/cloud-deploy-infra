@@ -42,7 +42,7 @@ def main():
         print(f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
-    get_commit_hash_for_release()
+    get_commit_hash_for_release(args.tag)
 
     os.environ['TF_VAR_FILENAME'] = "setup.auto.tfvars"
     os.environ['BACKEND_VARS_FILENAME'] = 'backend_vars'
@@ -96,64 +96,6 @@ def validate_tag(tag):
         Continue: ''')
     resp = input()
     return resp.lower().strip() == 'yes'
-
-def get_commit_hash_for_release():
-
-    owner = "civiform"
-    repo_name = "civiform"
-    tag_name = "v1.0.0"  # replace with the desired tag name
-    api_token = "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"  # replace with your GitHub API token
-
-    # get the commit SHA associated with the tag
-    url = f"https://api.github.com/repos/{owner}/{repo_name}/git/refs/tags/{tag_name}"
-    headers = {"Authorization": f"Token {api_token}"}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        commit_sha = response.json()["object"]["sha"]
-        print(f"The commit SHA for tag {tag_name} is {commit_sha}")
-    else:
-        print(f"Error: {response.status_code} - {response.json()['message']}")
-
-
-
-
-    # #TODO(jhummel) find a way to get a sha for the aip
-    # #TODO(jhummel) find a way of getting the commit from the release data
-
-    # # Set the API endpoint and release tag
-    # owner = 'civiform'
-    # repo = 'civiform'
-    # tag = 'v1.23.0'
-    # api_url = 'https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}'
-
-    # #TODO(jhummel) replace the personal access token with a production usable one.
-    # # Set the authorization headers
-    # headers = {'Authorization': 'Bearer ' + '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'}
-
-    # # Make the API call
-    # response = requests.get(api_url.format(owner=owner, repo=repo, tag=tag), headers=headers)
-
-    # # Parse the response
-    # if response.status_code == 200:
-
-    #     # data = response.json()
-    #     # commit_sha = data["commit"]["sha"]
-    #     # print("\nSHA_!")
-    #     # print(f"Commit SHA for release: {commit_sha}")
-            
-    #     # data = response.json()
-    #     # tarball_url = data["tarball_url"]
-    #     # commit_sha = tarball_url.split("/")[-1].split("-")[1]
-    #     # print(f"Commit SHA for release : {commit_sha}")
-    #     # print("")
-    #     release_data = json.loads(response.text or response.content)
-    #     commit_sha = release_data['target_commitish']
-    #     print('The commit SHA for release {} is {}'.format(tag, commit_sha))
-    #     print(release_data)
-    # else:
-    #     print('Error: Failed to get release details. Status code: {}'.format(response.status_code))
-
 
 def normalize_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag) and not tag[0] == 'v':

@@ -131,6 +131,29 @@ class ConfigLoader:
                     )
 
         return validation_errors
+    
+    #TODO(jhummel)
+    # write tests
+    # add requests to requirements files
+    # Do same in bash for requirements file
+    # Use the function
+
+def get_commit_hash_for_release(tag: str) -> str:
+    """Get the commit sha for the release specified in the tag"""
+
+    # get the commit SHA associated with the release tag/version.
+    # We are calling the GitHub API with an unauthenticated requests, which is rate-limited.
+    # For unauthenticated requests, the rate limit allows for up to 60 requests per hour 
+    # associated with the originating IP address.
+    url = f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        commit_sha = response.json()["object"]["sha"]
+        return commit_sha
+    else:
+        print(f"Error: The commit sha for version {tag} could not be found: {response.status_code} - {response.json()['message']}")
+        return ""
 
     def validate_config(self):
         return self._validate_config(self.variable_definitions, self.configs)
