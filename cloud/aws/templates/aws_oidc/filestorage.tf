@@ -72,6 +72,7 @@ resource "aws_s3_bucket_ownership_controls" "civiform_files_ownership" {
   rule {
     object_ownership = "BucketOwnerEnforced"
   }
+  depends_on = [aws_s3_bucket_acl.log_bucket_acl]
 }
 
 resource "aws_s3_bucket_logging" "civiform_files_logging" {
