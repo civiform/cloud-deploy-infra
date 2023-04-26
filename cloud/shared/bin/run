@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+# Script for running the commands supported by the deploy system by calling run.py.
+# See comments below for why we need this script rather than running run.py directly.
+# TODO(#4612) Enable the env-var-docs variable generation feature by using this script
+# instead of run.py across the civiform-deploy repository
+
+# In the server code repository in git(civiform), we define a python package called env-var-docs.
+# https://github.com/civiform/civiform/tree/main/env-var-docs
+# Its purpose is to automate various aspects of adding a variable to application.conf.
+# Variables in application.conf make the server configurable.
+# To make the variables configurable via the deploy system, we need the env-var-docs package.
+# To get access to the package, we create a python virtual environment(venv), install the package and
+# activate the venv. The activation has to happen in the parent process before the python code is run.
+# This is why we need a bash script that preceeds the python code
+source cloud/shared/bin/python-env_setup
+# TODO(#4612)Download the newest version of the package rather than a fixed version.
+initialize_python_env cloud/shared/bin/env-var-docs-python-dependencies.txt
+
+# Get the arguments that we want to pass to run.py
+while getopts s:c:t: flag; do
+  case "${flag}" in
+    # The civiform_config file that contains the values to configure the deployment
+    s) sourceconfig=${OPTARG} ;;
+    # The command that the run.py script should execute
+    c) command=${OPTARG} ;;
+    # The tag of the image that should be used for this deployment (e.g. "latest")
+    t) tag=${OPTARG} ;;
+  esac
+done
+
+cloud/shared/bin/run.py --command $command --tag $tag --config $sourceconfig
