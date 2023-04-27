@@ -42,7 +42,7 @@ def main():
         print(f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
-    get_commit_hash_for_release(args.tag)
+    #get_commit_sha_for_release(args.tag)
 
     os.environ['TF_VAR_FILENAME'] = "setup.auto.tfvars"
     os.environ['BACKEND_VARS_FILENAME'] = 'backend_vars'

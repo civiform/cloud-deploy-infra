@@ -1,4 +1,7 @@
 import unittest
+import requests
+import json
+from unittest.mock import patch, MagicMock
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 """
@@ -132,6 +135,55 @@ class TestConfigLoader(unittest.TestCase):
         config_loader.configs = {}
         self.assertEqual(config_loader.validate_config(), [])
 
+    def mocked_get(url):
+    
+
+
+        response = requests.Response()
+        response.status_code = 200
+
+        # mock out getting te version number that matches "latest"
+        if url == "https://api.github.com/repos/civiform/civiform/releases/latest":
+            data_1 = {"tag_name" : "v1.23.0"}
+            response._content = json.dumps(data_1)
+        # mock out getting the sha for for the version number v1.23.0
+        elif url == "https://api.github.com/repos/civiform/civiform/git/refs/tags/v1.23.0":
+            data = {"object": {"sha": "0123456789abcdef"}}
+            response._content = json.dumps(data)
+        else:
+            raise ValueError(f"Unexpected URL: {url}")
+        return response
+
+    @patch('requests.get', side_effect=mocked_get)
+    def test_get_commit_hash_for_release__success_case(self, mock_get):
+        config_loader = ConfigLoader()
+
+        # # Successful call to git for getting
+        # mock_response = MagicMock()
+        # mock_response.status_code = 200
+        # mock_response.json.return_value = {"object": {"sha": "0123456789abcdef"}}
+        # mock_requests.return_value = mock_response
+
+        commit_sha = config_loader.get_commit_sha_for_release("latest")
+
+        #mock_requests.assert_called_with("https://api.github.com/repos/civiform/civiform/git/refs/tags/V1.0.0")
+        self.assertEqual(commit_sha, "0123456789abcdef")
+
+
+    # @patch('requests.get')
+    # def test_get_commit_hash_for_release__fail_case(self, mock_requests):
+    #     config_loader = ConfigLoader()
+
+    #     # Successful call to git for getting
+    #     mock_response = MagicMock()
+    #     mock_response.status_code = 404
+    #     mock_response.json.return_value = {"message": "Not Found"}        
+    #     mock_requests.return_value = mock_response
+
+    #     try:
+    #         commit_sha = config_loader.get_commit_sha_for_release("invalid tag")
+    #     except ConfigLoader.VersionNotFoundError as e:
+    #         self.assertEqual("Error: The commit sha for version invalid tag could not be found: 404 - Not Found", e.args[0])
 
 if __name__ == "__main__":
     unittest.main()

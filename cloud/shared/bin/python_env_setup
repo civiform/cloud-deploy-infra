@@ -10,6 +10,35 @@
 # For more details about requirement files see:
 # https://pip.pypa.io/en/stable/user_guide/#requirements-files
 function initialize_python_env() {
+    
+
+# # Use config parser to get the version
+# # If version below a certain value, use first json that existed.
+
+# # Define the tag to search for
+# tag="v1.0.0"
+
+# # Define the GitHub API URL
+# url="https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}"
+
+# # Make a request to the GitHub API
+# response=$(curl -s "${url}")
+
+# # Check if the response is valid
+# if [[ "${response}" == *"\"message\":"* ]]; then
+#   # Print the error message
+#   message=$(echo "${response}" | jq -r .message)
+#   echo "Error: The commit sha for version ${tag} could not be found: ${message}"
+#   exit 1
+# else
+#   # Parse the response and extract the commit SHA
+#   commit_sha=$(echo "${response}" | jq -r .object.sha)
+#   echo "${commit_sha}"
+#   exit 0
+# fi
+  
+#   local env_var_docs_package = git+https://github.com/civiform/civiform.git@3af899747eee36c2cd05892a0067dd5843b923f3#subdirectory=env-var-docs/parser-package
+#   local requests_package = "requests"
 
   echo "initializing python env from script"
 
