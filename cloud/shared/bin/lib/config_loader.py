@@ -48,15 +48,13 @@ class ConfigLoader:
     @property
     def skip_confirmations(self):
         return os.getenv("SKIP_CONFIRMATIONS", False)
-    
+
     class VersionNotFoundError(Exception):
         pass
 
     def load_config(self, config_file):
         self._load_config(config_file)
         self._load_variable_definitions()
-        print("*****************")
-        print(self.get_commit_sha_for_release(self.configs["CIVIFORM_VERSION"]))
         return self.validate_config()
 
     def _load_variable_definitions(self):
@@ -137,43 +135,28 @@ class ConfigLoader:
                     )
 
         return validation_errors
-    
-    #TODO(jhummel)
-    # add requests to requirements files
-    # Do same in bash for requirements file
-    # Test with "latest"
-    # Use Config parser in run script to get the version number
 
-    # TODO(jhummel) Once #132 is submitted, use this function to download the correct
+    # TODO((#4293) Once #132 is submitted, use this function to download the correct
     # version of the env-var-docs.json
     def get_commit_sha_for_release(self, tag: str) -> str:
-        """Get the commit sha for the release specified in the tag"""
+        """Get the commit sha for the release specified in the tag
 
-        print("input tag")
-        print(tag)
-
-        if tag.strip.__eq__("latest"):
-            print("converting")
+          We are calling the GitHub API with unauthenticated request, which are rate-limited.
+          The rate limit allows for up to 60 requests per hour  associated with the originating 
+          IP address.
+        """
+        if tag.strip() == 'latest':
             # Translate "latest" into a version number
             url = f"https://api.github.com/repos/civiform/civiform/releases/latest"
             response = requests.get(url)
             if response.status_code == 200:
-                print("Type of tag: ")
-                print(type(tag))
-                print("newtag type:")
                 newtag = response.json()["tag_name"]
-                print(newtag)
-                print(type(newtag))
                 tag = response.json()["tag_name"]
             else:
-                raise self.VersionNotFoundError(f"Error: 'latest' could not be translated to a release tag {response.status_code} - {response.json()['message']}")
+                raise self.VersionNotFoundError(
+                    f"Error: 'latest' could not be translated to a release tag {response.status_code} - {response.json()['message']}"
+                )
 
-        print("converted tag:")
-        print(tag)
-
-        # We are calling the GitHub API with an unauthenticated requests, which is rate-limited.
-        # For unauthenticated requests, the rate limit allows for up to 60 requests per hour 
-        # associated with the originating IP address.
         url = f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}"
         response = requests.get(url)
 
@@ -181,7 +164,9 @@ class ConfigLoader:
             commit_sha = response.json()["object"]["sha"]
             return commit_sha
         else:
-            raise self.VersionNotFoundError(f"Error: The commit sha for version {tag} could not be found: {response.status_code} - {response.json()['message']}")
+            raise self.VersionNotFoundError(
+                f"The commit sha for version {tag} could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0?\n {response.status_code} - {response.json()['message']}"
+            )
 
     def validate_config(self):
         return self._validate_config(self.variable_definitions, self.configs)
