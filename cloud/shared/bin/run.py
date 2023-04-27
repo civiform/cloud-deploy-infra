@@ -6,9 +6,6 @@ import os
 import sys
 import importlib
 import re
-#todo check if requests needs to be installed via pip manually
-import requests
-import json
 
 # Need to add current directory to PYTHONPATH if this script is run directly.
 sys.path.append(os.getcwd())
@@ -33,7 +30,6 @@ def main():
         default='civiform_config.sh',
         help='Path to CiviForm deployment config file.')
 
-
     args = parser.parse_args()
     if args.tag:
         if not validate_tag(args.tag):
@@ -42,7 +38,6 @@ def main():
         print(f'Running command with tag {os.environ["TF_VAR_image_tag"]}\n')
     elif args.command is not None and args.command in ['setup', 'deploy']:
         exit('--tag is required')
-    #get_commit_sha_for_release(args.tag)
 
     os.environ['TF_VAR_FILENAME'] = "setup.auto.tfvars"
     os.environ['BACKEND_VARS_FILENAME'] = 'backend_vars'
@@ -76,6 +71,7 @@ def main():
             exit(f'Command {cmd} not found.')
         command_module.run(config, params)
 
+
 def validate_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag):
         return True
@@ -96,6 +92,7 @@ def validate_tag(tag):
         Continue: ''')
     resp = input()
     return resp.lower().strip() == 'yes'
+
 
 def normalize_tag(tag):
     if _CIVIFORM_RELEASE_TAG_REGEX.match(tag) and not tag[0] == 'v':
