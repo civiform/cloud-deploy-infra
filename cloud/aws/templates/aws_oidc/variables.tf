@@ -118,6 +118,12 @@ variable "postgres_backup_retention_days" {
   default     = 7
 }
 
+variable "postgres_restore_snapshot_identifier" {
+  type        = string
+  description = "If not null, destroys the current database, replacing it with a new one restored from the provided snapshot"
+  default     = null
+}
+
 variable "staging_program_admin_notification_mailing_list" {
   type        = string
   description = "Admin notification mailing list for staging"

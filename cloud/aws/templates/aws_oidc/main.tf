@@ -29,6 +29,9 @@ resource "aws_db_instance" "civiform" {
     Name = "${var.app_prefix} Civiform Database"
     Type = "Civiform Database"
   }
+
+  # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
+  snapshot_identifier             = var.postgres_restore_snapshot_identifier
   deletion_protection             = local.deletion_protection
   instance_class                  = var.postgres_instance_class
   allocated_storage               = var.postgres_storage_gb
