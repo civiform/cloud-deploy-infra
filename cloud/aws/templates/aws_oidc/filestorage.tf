@@ -95,7 +95,7 @@ resource "aws_s3_bucket" "log_bucket" {
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
   bucket     = aws_s3_bucket.log_bucket.id
   acl        = "log-delivery-write"
-  depends_on = aws_s3_bucket_ownership_controls.civiform_files_ownership
+  depends_on = [aws_s3_bucket_ownership_controls.civiform_files_ownership]
 }
 
 resource "aws_s3_bucket_ownership_controls" "file_access_logs_bucket_ownership" {

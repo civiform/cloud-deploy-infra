@@ -230,5 +230,17 @@
     "secret": false,
     "tfvar": false,
     "type": "string"
+  },
+  "BYPASS_LOGIN_LANGUAGE_SCREENS": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "bool"
+  },
+  "PHONE_QUESTION_TYPE_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "bool"
   }
 }
