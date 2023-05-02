@@ -398,3 +398,9 @@ variable "common_intake_more_resources_link_href" {
   description = "The HREF for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
   default     = "https://access.arkansas.gov/Learn/Home"
 }
+
+variable "bypass_login_language_screens" {
+  type        = bool
+  description = "Whether to enable the feature removing the login and language screen, landing on the index page."
+  default     = false
+}
