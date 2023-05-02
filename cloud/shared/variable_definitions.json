@@ -222,25 +222,25 @@
   "COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT": {
     "required": false,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "string"
   },
   "COMMON_INTAKE_MORE_RESOURCES_LINK_HREF": {
     "required": false,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "string"
   },
   "BYPASS_LOGIN_LANGUAGE_SCREENS": {
     "required": false,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "bool"
   },
   "PHONE_QUESTION_TYPE_ENABLED": {
     "required": false,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "bool"
   }
 }
