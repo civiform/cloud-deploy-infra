@@ -404,3 +404,9 @@ variable "bypass_login_language_screens" {
   description = "Whether to enable the feature removing the login and language screen, landing on the index page."
   default     = false
 }
+
+variable "phone_question_type_enabled" {
+  type        = bool
+  description = "Whether to enable the phone question type."
+  default     = false
+}
