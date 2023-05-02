@@ -352,7 +352,7 @@ module "ecs_fargate_service" {
   public_subnets          = module.vpc.public_subnets
 
   lb_http_ports = {
-    default_http = {
+    http = {
       type          = "redirect"
       listener_port = 80
       port          = 443
@@ -364,7 +364,7 @@ module "ecs_fargate_service" {
     }
   }
   lb_https_ports = {
-    default_http = {
+    http = {
       listener_port         = 443
       target_group_port     = var.port
       target_group_protocol = "HTTP"
