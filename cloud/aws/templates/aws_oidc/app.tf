@@ -339,7 +339,7 @@ resource "aws_ecs_task_definition" "td" {
 module "ecs_fargate_service" {
   source                  = "cn-terraform/ecs-fargate-service/aws"
   version                 = "2.0.40"
-  name_prefix             = "${var.app_prefix}-civiform"
+  name_prefix             = var.app_prefix
   desired_count           = var.fargate_desired_task_count
   default_certificate_arn = var.ssl_certificate_arn
   ssl_policy              = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
