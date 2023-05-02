@@ -123,6 +123,7 @@ module "civiform_server_container_def" {
     AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
     ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS      = var.allow_civiform_admin_access_programs
+    BYPASS_LOGIN_LANGUAGE_SCREENS             = var.bypass_login_language_screens
     PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED    = var.program_eligibility_conditions_enabled
     INTAKE_FORM_ENABLED                       = var.intake_form_enabled
     NONGATED_ELIGIBILITY_ENABLED              = var.nongated_eligibility_enabled
