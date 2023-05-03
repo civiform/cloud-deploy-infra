@@ -410,3 +410,45 @@ variable "phone_question_type_enabled" {
   description = "Whether to enable the phone question type."
   default     = false
 }
+
+variable "esri_address_correction_enabled" {
+  type        = bool
+  description = "Whether to enable esri address correction."
+  default     = false
+}
+
+variable "esri_find_address_candidate_url" {
+  type        = string
+  description = "Url to use to fetch address suggestions."
+  default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
+}
+
+variable "esri_address_service_area_validation_enabled" {
+  type        = bool
+  description = "Whether to enable esri service area validation."
+  default     = false
+}
+
+variable "esri_address_service_area_validation_urls" {
+  type        = list(string)
+  description = "Url to use to check if an address is in a given service area."
+  default     = []
+}
+
+variable "esri_address_service_area_validation_labels" {
+  type        = list(string)
+  description = ""
+  default     = ["Seattle"]
+}
+
+variable "esri_address_service_area_validation_ids" {
+  type        = list(string)
+  description = ""
+  default     = ["Seattle"]
+}
+
+variable "esri_address_service_area_validation_attributes" {
+  type        = list(string)
+  description = ""
+  default     = ["CITYNAME"]
+}
