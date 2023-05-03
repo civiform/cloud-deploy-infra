@@ -132,7 +132,14 @@ module "civiform_server_container_def" {
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
 
-
+    ESRI_ADDRESS_CORRECTION_ENABLED = var.esri_address_correction_enabled
+    ESRI_FIND_ADDRESS_CANDIDATES_URL = var.esri_find_address_candidate_url
+    ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ENABLED = var.esri_address_service_area_validation_enabled
+    ESRI_ADDRESS_SERVICE_AREA_VALIDATION_URLS = var.esri_address_service_area_validation_urls
+    ESRI_ADDRESS_SERVICE_AREA_VALIDATION_LABELS = var.esri_address_service_area_validation_labels
+    ESRI_ADDRESS_SERVICE_AREA_VALIDATION_IDS = var.esri_address_service_area_validation_ids
+    ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ATTRIBUTES = var.esri_address_service_area_validation_attributes
+    
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
     CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
