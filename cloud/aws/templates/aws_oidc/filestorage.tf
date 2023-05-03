@@ -70,9 +70,8 @@ resource "aws_s3_bucket_ownership_controls" "civiform_files_ownership" {
   bucket = aws_s3_bucket.civiform_files_s3.id
 
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced"
   }
-  depends_on = [aws_s3_bucket_acl.log_bucket_acl]
 }
 
 resource "aws_s3_bucket_logging" "civiform_files_logging" {
@@ -93,8 +92,17 @@ resource "aws_s3_bucket" "log_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  bucket     = aws_s3_bucket.log_bucket.id
+  depends_on = [aws_s3_bucket_ownership_controls.file_access_logs_bucket_ownership]
+  acl        = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_ownership_controls" "file_access_logs_bucket_ownership" {
   bucket = aws_s3_bucket.log_bucket.id
-  acl    = "log-delivery-write"
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "logging_versioning" {
