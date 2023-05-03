@@ -19,7 +19,7 @@ POSTGRES_PASSWORD = 'civiform_postgres_password'
 DATABASE = 'civiform-db'
 
 # Defined by fargate modules in cloud/aws/templates/aws_oidc/app.tf
-FARGATE_SERVICE = 'civiform-service'
+FARGATE_SERVICE = 'service'
 LOAD_BALANCER = 'civiform-lb'
 CLUSTER = 'civiform'
 
