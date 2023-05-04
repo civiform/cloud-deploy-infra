@@ -81,6 +81,7 @@ module "civiform_server_container_def" {
     STAGING_HOSTNAME = var.staging_hostname
     BASE_URL         = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
 
+    CLIENT_IP_TYPE       = "FORWARDED"
     STORAGE_SERVICE_NAME = "s3"
     AWS_S3_BUCKET_NAME   = aws_s3_bucket.civiform_files_s3.id
 
