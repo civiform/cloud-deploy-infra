@@ -76,6 +76,7 @@ class ValidateVariableDefinitions:
             "string": self.validate_string_definition_type,
             "enum": self.validate_enum_definition_type,
             "bool": self.validate_bool_definition_type,
+            "list(string)": self.validate_list_definition_type
         }
 
         validator = type_specific_validators.get(
@@ -129,4 +130,6 @@ class ValidateVariableDefinitions:
     def validate_enum_definition_type(self, variable_definition):
         if not isinstance(variable_definition.get("values", None), list):
             return ["Missing 'values' field for enum."]
+        return []
+    def validate_list_definition_type(self, variable_definition):
         return []

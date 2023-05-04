@@ -289,6 +289,6 @@
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "number"
+    "type": "integer"
   }
 }
