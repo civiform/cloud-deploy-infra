@@ -131,6 +131,6 @@ class ValidateVariableDefinitions:
         if not isinstance(variable_definition.get("values", None), list):
             return ["Missing 'values' field for enum."]
         return []
-        
+
     def validate_list_definition_type(self, variable_definition):
         return []
