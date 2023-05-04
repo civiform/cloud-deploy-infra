@@ -139,6 +139,7 @@ module "civiform_server_container_def" {
     ESRI_ADDRESS_SERVICE_AREA_VALIDATION_LABELS = var.esri_address_service_area_validation_labels
     ESRI_ADDRESS_SERVICE_AREA_VALIDATION_IDS = var.esri_address_service_area_validation_ids
     ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ATTRIBUTES = var.esri_address_service_area_validation_attributes
+    ESRI_EXTERNAL_CALL_TRIES = var.esri_external_call_tries
     
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
