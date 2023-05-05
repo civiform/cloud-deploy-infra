@@ -254,41 +254,5 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
-  },
-  "ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ENABLED": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "bool"
-  },
-  "ESRI_ADDRESS_SERVICE_AREA_VALIDATION_URLS": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "list(string)"
-  },
-  "ESRI_ADDRESS_SERVICE_AREA_VALIDATION_LABELS": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "list(string)"
-  },
-  "ESRI_ADDRESS_SERVICE_AREA_VALIDATION_IDS": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "list(string)"
-  },
-  "ESRI_ADDRESS_SERVICE_AREA_VALIDATION_ATTRIBUTES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "list(string)"
-  },
-  "ESRI_EXTERNAL_CALL_TRIES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "integer"
   }
 }
