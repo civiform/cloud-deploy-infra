@@ -132,8 +132,8 @@ module "civiform_server_container_def" {
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
 
-    ESRI_ADDRESS_CORRECTION_ENABLED                 = var.esri_address_correction_enabled
-    ESRI_FIND_ADDRESS_CANDIDATES_URL                = var.esri_find_address_candidate_url
+    ESRI_ADDRESS_CORRECTION_ENABLED  = var.esri_address_correction_enabled
+    ESRI_FIND_ADDRESS_CANDIDATES_URL = var.esri_find_address_candidate_url
 
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
