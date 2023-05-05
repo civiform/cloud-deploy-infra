@@ -55,13 +55,13 @@ class AwsCli:
         Polls the CiviForm ECS service, waiting for the PRIMARY deployment to
         have rolloutStatus of COMPLETED.
 
-        Gives up after 20 tries, sleeps 30 seconds between each try.
+        Gives up after 30 tries, sleeps 30 seconds between each try.
         """
         print(
             "\nWaiting for CiviForm ECS service to become healthy.\n"
             f"Service URL: {self._get_url_of_ecs_service()}")
 
-        tries = 20
+        tries = 30
         while True:
             state = self._ecs_service_state()
             if state == "COMPLETED":
@@ -71,7 +71,8 @@ class AwsCli:
             tries -= 1
             if tries == 0:
                 print(
-                    "\nERROR: service did not become healthy in expected amount of time. This usually means the new tasks are crash-looping.\n"
+                    "\nERROR: service did not become healthy in expected amount of time. This usually means the new tasks are crash-looping, but can mean the check timed out before the service finished starting.\n"
+                    "To check the health of the service, go to the Service URL printed above and click on the logs tab.\n"
                     "To see the task logs, follow https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system/terraform-aws-deployment#inspecting-logs\n"
                     "For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities"
                 )
