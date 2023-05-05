@@ -410,3 +410,15 @@ variable "phone_question_type_enabled" {
   description = "Whether to enable the phone question type."
   default     = false
 }
+
+variable "esri_address_correction_enabled" {
+  type        = bool
+  description = "Enables the feature that allows address correction for address questions."
+  default     = false
+}
+
+variable "esri_find_address_candidate_url" {
+  type        = string
+  description = "The URL CiviForm will use to call Esri’s findAddressCandidates service."
+  default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
+}
