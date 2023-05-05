@@ -422,39 +422,3 @@ variable "esri_find_address_candidate_url" {
   description = "The URL CiviForm will use to call Esri’s findAddressCandidates service."
   default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
 }
-
-variable "esri_address_service_area_validation_enabled" {
-  type        = bool
-  description = "Enables the feature that allows for service area validation of a corrected address. ESRI_ADDRESS_CORRECTION_ENABLED needs to be enabled."
-  default     = false
-}
-
-variable "esri_address_service_area_validation_urls" {
-  type        = list(string)
-  description = "The URL CiviForm will use to call Esri’s map query service for service area validation."
-  default     = ["https://gisdata.seattle.gov/server/rest/services/COS/Seattle_City_Limits/MapServer/1/query"]
-}
-
-variable "esri_address_service_area_validation_labels" {
-  type        = list(string)
-  description = "Human readable labels used to present the service area validation options in CiviForm’s admin UI."
-  default     = ["Seattle"]
-}
-
-variable "esri_address_service_area_validation_ids" {
-  type        = list(string)
-  description = "The value CiviForm uses to validate if an address is in a service area."
-  default     = ["Seattle"]
-}
-
-variable "esri_address_service_area_validation_attributes" {
-  type        = list(string)
-  description = "The attribute CiviForm checks from the service area validation response to get the service area validation ID."
-  default     = ["CITYNAME"]
-}
-
-variable "esri_external_call_tries" {
-  type        = number
-  description = "The number of tries CiviForm will attempt requests to external Esri services."
-  default     = 3
-}
