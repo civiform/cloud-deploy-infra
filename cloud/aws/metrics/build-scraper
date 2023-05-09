@@ -2,23 +2,23 @@
 
 # Builds the prometheus metrics scraper Docker image
 
+set -e
+set +x
+
 readonly SHORT_SHA="$(git rev-parse --short HEAD)"
 readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
 readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
 readonly IMAGE="aws-metrics-scraper"
 
 PLATFORM_ARG=()
-if [[ "${PLATFORM}" ]]; then
+if [[ -n "${PLATFORM}" ]]; then
   PLATFORM_ARG=(--platform "${PLATFORM}")
 fi
-
-set -e
-set +x
 
 echo "start ${IMAGE} build"
 docker buildx create --use
 docker buildx build \
   "${PLATFORM_ARG[@]}" --push \
-  -t docker.io/civiform/${IMAGE}:latest \
-  -t docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG} \
+  -t "docker.io/civiform/${IMAGE}:latest" \
+  -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
   -f metrics_scraper.Dockerfile .
