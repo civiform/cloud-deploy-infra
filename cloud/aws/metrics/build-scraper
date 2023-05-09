@@ -14,11 +14,12 @@ PLATFORM_ARG=()
 if [[ -n "${PLATFORM}" ]]; then
   PLATFORM_ARG=(--platform "${PLATFORM}")
 fi
+readonly PLATFORM_ARG
 
 echo "start ${IMAGE} build"
 docker buildx create --use
-docker buildx build \
-  "${PLATFORM_ARG[@]}" --push \
+docker buildx build --push \
+  "${PLATFORM_ARG[@]}" \
   -t "docker.io/civiform/${IMAGE}:latest" \
   -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
   -f metrics_scraper.Dockerfile .
