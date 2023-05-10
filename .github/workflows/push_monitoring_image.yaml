@@ -12,13 +12,13 @@ permissions: read-all
 
 # Build and push the monitoring image.
 jobs:
-  build_civiform_cloud_deployment:
+  build_monitoring:
     runs-on: ubuntu-latest
 
     concurrency:
       group: build-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    name: Build civiform-cloud-deployment
+    name: Build monitoring
     steps:
       - name: Checkout
         uses: actions/checkout@v3
