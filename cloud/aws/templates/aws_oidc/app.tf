@@ -129,6 +129,7 @@ module "civiform_server_container_def" {
     INTAKE_FORM_ENABLED                       = var.intake_form_enabled
     NONGATED_ELIGIBILITY_ENABLED              = var.nongated_eligibility_enabled
     PHONE_QUESTION_TYPE_ENABLED               = var.phone_question_type_enabled
+    PUBLISH_SINGLE_PROGRAM_ENABLED            = var.publish_single_program_enabled
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
