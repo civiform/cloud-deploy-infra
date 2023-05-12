@@ -422,7 +422,8 @@ variable "esri_find_address_candidate_url" {
   description = "The URL CiviForm will use to call Esri’s findAddressCandidates service."
   default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
 }
-variable "PUBLISH_SINGLE_PROGRAM_ENABLED" {
+
+variable "publish_single_program_enabled" {
   type        = bool
   description = "Whether to enable the feature that allows publishing a single program on its own."
   default     = false
