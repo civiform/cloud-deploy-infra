@@ -254,7 +254,7 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
-  }
+  },
   "PUBLISH_SINGLE_PROGRAM_ENABLED": {
     "required": false,
     "secret": false,
