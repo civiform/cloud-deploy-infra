@@ -139,7 +139,7 @@ class TestConfigLoader(unittest.TestCase):
         response = requests.Response()
         response.headers["Content-type"] = "application/json"
 
-        # mock out getting te version number that matches "latest"
+        # mock out getting the version number that matches "latest"
         if url == "https://api.github.com/repos/civiform/civiform/releases/latest":
             response.status_code = 200
             data_1 = {"tag_name": "v1.23.0"}

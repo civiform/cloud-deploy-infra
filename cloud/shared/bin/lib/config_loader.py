@@ -139,10 +139,12 @@ class ConfigLoader:
     # TODO((#4293) Once #132 is submitted, use this function to download the correct
     # version of the env-var-docs.json
     def get_commit_sha_for_release(self, tag: str) -> str:
-        """Get the commit sha for the release specified in the tag
+        """Get the commit SHA for the release specified in the tag.
+        
+          The tag is a release version number such as "v1.24.0".
 
-          We are calling the GitHub API with unauthenticated request, which are rate-limited.
-          The rate limit allows for up to 60 requests per hour  associated with the originating 
+          We are calling the GitHub API with unauthenticated requests, which are rate-limited.
+          The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
         if tag.strip() == 'latest':
