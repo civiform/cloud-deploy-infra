@@ -16,5 +16,15 @@ class TfVarWriter:
     def write_variables(self, config_vars: dict):
         with open(self.filepath, "w") as tf_vars_file:
             for name, definition in config_vars.items():
+                # Special key that has a dict value.
+                if name == "civiform_server_environment_variables":
+                    tf_vars_file.write(
+                        "civiform_server_environment_variables = {\n")
+                    for key, value in definition.items():
+                        if value is not None:
+                            tf_vars_file.write(f'  "{key}"="{value}"\n')
+                    tf_vars_file.write("}\n")
+                    continue
+
                 if definition is not None:
                     tf_vars_file.write(f'{name.lower()}="{definition}"\n')

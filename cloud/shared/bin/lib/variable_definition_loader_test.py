@@ -3,18 +3,17 @@ import json
 import os
 import tempfile
 
-from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
+from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 """
- Tests for the VariableDefinitionLoader. Tests the loading of configuration
- variables from a json file.
+Tests the loading of configuration variables from a json file.
 
- To run the tests from the root direcory of the deploy-infra repostory run:
-    PYTHONPATH="${PYTHONPATH}:${pwd}" 
-    python3 cloud/shared/bin/lib/variable_definition_loader_test.py
+To run the tests from the root direcory of the deploy-infra repostory run:
+   PYTHONPATH="${PYTHONPATH}:${pwd}" 
+   python3 cloud/shared/bin/lib/variable_definition_loader_test.py
 """
 
 
-class TestVariableDefinitionLoader(unittest.TestCase):
+class TestLoadVariables(unittest.TestCase):
 
     __valid_variable_defs = {
         "BING": {
@@ -35,14 +34,10 @@ class TestVariableDefinitionLoader(unittest.TestCase):
     }
 
     def test_load_valid_variable_definitions(self):
-        varDefLoader = VariableDefinitionLoader({})
-
         with tempfile.NamedTemporaryFile(mode='w') as f:
             self._write_json_file(self.__valid_variable_defs, f.name)
-            varDefLoader.load_definition_file(f.name)
-
-        vars = varDefLoader.get_variable_definitions()
-        self.assertEqual(vars, self.__valid_variable_defs)
+            vars = load_variables_definitions(f.name)
+            self.assertEqual(vars, self.__valid_variable_defs)
 
     def _write_json_file(self, json_content, filepath: str):
         defs_string = json.dumps(json_content)
