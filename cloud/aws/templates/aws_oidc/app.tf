@@ -133,13 +133,13 @@ module "civiform_server_container_def" {
     ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
     AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name
 
-    BYPASS_LOGIN_LANGUAGE_SCREENS             = var.bypass_login_language_screens
+    BYPASS_LOGIN_LANGUAGE_SCREENS          = var.bypass_login_language_screens
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs
     PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED = var.program_eligibility_conditions_enabled
     INTAKE_FORM_ENABLED                    = var.intake_form_enabled
     NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled
-    PHONE_QUESTION_TYPE_ENABLED               = var.phone_question_type_enabled
-    PUBLISH_SINGLE_PROGRAM_ENABLED            = var.publish_single_program_enabled
+    PHONE_QUESTION_TYPE_ENABLED            = var.phone_question_type_enabled
+    PUBLISH_SINGLE_PROGRAM_ENABLED         = var.publish_single_program_enabled
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
