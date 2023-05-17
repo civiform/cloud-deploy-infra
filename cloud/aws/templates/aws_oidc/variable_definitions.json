@@ -184,5 +184,11 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   }
 }

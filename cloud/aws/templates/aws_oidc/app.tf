@@ -31,7 +31,7 @@ module "aws_scraper_logs" {
 
 module "civiform_server_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.58.2"
+  version = "0.58.3"
 
   container_name               = "${var.app_prefix}-civiform"
   container_image              = "${var.civiform_image_repo}:${var.image_tag}"
@@ -108,15 +108,13 @@ module "civiform_server_container_def" {
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
 
-    CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
-    CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-
     # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
 
     # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
     # duplicates in the civiform_server_environment_variables map. 
     STAGING_HOSTNAME                     = var.staging_hostname
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
+    CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     FAVICON_URL                          = var.favicon_url
     AWS_REGION                           = var.aws_region
@@ -135,13 +133,19 @@ module "civiform_server_container_def" {
     ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
     AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name
 
+    BYPASS_LOGIN_LANGUAGE_SCREENS             = var.bypass_login_language_screens
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs
     PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED = var.program_eligibility_conditions_enabled
     INTAKE_FORM_ENABLED                    = var.intake_form_enabled
     NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled
+    PHONE_QUESTION_TYPE_ENABLED               = var.phone_question_type_enabled
+    PUBLISH_SINGLE_PROGRAM_ENABLED            = var.publish_single_program_enabled
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
     COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
+
+    ESRI_ADDRESS_CORRECTION_ENABLED  = var.esri_address_correction_enabled
+    ESRI_FIND_ADDRESS_CANDIDATES_URL = var.esri_find_address_candidate_url
 
     CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET = var.civiform_api_keys_ban_global_subnet
     CIVIFORM_SERVER_METRICS_ENABLED     = var.civiform_server_metrics_enabled
@@ -189,7 +193,7 @@ module "civiform_server_container_def" {
 
 module "civiform_metrics_scraper_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.58.2"
+  version = "0.58.3"
 
   container_name               = "${var.app_prefix}-metrics-scraper"
   container_image              = var.scraper_image
@@ -360,6 +364,7 @@ module "ecs_fargate_service" {
   ecs_cluster_arn         = module.ecs_cluster.aws_ecs_cluster_cluster_arn
   private_subnets         = module.vpc.private_subnets
   public_subnets          = module.vpc.public_subnets
+  enable_s3_logs          = false
 
   lb_http_ports = {
     default_http = {
