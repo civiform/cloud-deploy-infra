@@ -342,7 +342,7 @@ class ConfigLoader:
 
     @property
     def skip_confirmations(self):
-        return self._config_fields.get("SKIP_CONFIRMATIONS", False)
+        return os.getenv("SKIP_CONFIRMATIONS", False)
 
     def get_config_var(self, variable_name):
         return self._config_fields.get(variable_name)
