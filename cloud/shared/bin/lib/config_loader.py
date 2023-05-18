@@ -147,12 +147,12 @@ class ConfigLoader:
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
-        if tag.strip() == 'latest':
+        tag = tag.strip()
+        if tag == 'latest':
             # Translate "latest" into a version number
-            url = f"https://api.github.com/repos/civiform/civiform/releases/latest"
+            url = "https://api.github.com/repos/civiform/civiform/releases/latest"
             response = requests.get(url)
             if response.status_code == 200:
-                newtag = response.json()["tag_name"]
                 tag = response.json()["tag_name"]
             else:
                 raise self.VersionNotFoundError(

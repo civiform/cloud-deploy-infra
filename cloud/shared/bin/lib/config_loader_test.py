@@ -160,11 +160,17 @@ class TestConfigLoader(unittest.TestCase):
         return response
 
     @patch('requests.get', side_effect=mocked_get)
-    def test_get_commit_hash_for_release__success_case(self, mocked_get):
+    def test_get_commit_hash_for_release__latest(self, mocked_get):
         config_loader = ConfigLoader()
         commit_sha = config_loader.get_commit_sha_for_release("latest")
 
-        #mock_requests.assert_called_with("https://api.github.com/repos/civiform/civiform/git/refs/tags/V1.0.0")
+        self.assertEqual(commit_sha, "0123456789abcdef")
+
+    @patch('requests.get', side_effect=mocked_get)
+    def test_get_commit_hash_for_release__with_tag(self, mocked_get):
+        config_loader = ConfigLoader()
+        commit_sha = config_loader.get_commit_sha_for_release("v1.23.0")
+
         self.assertEqual(commit_sha, "0123456789abcdef")
 
     @patch('requests.get', side_effect=mocked_get)
