@@ -1,3 +1,9 @@
+variable "civiform_server_environment_variables" {
+  type        = map(string)
+  description = "CiviForm server environment variables set in civiform_config.sh that are passed directly to the container environment."
+  default     = {}
+}
+
 variable "aws_region" {
   type        = string
   description = "Region where the AWS servers will live"
@@ -116,6 +122,12 @@ variable "postgres_backup_retention_days" {
   type        = number
   description = "Number of days to retain postgres backup"
   default     = 7
+}
+
+variable "postgres_restore_snapshot_identifier" {
+  type        = string
+  description = "If not null, destroys the current database, replacing it with a new one restored from the provided snapshot"
+  default     = null
 }
 
 variable "staging_program_admin_notification_mailing_list" {
@@ -391,4 +403,34 @@ variable "common_intake_more_resources_link_href" {
   type        = string
   description = "The HREF for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
   default     = "https://access.arkansas.gov/Learn/Home"
+}
+
+variable "bypass_login_language_screens" {
+  type        = bool
+  description = "Whether to enable the feature removing the login and language screen, landing on the index page."
+  default     = false
+}
+
+variable "phone_question_type_enabled" {
+  type        = bool
+  description = "Whether to enable the phone question type."
+  default     = false
+}
+
+variable "esri_address_correction_enabled" {
+  type        = bool
+  description = "Enables the feature that allows address correction for address questions."
+  default     = false
+}
+
+variable "esri_find_address_candidate_url" {
+  type        = string
+  description = "The URL CiviForm will use to call Esri’s findAddressCandidates service."
+  default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
+}
+
+variable "publish_single_program_enabled" {
+  type        = bool
+  description = "Whether to enable the feature that allows publishing a single program on its own."
+  default     = false
 }

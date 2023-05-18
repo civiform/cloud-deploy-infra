@@ -4,14 +4,14 @@
 # workaround uses an aarch64 (arm64) image instead when an optional platform argument is set to arm64.
 # Docker's BuildKit skips unused stages so the image for the platform that isn't used will not be built.
 
-FROM eclipse-temurin:11.0.18_10-jre as amd64
-FROM bellsoft/liberica-openjre-debian:11.0.16-8 as arm64
+FROM eclipse-temurin:11.0.19_7-jre as amd64
+FROM bellsoft/liberica-openjre-debian:11.0.19-7 as arm64
 
 FROM ${TARGETARCH}
 
-COPY --from=hashicorp/terraform:1.4.4 /bin/terraform /usr/local/bin/
-COPY --from=amazon/aws-cli:2.11.15 /usr/local /usr/local
-COPY --from=amazon/aws-cli:2.11.15 /aws /aws
+COPY --from=hashicorp/terraform:1.4.6 /bin/terraform /usr/local/bin/
+COPY --from=amazon/aws-cli:2.11.20 /usr/local /usr/local
+COPY --from=amazon/aws-cli:2.11.20 /aws /aws
 # TODO(#3222): Add Azure CLI and make sure It works with arm64.
 
 RUN /bin/sh -c set -o pipefail && apt-get update && \
