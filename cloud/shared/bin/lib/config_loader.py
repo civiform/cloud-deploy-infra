@@ -214,8 +214,6 @@ class ConfigLoader:
 
         return validation_errors
 
-    # TODO((#4293) Once #132 is submitted, use this function to download the correct
-    # version of the env-var-docs.json
     def _get_commit_sha_for_release(self, tag: str) -> str:
         """Get the commit SHA for the release specified in the tag.
         

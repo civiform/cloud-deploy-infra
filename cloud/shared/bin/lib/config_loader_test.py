@@ -217,8 +217,6 @@ class TestConfigLoader(unittest.TestCase):
                 """The commit sha for version invalid tag could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? 404 - no json found""",
                 e.args[0])
 
-    # add test cases for mini functions i made
-
     @patch('importlib.import_module')
     def test_validate_correct_values_in_config__for_server_variables(
             self, mock_import_module):
