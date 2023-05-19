@@ -234,7 +234,8 @@ class ConfigLoader:
         release_response = requests.get(release_url)
 
         if release_response.status_code == 200:
-            return self._get_commit_sha_for_tag(release_response.json()["object"]["sha"])
+            return self._get_commit_sha_for_tag(
+                release_response.json()["object"]["sha"])
         else:
             raise self.VersionNotFoundError(
                 f"The commit sha for version {tag} could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? {release_response.status_code} - {release_response.json()['message']}"
@@ -257,7 +258,9 @@ class ConfigLoader:
             commit_sha = tag_response.json()["object"]["sha"]
             return commit_sha
         else:
-            raise self.VersionNotFoundError(f"The commit sha {commit_sha} could not be found. {tag_response.status_code} - {tag_response.json()['message']}")
+            raise self.VersionNotFoundError(
+                f"The commit sha {commit_sha} could not be found. {tag_response.status_code} - {tag_response.json()['message']}"
+            )
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:

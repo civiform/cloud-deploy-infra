@@ -185,16 +185,22 @@ class TestConfigLoader(unittest.TestCase):
             return "abcdef"
 
     @patch('requests.get', side_effect=mocked_get)
-    @patch('cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag', side_effect=mocked_get_commit_sha_for_tag)
-    def test_get_commit_hash_for_release__latest(self, mocked_get, mocked_get_commit_sha_for_tag):
+    @patch(
+        'cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag',
+        side_effect=mocked_get_commit_sha_for_tag)
+    def test_get_commit_hash_for_release__latest(
+            self, mocked_get, mocked_get_commit_sha_for_tag):
         config_loader = ConfigLoader()
         commit_sha = config_loader._get_commit_sha_for_release("latest")
 
         self.assertEqual(commit_sha, "abcdef")
 
     @patch('requests.get', side_effect=mocked_get)
-    @patch('cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag', side_effect=mocked_get_commit_sha_for_tag)
-    def test_get_commit_hash_for_release__with_tag(self, mocked_get, mocked_get_commit_sha_for_tag):
+    @patch(
+        'cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag',
+        side_effect=mocked_get_commit_sha_for_tag)
+    def test_get_commit_hash_for_release__with_tag(
+            self, mocked_get, mocked_get_commit_sha_for_tag):
         config_loader = ConfigLoader()
         commit_sha = config_loader._get_commit_sha_for_release("v1.23.0")
 
@@ -204,10 +210,12 @@ class TestConfigLoader(unittest.TestCase):
     def test_get_commit_hash_for_release__fail_case(self, mocked_get):
         config_loader = ConfigLoader()
         try:
-            commit_sha = config_loader._get_commit_sha_for_release("invalid tag")
+            commit_sha = config_loader._get_commit_sha_for_release(
+                "invalid tag")
         except ConfigLoader.VersionNotFoundError as e:
             self.assertEqual(
-                """The commit sha for version invalid tag could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? 404 - no json found""", e.args[0])
+                """The commit sha for version invalid tag could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? 404 - no json found""",
+                e.args[0])
 
     # add test cases for mini functions i made
 
@@ -438,6 +446,7 @@ class TestConfigLoader(unittest.TestCase):
         expected = '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
         env_var_docs = config_loader._download_env_var_docs("latest")
         self.assertEqual(env_var_docs.getvalue(), expected)
+
 
 if __name__ == "__main__":
     unittest.main()
