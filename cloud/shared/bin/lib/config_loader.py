@@ -1,6 +1,7 @@
 import importlib
 import io
 import os
+import requests
 import re
 import ssl
 import typing
@@ -50,6 +51,9 @@ class ConfigLoader:
         the env variables that are defined in env-var-docs and passed to the server. 
         Remove them when other required changes are completed.
         """
+
+    class VersionNotFoundError(Exception):
+        pass
 
     def load_config(self, config_file: str):
         self._config_fields = self._load_config_fields(config_file)
@@ -135,16 +139,11 @@ class ConfigLoader:
         Downloads the env-var-docs.json from the civiform git repository if there is a version that corresponds to the
         civiform version of this deployment. The env-var-docs.json defines all server variables. 
         """
-        # TODO(#4612)Support versioning of env-var-docs.json files. We disable the use for older versions to reduce
-        # the risk of backwards compatibility issues, a risk remains because env-var-docs.json could have been edited
-        # since the last release of the civiform image.
-        if not civiform_version == "latest":
-            print(
-                "Disabling dynamic civiform server environment variable forwarding, because it is only supported for the 'latest' version"
-            )
+        try:
+            commit_sha = self._get_commit_sha_for_release(civiform_version)
+        except:
             return None
-
-        url = "https://raw.githubusercontent.com/civiform/civiform/main/server/conf/env-var-docs.json"
+        url = f"https://raw.githubusercontent.com/civiform/civiform/{commit_sha}/server/conf/env-var-docs.json"
 
         try:
             with urllib.request.urlopen(url) as f:
@@ -214,6 +213,52 @@ class ConfigLoader:
                     )
 
         return validation_errors
+
+    def _get_commit_sha_for_release(self, tag: str) -> str:
+        """Get the commit SHA for the release specified in the tag.
+        
+          The tag is a release version number such as "v1.24.0".
+
+          We are calling the GitHub API with unauthenticated requests, which are rate-limited.
+          The rate limit allows for up to 60 requests per hour associated with the originating 
+          IP address.
+        """
+        tag = tag.strip()
+        if tag == 'latest':
+            # Translate "latest" into a version number
+            tag = self._get_latest_version_number()
+
+        release_url = f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}"
+        release_response = requests.get(release_url)
+
+        if release_response.status_code == 200:
+            return self._get_commit_sha_for_tag(
+                release_response.json()["object"]["sha"])
+        else:
+            raise self.VersionNotFoundError(
+                f"The commit sha for version {tag} could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? {release_response.status_code} - {release_response.json()['message']}"
+            )
+
+    def _get_latest_version_number(self) -> str:
+        url = "https://api.github.com/repos/civiform/civiform/releases/latest"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()["tag_name"]
+        else:
+            raise self.VersionNotFoundError(
+                f"Error: 'latest' could not be translated to a release tag. {response.status_code} - {response.json()['message']}"
+            )
+
+    def _get_commit_sha_for_tag(self, tag_commit_sha: str) -> str:
+        tag_url = f"https://api.github.com/repos/civiform/civiform/git/tags/{tag_commit_sha}"
+        tag_response = requests.get(tag_url)
+        if tag_response.status_code == 200:
+            commit_sha = tag_response.json()["object"]["sha"]
+            return commit_sha
+        else:
+            raise self.VersionNotFoundError(
+                f"The commit sha {commit_sha} could not be found. {tag_response.status_code} - {tag_response.json()['message']}"
+            )
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:

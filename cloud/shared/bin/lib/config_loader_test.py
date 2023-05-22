@@ -6,6 +6,8 @@ import subprocess
 import sys
 import typing
 import unittest
+import requests
+import json
 import unittest.mock
 from unittest.mock import MagicMock, patch
 from urllib.request import urlopen
@@ -153,6 +155,67 @@ class TestConfigLoader(unittest.TestCase):
         config_loader._infra_variable_definitions = defs
 
         self.assertEqual(config_loader.validate_config(), [])
+
+    def mocked_get(url):
+        response = requests.Response()
+        response.headers["Content-type"] = "application/json"
+
+        # mock out getting the version number that matches "latest"
+        if url == "https://api.github.com/repos/civiform/civiform/releases/latest":
+            response.status_code = 200
+            data_1 = {"tag_name": "v1.23.0"}
+            response._content = json.dumps(data_1).encode()
+
+        # mock out getting the sha for for the version number v1.23.0
+        elif url == "https://api.github.com/repos/civiform/civiform/git/refs/tags/v1.23.0":
+            response.status_code = 200
+            data = {"object": {"sha": "0123456789"}}
+            response._content = json.dumps(data).encode()
+
+        # mock out the case when the version number is not available and the request fails
+        else:
+            response.status_code = 404
+            data = {"message": "no json found"}
+            response._content = json.dumps(data).encode()
+
+        return response
+
+    def mocked_get_commit_sha_for_tag(tag_commit_sha):
+        if tag_commit_sha == "0123456789":
+            return "abcdef"
+
+    @patch('requests.get', side_effect=mocked_get)
+    @patch(
+        'cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag',
+        side_effect=mocked_get_commit_sha_for_tag)
+    def test_get_commit_hash_for_release__latest(
+            self, mocked_get, mocked_get_commit_sha_for_tag):
+        config_loader = ConfigLoader()
+        commit_sha = config_loader._get_commit_sha_for_release("latest")
+
+        self.assertEqual(commit_sha, "abcdef")
+
+    @patch('requests.get', side_effect=mocked_get)
+    @patch(
+        'cloud.shared.bin.lib.config_loader.ConfigLoader._get_commit_sha_for_tag',
+        side_effect=mocked_get_commit_sha_for_tag)
+    def test_get_commit_hash_for_release__with_tag(
+            self, mocked_get, mocked_get_commit_sha_for_tag):
+        config_loader = ConfigLoader()
+        commit_sha = config_loader._get_commit_sha_for_release("v1.23.0")
+
+        self.assertEqual(commit_sha, "abcdef")
+
+    @patch('requests.get', side_effect=mocked_get)
+    def test_get_commit_hash_for_release__fail_case(self, mocked_get):
+        config_loader = ConfigLoader()
+        try:
+            commit_sha = config_loader._get_commit_sha_for_release(
+                "invalid tag")
+        except ConfigLoader.VersionNotFoundError as e:
+            self.assertEqual(
+                """The commit sha for version invalid tag could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? 404 - no json found""",
+                e.args[0])
 
     @patch('importlib.import_module')
     def test_validate_correct_values_in_config__for_server_variables(

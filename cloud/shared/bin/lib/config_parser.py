@@ -15,7 +15,7 @@ class ConfigParser:
     def parse_config(self, config_file):
         config_values: dict = {}
         if not os.path.exists(config_file):
-            exit(f"Cannot find file {config_file}")
+            exit(f"Config Parser cannot find config file: {config_file}")
 
         print(f"Parsing config from {config_file}")
 
