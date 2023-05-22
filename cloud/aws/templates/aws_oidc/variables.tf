@@ -381,8 +381,8 @@ variable "staging_disable_applicant_guest_login" {
 }
 variable "program_eligibility_conditions_enabled" {
   type        = bool
-  description = "Whether to enable program eligibility conditions"
-  default     = false
+  description = "Whether to enable program eligibility conditions. This feature flag has been removed, so this will be enabled by default for all deployments after v1.26.0."
+  default     = true
 }
 variable "intake_form_enabled" {
   type        = bool
