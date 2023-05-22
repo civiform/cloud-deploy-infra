@@ -13,7 +13,40 @@
 # activate the venv. The activation has to happen in the parent process before the python code is run.
 # This is why we need a bash script that preceeds the python code
 source cloud/shared/bin/python_env_setup
-# TODO(#4612)Download the newest version of the package rather than a fixed version.
+
+# Get the arguments that we want to pass to run.py
+while getopts s:c:t: flag; do
+  case "${flag}" in
+    # The civiform_config file that contains the values to configure the deployment
+    s) sourceconfig=${OPTARG} ;;
+    # The command that the run.py script should execute
+    c) command=${OPTARG} ;;
+    # The tag of the image that should be used for this deployment (e.g. "latest")
+    t) tag=${OPTARG} ;;
+  esac
+done
+
+echo "TAG BEFORE REASSIGNMENT"
+echo $tag
+
+# need to handle "latest" case
+if [ $tag == "latest" ]; then
+  tag=`curl -s "https://api.github.com/repos/civiform/civiform/releases/latest" | \
+    python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])"`
+fi
+
+echo "TAG AFTER REASSIGNMENT"
+echo $tag
+
+# Get the correct version of the env-var-docs/parser-package and write it to the dependencies file for installation
+tag_url=`curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" | \
+    python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])"`
+echo $tag_url
+commit_sha=`curl -s "${tag_url}" | \
+    python3 -c "import sys, json; print(json.load(sys.stdin)['object']['sha'])"`
+echo $commit_sha
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >> "cloud/shared/bin/env-var-docs-python-dependencies.txt"
+
 initialize_python_env cloud/shared/bin/env-var-docs-python-dependencies.txt
 
-cloud/shared/bin/run.py "$@"
+cloud/shared/bin/run.py --command $command --tag $tag --config $sourceconfig
