@@ -49,9 +49,11 @@ function fetch_json_val() {
 tag_url=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" "['object']['url']")
 commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
 
-# Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
-echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >>"cloud/shared/bin/env-var-docs-python-dependencies.txt"
+dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
-initialize_python_env cloud/shared/bin/env-var-docs-python-dependencies.txt
+# Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package">>${dependencies_file_path}
+
+initialize_python_env ${dependencies_file_path}
 
 cloud/shared/bin/run.py --command $command --tag $tag --config $source_config
