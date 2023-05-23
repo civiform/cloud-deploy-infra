@@ -32,9 +32,24 @@ if [[ ${tag} == "latest" ]]; then
     | python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
 fi
 
+#######################################
+# Get the value in a JSON document at the given URL.
+# Arguments:
+#   1: URL of the JSON document
+#   2: Path of the value in bracket notation e.g. "['object']['sha']"
+# Returns:
+#   Value found at the specified path in the JSON document
+#######################################
+function fetch_json_val() {
+  curl -s "${1}" \ |
+    python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
+}
+
 # Get the commit sha for the commit at the tip of the CiviForm version being deployed
-tag_url=$(curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
-  | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])")
+tag_url=fetch_json_val "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" "['object']['url']"
+
+# $(curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+#   | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])")
 commit_sha=$(curl -s "${tag_url}" \
   | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['sha'])")
 # Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
