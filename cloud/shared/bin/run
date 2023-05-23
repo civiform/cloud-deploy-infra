@@ -32,11 +32,12 @@ if [ $tag == "latest" ]; then
     | python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
 fi
 
-# Get the correct version of the env-var-docs/parser-package and write it to the dependencies file for installation
+# Get the commit sha for the commit at the tip of the CiviForm version being deployed
 tag_url=$(curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
   | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])")
 commit_sha=$(curl -s "${tag_url}" \
   | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['sha'])")
+# Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
 echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >>"cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
 initialize_python_env cloud/shared/bin/env-var-docs-python-dependencies.txt
