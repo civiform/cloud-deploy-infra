@@ -27,7 +27,7 @@ while getopts s:c:t: flag; do
 done
 
 # If tag is "latest" get the latest release number (eg. v1.26.0)
-if [ $tag == "latest" ]; then
+if [[ ${tag} == "latest" ]]; then
   tag=$(curl -s "https://api.github.com/repos/civiform/civiform/releases/latest" \
     | python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
 fi
