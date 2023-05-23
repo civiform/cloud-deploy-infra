@@ -18,7 +18,7 @@ source cloud/shared/bin/python_env_setup
 while getopts s:c:t: flag; do
   case "${flag}" in
     # The civiform_config file that contains the values to configure the deployment
-    s) sourceconfig=${OPTARG} ;;
+    s) source_config=${OPTARG} ;;
     # The command that the run.py script should execute
     c) command=${OPTARG} ;;
     # The tag of the image that should be used for this deployment (e.g. "latest")
