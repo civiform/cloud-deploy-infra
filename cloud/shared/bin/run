@@ -52,8 +52,8 @@ commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
 dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
 # Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
-echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package">>${dependencies_file_path}
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package">>$dependencies_file_path
 
-initialize_python_env ${dependencies_file_path}
+initialize_python_env $dependencies_file_path
 
 cloud/shared/bin/run.py --command $command --tag $tag --config $source_config
