@@ -28,16 +28,16 @@ done
 
 # If tag is "latest" get the latest release number (eg. v1.26.0)
 if [ $tag == "latest" ]; then
-  tag=`curl -s "https://api.github.com/repos/civiform/civiform/releases/latest" | \
-    python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])"`
+  tag=$(curl -s "https://api.github.com/repos/civiform/civiform/releases/latest" \
+    | python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
 fi
 
 # Get the correct version of the env-var-docs/parser-package and write it to the dependencies file for installation
-tag_url=`curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" | \
-    python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])"`
-commit_sha=`curl -s "${tag_url}" | \
-    python3 -c "import sys, json; print(json.load(sys.stdin)['object']['sha'])"`
-echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >> "cloud/shared/bin/env-var-docs-python-dependencies.txt"
+tag_url=$(curl -s "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+  | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['url'])")
+commit_sha=$(curl -s "${tag_url}" \
+  | python3 -c "import sys, json; print(json.load(sys.stdin)['object']['sha'])")
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >>"cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
 initialize_python_env cloud/shared/bin/env-var-docs-python-dependencies.txt
 
