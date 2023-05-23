@@ -4,13 +4,14 @@
 # TODO(#4612) Enable the env-var-docs variable generation feature by using this script
 # instead of run.py across the civiform-deploy repository
 
-# In the server code repository in git(civiform), we define a python package called env-var-docs.
-# https://github.com/civiform/civiform/tree/main/env-var-docs
+# In the server code repository in git(civiform), we define a python package 
+# called env-var-docs: https://github.com/civiform/civiform/tree/main/env-var-docs
 # Its purpose is to automate various aspects of adding a variable to application.conf.
 # Variables in application.conf make the server configurable.
 # To make the variables configurable via the deploy system, we need the env-var-docs package.
-# To get access to the package, we create a python virtual environment(venv), install the package and
-# activate the venv. The activation has to happen in the parent process before the python code is run.
+# To get access to the package, we create a python virtual environment(venv), 
+# install the package and activate the venv. The activation has to happen in the 
+# parent process before the python code is run.
 # This is why we need a bash script that preceeds the python code
 source cloud/shared/bin/python_env_setup
 
@@ -26,12 +27,6 @@ while getopts s:c:t: flag; do
   esac
 done
 
-# If tag is "latest" get the latest release number (eg. v1.26.0)
-if [[ ${tag} == "latest" ]]; then
-  tag=$(curl -s "https://api.github.com/repos/civiform/civiform/releases/latest" \
-    | python3 -c "import sys, json; print(json.load(sys.stdin)['tag_name'])")
-fi
-
 #######################################
 # Get the value in a JSON document at the given URL.
 # Arguments:
@@ -41,18 +36,29 @@ fi
 #   Value found at the specified path in the JSON document
 #######################################
 function fetch_json_val() {
-  curl -s "${1}" \  \
-    | python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
+  curl -s "${1}" \ |
+    python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
 }
 
+# If tag is "latest" get the latest release number (eg. v1.26.0)
+if [[ ${tag} == "latest" ]]; then
+  tag=$(fetch_json_val \
+  "https://api.github.com/repos/civiform/civiform/releases/latest" \
+  "['tag_name']")
+fi
+
 # Get the commit sha for the commit at the tip of the CiviForm version being deployed
-tag_url=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" "['object']['url']")
+tag_url=$(fetch_json_val \
+"https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+"['object']['url']")
 commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
 
 dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
-# Write the correct version of the env-var-docs/parser-package to the dependencies file to be downloaded
-echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}#subdirectory=env-var-docs/parser-package" >>$dependencies_file_path
+# Write the correct version of the env-var-docs/parser-package to the 
+# dependencies file to be downloaded
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}\
+#subdirectory=env-var-docs/parser-package">>$dependencies_file_path
 
 initialize_python_env $dependencies_file_path
 
