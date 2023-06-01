@@ -42,7 +42,7 @@ function fetch_json_val() {
 
 commit_sha=""
 
-# In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the 
+# In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the
 # shortened commit sha. Use this to get the full commit sha.
 if [[ ${tag} == *"SNAPSHOT"* ]]; then
   splitTag=(${tag//-/ })

@@ -116,7 +116,8 @@ class ConfigLoader:
 
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
-        env_var_docs = self._download_env_var_docs(self.get_civiform_image_tag_or_version())
+        env_var_docs = self._download_env_var_docs(
+            self.get_civiform_image_tag_or_version())
         if env_var_docs is None:
             return {}
 
@@ -403,7 +404,8 @@ class ConfigLoader:
         if v is None:
             v = self._config_fields.get("CIVIFORM_VERSION")
             if v is None:
-                exit("CIVIFORM_VERSION is required to be set in the config file")
+                exit(
+                    "CIVIFORM_VERSION is required to be set in the config file")
         return v
 
     def get_template_dir(self):
