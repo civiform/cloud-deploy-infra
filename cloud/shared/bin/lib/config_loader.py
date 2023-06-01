@@ -116,7 +116,7 @@ class ConfigLoader:
 
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
-        env_var_docs = self._download_env_var_docs(self.get_civiform_version())
+        env_var_docs = self._download_env_var_docs(self.get_civiform_image_tag_or_version())
         if env_var_docs is None:
             return {}
 
@@ -217,13 +217,18 @@ class ConfigLoader:
     def _get_commit_sha_for_release(self, tag: str) -> str:
         """Get the commit SHA for the release specified in the tag.
         
-          The tag is a release version number such as "v1.24.0".
+          The tag can be a release version number such as "v1.24.0", a specific snapshot 
+          such as "SNAPSHOT-920bc49-1685642238", or the string "latest".
 
           We are calling the GitHub API with unauthenticated requests, which are rate-limited.
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
         tag = tag.strip()
+        if "SNAPSHOT" in tag:
+            # In a snapshot tag, the middle section is the commit sha
+            return tag.split("-")[1]
+
         if tag == 'latest':
             # Translate "latest" into a version number
             tag = self._get_latest_version_number()
@@ -271,9 +276,6 @@ class ConfigLoader:
         for name, variable in env_var_docs.items():
             config_value = config_fields.get(name)
 
-            # TODO(#4612) Extend env-var-docs to include the required field, use the
-            # variable_definitions.json files as the source for the values. env_var_docs does
-            # not currently include required field. Therefore this code will never run.
             if config_value is None:
                 if variable.required:
                     validation_errors.append(
@@ -281,6 +283,8 @@ class ConfigLoader:
                 continue
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
+            # Validation for 'index-list' is not implemented at this time because
+            # 'index-list' does not yet support subtyping.
             if variable.type == "string":
                 if variable.values is not None:
                     if config_value not in variable.values:
@@ -310,12 +314,6 @@ class ConfigLoader:
                         f"'{name}' is required to be either 'true' or 'false', got {config_value}"
                     )
                     continue
-
-            # TODO(#4612): Add support for validation of items in an index-list.
-            # An Index-list variables VAR is represented as a comma-separated string.
-            # Individual fields in VAR can NOT currently be set the same way as on the
-            # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
-            # be required, but validation should be supported.
 
         return validation_errors
 
@@ -400,10 +398,12 @@ class ConfigLoader:
 
     # TODO() Make the configuration option required as part of the validation
     # instead of manually checking for it here.
-    def get_civiform_version(self):
-        v = self._config_fields.get("CIVIFORM_VERSION")
+    def get_civiform_image_tag_or_version(self):
+        v = self._config_fields.get("IMAGE_TAG")
         if v is None:
-            exit("CIVIFORM_VERSION is required to be set in the config file")
+            v = self._config_fields.get("CIVIFORM_VERSION")
+            if v is None:
+                exit("CIVIFORM_VERSION is required to be set in the config file")
         return v
 
     def get_template_dir(self):
