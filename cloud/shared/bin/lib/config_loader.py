@@ -91,7 +91,7 @@ class ConfigLoader:
                 os.getcwd(), "cloud", "shared", "variable_definitions.json"))
         template_vars = load_variables_definitions(
             os.path.join(self.get_template_dir(), "variable_definitions.json"))
-        return shared_vars | template_vars
+        return {**shared_vars, **template_vars}
 
     def _load_civiform_server_env_vars(self) -> dict:
         """Returns environment variables in
