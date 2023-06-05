@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      USE_LOCAL_BACKEND: true
       SKIP_TAG_CHECK: true
     steps:
       - name: Check out branch
@@ -38,6 +37,7 @@ jobs:
           #  the changes work with actual data
           curl https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/aws_staging_civiform_config.sh > civiform_config.sh
           echo 'export CIVIFORM_MODE="test"' >> civiform_config.sh
+          echo 'export USE_LOCAL_BACKEND=true' >> civiform_config.sh
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run deploy with latest tag
         run: |

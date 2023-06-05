@@ -92,8 +92,17 @@ resource "aws_s3_bucket" "log_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  bucket     = aws_s3_bucket.log_bucket.id
+  depends_on = [aws_s3_bucket_ownership_controls.file_access_logs_bucket_ownership]
+  acl        = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_ownership_controls" "file_access_logs_bucket_ownership" {
   bucket = aws_s3_bucket.log_bucket.id
-  acl    = "log-delivery-write"
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "logging_versioning" {
