@@ -265,12 +265,12 @@
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "number"
+    "type": "integer"
   },
   "ECS_TASK_MEMORY": {
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "number"
+    "type": "integer"
   }
 }
