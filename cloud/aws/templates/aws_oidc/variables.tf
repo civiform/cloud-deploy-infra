@@ -313,6 +313,18 @@ variable "fargate_desired_task_count" {
   description = "Number of Civiform server tasks to run. Can be set to 0 to shutdown server."
 }
 
+variable "ecs_task_cpu" {
+  type        = number
+  description = "CPU of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_memory` as well."
+  default     = 1024
+}
+
+variable "ecs_task_memory" {
+  type        = number
+  description = "Memory of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_cpu` as well."
+  default     = 6144
+}
+
 variable "feature_flag_reporting_enabled" {
   type        = bool
   description = "Whether or not to enable the reporting feature"
