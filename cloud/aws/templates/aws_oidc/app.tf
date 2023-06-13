@@ -335,8 +335,8 @@ resource "aws_iam_role_policy_attachment" "civiform_ecs_task_execution_role_cust
 resource "aws_ecs_task_definition" "td" {
   family = "${local.name_prefix}-td"
 
-  cpu    = 1024
-  memory = 6144
+  cpu    = var.ecs_task_cpu
+  memory = var.ecs_task_memory
 
   container_definitions = jsonencode([
     module.civiform_server_container_def.json_map_object,
