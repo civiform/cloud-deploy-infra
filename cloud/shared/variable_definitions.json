@@ -260,17 +260,5 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
-  },
-  "ECS_TASK_CPU": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "integer"
-  },
-  "ECS_TASK_MEMORY": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "integer"
   }
 }
