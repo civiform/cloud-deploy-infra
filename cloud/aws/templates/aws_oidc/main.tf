@@ -108,9 +108,9 @@ module "pgadmin" {
   aws_region = var.aws_region
 
   vpc_id          = module.vpc.vpc_id
-  lb_arn          = module.ecs_fargate_service.aws_lb_lb_arn
+  lb_arn          = aws_lb.lb.arn
   lb_ssl_cert_arn = var.ssl_certificate_arn
-  lb_access_sg_id = module.ecs_fargate_service.aws_security_group_lb_access_sg_id
+  lb_access_sg_id = aws_security_group.lb_access_sg.id
   cidr_allowlist  = var.pgadmin_cidr_allowlist
 
   ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
