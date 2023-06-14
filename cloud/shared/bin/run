@@ -40,16 +40,18 @@ function fetch_json_val() {
     | python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
 }
 
-# If tag is "latest" get the latest release number (eg. v1.26.0)
-if [[ ${tag} == "latest" ]]; then
-  tag=$(fetch_json_val \
+# Reassign tag to version so we don't overwrite tag
+version=${tag}
+# If version is "latest" get the latest release number (eg. v1.26.0)
+if [[ ${version} == "latest" ]]; then
+  version=$(fetch_json_val \
     "https://api.github.com/repos/civiform/civiform/releases/latest" \
     "['tag_name']")
 fi
 
 # Get the commit sha for the commit at the tip of the CiviForm version being deployed
 tag_url=$(fetch_json_val \
-  "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+  "https://api.github.com/repos/civiform/civiform/git/refs/tags/${version}" \
   "['object']['url']")
 commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
 
