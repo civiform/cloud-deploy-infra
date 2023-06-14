@@ -202,5 +202,17 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "ECS_MAX_CPU_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   }
 }

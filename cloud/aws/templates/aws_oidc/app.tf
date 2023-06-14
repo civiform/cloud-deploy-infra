@@ -365,6 +365,8 @@ module "ecs_fargate_service" {
   private_subnets         = module.vpc.private_subnets
   public_subnets          = module.vpc.public_subnets
   enable_s3_logs          = false
+  ecs_max_cpu_threshold   = var.ecs_max_cpu_threshold
+  ecs_min_cpu_threshold   = var.ecs_min_cpu_threshold
 
   lb_http_ports = {
     default_http = {
