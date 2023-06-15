@@ -368,6 +368,7 @@ module "ecs_fargate_service" {
   max_cpu_threshold   = var.ecs_max_cpu_threshold
   min_cpu_threshold   = var.ecs_min_cpu_threshold
 
+
   lb_http_ports = {
     default_http = {
       type          = "redirect"
