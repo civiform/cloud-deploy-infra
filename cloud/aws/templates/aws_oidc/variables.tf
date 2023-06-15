@@ -325,18 +325,6 @@ variable "ecs_task_memory" {
   default     = 6144
 }
 
-variable "ecs_max_cpu_threshold" {
-  type        = string
-  description = "The threshold for max CPU usage in an ECS task. If the CPU increases above this threshold, there will be a cloudwatch alarm and another ECS task will be added."
-  default     = "85"
-}
-
-variable "ecs_min_cpu_threshold" {
-  type        = string
-  description = "The threshold for min CPU usage in an ECS task. If the CPU decreases below this threshold, there will be a cloudwatch alarm and an ECS task will be removed."
-  default     = "10"
-}
-
 variable "feature_flag_reporting_enabled" {
   type        = bool
   description = "Whether or not to enable the reporting feature"
