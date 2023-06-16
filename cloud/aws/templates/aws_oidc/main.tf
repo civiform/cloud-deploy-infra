@@ -71,7 +71,6 @@ module "aws-rds-alarms" {
   create_low_disk_burst_alarm	  = false
   create_swap_alarm               = false
   create_anomaly_alarm            = false
-
 }
 
 module "email_service" {
