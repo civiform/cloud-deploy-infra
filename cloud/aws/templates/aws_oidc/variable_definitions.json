@@ -243,12 +243,12 @@
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "number"
+    "type": "integer"
   },
   "ECS_SCALE_TARGET_MIN_CAPACITY": {
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "number"
+    "type": "integer"
   }
 }
