@@ -362,13 +362,13 @@ variable "ecs_min_cpu_period" {
 }
 
 variable "ecs_scale_target_max_capacity" {
-  type        = string
+  type        = number
   description = "The max capacity of the scalable target."
   default     = 5
 }
 
 variable "ecs_scale_target_min_capacity" {
-  type        = string
+  type        = number
   description = "The min capacity of the scalable target."
   default     = 1
 }
