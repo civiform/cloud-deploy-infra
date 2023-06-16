@@ -68,8 +68,8 @@ module "aws-rds-alarms" {
   create_high_queue_depth_alarm = true
   create_low_disk_space_alarm   = true
   create_low_memory_alarm       = true
-  create_low_cpu_credit_alarm	= false
-  create_low_disk_burst_alarm	= false
+  create_low_cpu_credit_alarm   = false
+  create_low_disk_burst_alarm   = false
   create_swap_alarm             = false
   create_anomaly_alarm          = false
 }
