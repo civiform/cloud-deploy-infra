@@ -191,6 +191,24 @@
     "tfvar": true,
     "type": "string"
   },
+  "AWS_DB_STORAGE_TYPE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "AWS_DB_STORAGE_THROUGHPUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "AWS_DB_IOPS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "ECS_TASK_CPU": {
     "required": false,
     "secret": false,
