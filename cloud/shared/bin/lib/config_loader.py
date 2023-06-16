@@ -152,6 +152,7 @@ class ConfigLoader:
             exit(f"Could not download {url}: {e}")
         env_var_docs_text = env_var_docs_bytes.decode("utf-8")
         env_var_docs = io.StringIO(env_var_docs_text)
+        print("Downloaded env-var-docs.json")
         return env_var_docs
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
@@ -227,20 +228,30 @@ class ConfigLoader:
         """
         
         tag = tag.strip()
-        if tag == "latest":
-            return self._fetch_json_val("https://api.github.com/repos/civiform/civiform/branches/main", "commit", "sha")
-        elif "SNAPSHOT" in tag:
-            short_commit_sha = tag.split("-")[1]
-            return self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}", "sha")
-        else:
-            tag_url = self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}", "object", "sha")
-            return self._fetch_json_val({tag_url}, "object", "sha")
+        
+        try:        
+            if tag == "latest":
+                return self._fetch_json_val("https://api.github.com/repos/civiform/civiform/branches/main", "commit", "sha")
+            elif "SNAPSHOT" in tag:
+                print(tag)
+                short_sha = tag.split("-")[1]
+                print(short_sha)
+                return self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}", "sha")
+            else:
+                tag_url = self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}", "object", "url")
+                return self._fetch_json_val(tag_url, "object", "sha")
+        except self.VersionNotFoundError as e:
+            print(e)
+            return None
 
-    def _fetch_json_val(self, url, field_one, field_two) -> str:
+    def _fetch_json_val(self, url, field_one, field_two=None) -> str:
         response = requests.get(url)
         if response.status_code == 200:
-            json = response.json()[field_one]
-            return json[field_two] if field_two else json
+            try:
+                return response.json()[field_one] if field_two is None else response.json()[field_one][field_two]
+            except:
+                print(f"Error parsing json with fields {field_one} {field_two}")
+                return None
         else:
             raise self.VersionNotFoundError(
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
