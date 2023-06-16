@@ -114,8 +114,14 @@ variable "postgres_instance_class" {
 
 variable "postgres_storage_gb" {
   type        = number
-  description = "The gb of storage for postgres instance"
+  description = "The gb of storage for postgres instance. If max_allocated_storage is configured, this argument represents the initial storage allocation and differences from the configuration will be ignored automatically when Storage Autoscaling occurs."
   default     = 5
+}
+
+variable "postgres_max_allocated_storage_gb" {
+  type        = number
+  description = "(Optional) When configured, the upper limit to which Amazon RDS can automatically scale the storage of postgres. Configuring this will automatically ignore differences to allocated_storage. Must be greater than or equal to allocated_storage or 0 to disable Storage Autoscaling."
+  default     = null
 }
 
 variable "postgres_backup_retention_days" {

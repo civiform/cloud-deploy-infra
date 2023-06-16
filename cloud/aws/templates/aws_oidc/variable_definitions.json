@@ -179,6 +179,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "POSTGRES_MAX_ALLOCATED_STORAGE_GB": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "POSTGRES_BACKUP_RETENTION_DAYS": {
     "required": false,
     "secret": false,
