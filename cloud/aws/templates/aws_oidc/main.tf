@@ -60,7 +60,7 @@ data "aws_db_instance" "civiform" {
 }
 
 module "aws-rds-alarms" {
-storage_encrypted               = true
+  storage_encrypted             = true
   source                        = "lorenzoaiello/rds-alarms/aws"
   version                       = "2.2.0"
   db_instance_id                = data.aws_db_instance.civiform.id
