@@ -140,7 +140,7 @@ class ConfigLoader:
         civiform version of this deployment. The env-var-docs.json defines all server variables. 
         """
         try:
-            commit_sha = self._get_commit_sha_for_release(civiform_version)
+            commit_sha = self._get_commit_sha_for_tag(civiform_version)
         except:
             return None
         url = f"https://raw.githubusercontent.com/civiform/civiform/{commit_sha}/server/conf/env-var-docs.json"
@@ -214,50 +214,36 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _get_commit_sha_for_release(self, tag: str) -> str:
+    def _get_commit_sha_for_tag(self, tag: str) -> str:
         """Get the commit SHA for the release specified in the tag.
         
-          The tag is a release version number such as "v1.24.0".
+          The tag can be a release version number such as "v1.24.0", a specific docker snapshot 
+          tag such as "SNAPSHOT-920bc49-1685642238" (where the middle secion is the shortened 
+          sha for the commit the docker image was built from), or the string "latest".
 
           We are calling the GitHub API with unauthenticated requests, which are rate-limited.
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
+        
         tag = tag.strip()
-        if tag == 'latest':
-            # Translate "latest" into a version number
-            tag = self._get_latest_version_number()
-
-        release_url = f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}"
-        release_response = requests.get(release_url)
-
-        if release_response.status_code == 200:
-            return self._get_commit_sha_for_tag(
-                release_response.json()["object"]["sha"])
+        if tag == "latest":
+            return self._fetch_json_val("https://api.github.com/repos/civiform/civiform/branches/main", "commit", "sha")
+        elif "SNAPSHOT" in tag:
+            short_commit_sha = tag.split("-")[1]
+            return self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}", "sha")
         else:
-            raise self.VersionNotFoundError(
-                f"The commit sha for version {tag} could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? {release_response.status_code} - {release_response.json()['message']}"
-            )
+            tag_url = self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}", "object", "sha")
+            return self._fetch_json_val({tag_url}, "object", "sha")
 
-    def _get_latest_version_number(self) -> str:
-        url = "https://api.github.com/repos/civiform/civiform/releases/latest"
+    def _fetch_json_val(self, url, field_one, field_two) -> str:
         response = requests.get(url)
         if response.status_code == 200:
-            return response.json()["tag_name"]
+            json = response.json()[field_one]
+            return json[field_two] if field_two else json
         else:
             raise self.VersionNotFoundError(
-                f"Error: 'latest' could not be translated to a release tag. {response.status_code} - {response.json()['message']}"
-            )
-
-    def _get_commit_sha_for_tag(self, tag_commit_sha: str) -> str:
-        tag_url = f"https://api.github.com/repos/civiform/civiform/git/tags/{tag_commit_sha}"
-        tag_response = requests.get(tag_url)
-        if tag_response.status_code == 200:
-            commit_sha = tag_response.json()["object"]["sha"]
-            return commit_sha
-        else:
-            raise self.VersionNotFoundError(
-                f"The commit sha {commit_sha} could not be found. {tag_response.status_code} - {tag_response.json()['message']}"
+                f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
 
     def _validate_civiform_server_env_vars(
@@ -281,6 +267,8 @@ class ConfigLoader:
                 continue
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
+            # Validation for 'index-list' is not implemented at this time because
+            # 'index-list' does not yet support subtyping.
             if variable.type == "string":
                 if variable.values is not None:
                     if config_value not in variable.values:
@@ -310,12 +298,6 @@ class ConfigLoader:
                         f"'{name}' is required to be either 'true' or 'false', got {config_value}"
                     )
                     continue
-
-            # TODO(#4612): Add support for validation of items in an index-list.
-            # An Index-list variables VAR is represented as a comma-separated string.
-            # Individual fields in VAR can NOT currently be set the same way as on the
-            # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
-            # be required, but validation should be supported.
 
         return validation_errors
 

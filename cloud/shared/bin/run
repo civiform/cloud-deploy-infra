@@ -13,6 +13,7 @@
 # install the package and activate the venv. The activation has to happen in the
 # parent process before the python code is run.
 # This is why we need a bash script that preceeds the python code
+
 source cloud/shared/bin/python_env_setup
 
 # Get the arguments that we want to pass to run.py
@@ -40,20 +41,24 @@ function fetch_json_val() {
     | python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
 }
 
-# Reassign tag to version so we don't overwrite tag
-version=${tag}
-# If version is "latest" get the latest release number (eg. v1.26.0)
-if [[ ${version} == "latest" ]]; then
-  version=$(fetch_json_val \
-    "https://api.github.com/repos/civiform/civiform/releases/latest" \
-    "['tag_name']")
-fi
+commit_sha=""
 
-# Get the commit sha for the commit at the tip of the CiviForm version being deployed
-tag_url=$(fetch_json_val \
-  "https://api.github.com/repos/civiform/civiform/git/refs/tags/${version}" \
-  "['object']['url']")
-commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
+if [[ ${tag} == "latest" ]]; then
+  # If tag is "latest" get the commit sha from the tip of main
+  commit_sha=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/branches/main" "['commit']['sha']")
+elif [[ ${tag} == *"SNAPSHOT"* ]]; then
+  # In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the
+  # shortened commit sha. Use this to get the full commit sha.
+  split_tag=(${tag//-/ })
+  short_sha=${split_tag[1]}
+  commit_sha=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/commits/${short_sha}" "['sha']")
+else
+  # tag is a specific version of CiviForm (eg. v1.2.3), get the commit sha at the tip of that version
+  tag_url=$(fetch_json_val \
+    "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+    "['object']['url']")
+  commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
+fi
 
 dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
