@@ -214,5 +214,41 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "ECS_MAX_CPU_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MAX_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_SCALE_TARGET_MAX_CAPACITY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "ECS_SCALE_TARGET_MIN_CAPACITY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
   }
 }

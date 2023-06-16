@@ -337,6 +337,42 @@ variable "ecs_min_cpu_threshold" {
   default     = "10"
 }
 
+variable "ecs_max_cpu_evaluation_period" {
+  type        = string
+  description = "The number of periods over which data is compared to the specified threshold for max cpu metric alarm."
+  default     = "3"
+}
+
+variable "ecs_min_cpu_evaluation_period" {
+  type        = string
+  description = "The number of periods over which data is compared to the specified threshold for min cpu metric alarm."
+  default     = "3"
+}
+
+variable "ecs_max_cpu_period" {
+  type        = string
+  description = "The period in seconds over which the specified statistic is applied for max cpu metric alarm."
+  default     = "60"
+}
+
+variable "ecs_min_cpu_period" {
+  type        = string
+  description = "The period in seconds over which the specified statistic is applied for min cpu metric alarm."
+  default     = "60"
+}
+
+variable "ecs_scale_target_max_capacity" {
+  type        = string
+  description = "The max capacity of the scalable target."
+  default     = 5
+}
+
+variable "ecs_scale_target_min_capacity" {
+  type        = string
+  description = "The min capacity of the scalable target."
+  default     = 1
+}
+
 variable "feature_flag_reporting_enabled" {
   type        = bool
   description = "Whether or not to enable the reporting feature"
