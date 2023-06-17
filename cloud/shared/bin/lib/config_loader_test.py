@@ -156,20 +156,14 @@ class TestConfigLoader(unittest.TestCase):
 
         self.assertEqual(config_loader.validate_config(), [])
 
-
-    
     def mocked_fetch_json_val(url, field_one, field_two=None):
         data = {}
         # mock out getting the sha if the tag is "latest"
         if url == "https://api.github.com/repos/civiform/civiform/branches/main":
-            data = {"commit": {
-                "sha": "12345"
-            }}
+            data = {"commit": {"sha": "12345"}}
         # mock out getting the sha if a snapshot tag is passed in
         elif url == "https://api.github.com/repos/civiform/civiform/commits/abc":
-            data = {
-                "sha": "abcdef"
-                }
+            data = {"sha": "abcdef"}
         # mock out getting the tag_url for the version number v1.23.0
         elif url == "https://api.github.com/repos/civiform/civiform/git/refs/tags/v1.23.0":
             data = {"object": {"url": "fake_tag_url"}}
@@ -178,14 +172,13 @@ class TestConfigLoader(unittest.TestCase):
             data = {"object": {"sha": "abc123"}}
         else:
             return None
-        return data[field_one] if field_two is None else data[field_one][field_two]
-
+        return data[field_one] if field_two is None else data[field_one][
+            field_two]
 
     @patch(
         'cloud.shared.bin.lib.config_loader.ConfigLoader._fetch_json_val',
         side_effect=mocked_fetch_json_val)
-    def test_get_commit_hash_for_tag__latest(
-            self, mocked_fetch_json_val):
+    def test_get_commit_hash_for_tag__latest(self, mocked_fetch_json_val):
         config_loader = ConfigLoader()
         commit_sha = config_loader._get_commit_sha_for_tag("latest")
 
@@ -194,8 +187,7 @@ class TestConfigLoader(unittest.TestCase):
     @patch(
         'cloud.shared.bin.lib.config_loader.ConfigLoader._fetch_json_val',
         side_effect=mocked_fetch_json_val)
-    def test_get_commit_hash_for_tag__snapshot(
-            self, mocked_fetch_json_val):
+    def test_get_commit_hash_for_tag__snapshot(self, mocked_fetch_json_val):
         config_loader = ConfigLoader()
         commit_sha = config_loader._get_commit_sha_for_tag("SNAPSHOT-abc-12345")
 
@@ -204,8 +196,7 @@ class TestConfigLoader(unittest.TestCase):
     @patch(
         'cloud.shared.bin.lib.config_loader.ConfigLoader._fetch_json_val',
         side_effect=mocked_fetch_json_val)
-    def test_get_commit_hash_for_tag__version(
-            self, mocked_fetch_json_val):
+    def test_get_commit_hash_for_tag__version(self, mocked_fetch_json_val):
         config_loader = ConfigLoader()
         commit_sha = config_loader._get_commit_sha_for_tag("v1.23.0")
 
@@ -216,8 +207,7 @@ class TestConfigLoader(unittest.TestCase):
         side_effect=mocked_fetch_json_val)
     def test_get_commit_hash_for_tag__fail_case(self, mocked_fetch_json_val):
         config_loader = ConfigLoader()
-        commit_sha = config_loader._get_commit_sha_for_tag(
-                "invalid tag")
+        commit_sha = config_loader._get_commit_sha_for_tag("invalid tag")
         self.assertEqual(commit_sha, None)
 
     @patch('importlib.import_module')

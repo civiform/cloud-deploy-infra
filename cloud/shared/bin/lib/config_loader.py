@@ -226,17 +226,23 @@ class ConfigLoader:
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
-        
+
         tag = tag.strip()
-        
-        try:        
+
+        try:
             if tag == "latest":
-                return self._fetch_json_val("https://api.github.com/repos/civiform/civiform/branches/main", "commit", "sha")
+                return self._fetch_json_val(
+                    "https://api.github.com/repos/civiform/civiform/branches/main",
+                    "commit", "sha")
             elif "SNAPSHOT" in tag:
                 short_sha = tag.split("-")[1]
-                return self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}", "sha")
+                return self._fetch_json_val(
+                    f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}",
+                    "sha")
             else:
-                tag_url = self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}", "object", "url")
+                tag_url = self._fetch_json_val(
+                    f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}",
+                    "object", "url")
                 return self._fetch_json_val(tag_url, "object", "sha")
         except self.VersionNotFoundError as e:
             print(e)
@@ -246,7 +252,9 @@ class ConfigLoader:
         response = requests.get(url)
         if response.status_code == 200:
             try:
-                return response.json()[field_one] if field_two is None else response.json()[field_one][field_two]
+                return response.json(
+                )[field_one] if field_two is None else response.json(
+                )[field_one][field_two]
             except:
                 print(f"Error parsing json with fields {field_one} {field_two}")
                 return None
