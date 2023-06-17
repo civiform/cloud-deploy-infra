@@ -233,9 +233,7 @@ class ConfigLoader:
             if tag == "latest":
                 return self._fetch_json_val("https://api.github.com/repos/civiform/civiform/branches/main", "commit", "sha")
             elif "SNAPSHOT" in tag:
-                print(tag)
                 short_sha = tag.split("-")[1]
-                print(short_sha)
                 return self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}", "sha")
             else:
                 tag_url = self._fetch_json_val(f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}", "object", "url")
