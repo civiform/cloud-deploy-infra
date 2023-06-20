@@ -136,10 +136,28 @@ variable "postgres_restore_snapshot_identifier" {
   default     = null
 }
 
+variable "rds_alarm_evaluation_period" {
+  type        = string
+  description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
+  default     = "5"
+}
+
+variable "rds_alarm_statistic_period" {
+  type        = string
+  description = "The length of time to use to evaluate the metric or expression to create each individual data point for an RDS alarm. It is expressed in seconds."
+  default     = "60"
+}
+
 variable "rds_create_high_cpu_alarm" {
   type        = bool
   description = "Whether or not to create a high CPU alarm for RDS."
   default     = true
+}
+
+variable "rds_max_cpu_utilization_threshold" {
+  type        = string
+  description = "The threshold for max CPU utilization for the database before the alarm gets triggered (if enabled)."
+  default     = "90"
 }
 
 variable "rds_create_high_queue_depth_alarm" {
@@ -148,10 +166,22 @@ variable "rds_create_high_queue_depth_alarm" {
   default     = true
 }
 
+variable "rds_disk_queue_depth_high_threshold" {
+  type        = string
+  description = "The threshold for the disk queue depth before the alarm gets triggered (if enabled)."
+  default     = "64"
+}
+
 variable "rds_create_low_disk_space_alarm" {
   type        = bool
   description = "Whether or not to create a low disk space alarm for RDS."
   default     = true
+}
+
+variable "rds_disk_free_storage_low_threshold" {
+  type        = string
+  description = "The threshold for the free disk storage space (in bytes) before the alarm gets triggered (if enabled)."
+  default     = "5368709120" // 5 GB
 }
 
 variable "rds_create_low_memory_alarm" {
@@ -160,10 +190,22 @@ variable "rds_create_low_memory_alarm" {
   default     = true
 }
 
+variable "rds_low_memory_threshold" {
+  type        = string
+  description = "The threshold for the low freeable memory (in bytes) before the alarm gets triggered (if enabled)."
+  default     = "256000000" // ~256 MB
+}
+
 variable "rds_create_low_cpu_credit_alarm" {
   type        = bool
   description = "Whether or not to create a low CPU credit alarm for RDS."
   default     = false
+}
+
+variable "rds_low_cpu_credit_balance_threshold" {
+  type        = string
+  description = "The threshold for the low CPU credit balance before the alarm gets triggered (if enabled)."
+  default     = "100"
 }
 
 variable "rds_create_low_disk_burst_alarm" {
@@ -172,10 +214,22 @@ variable "rds_create_low_disk_burst_alarm" {
   default     = false
 }
 
+variable "rds_disk_burst_balance_low_threshold" {
+  type        = string
+  description = "The threshold for the low disk burst balance before the alarm gets triggered (if enabled)."
+  default     = "100"
+}
+
 variable "rds_create_swap_alarm" {
   type        = bool
   description = "Whether or not to create a high swap usage alarm for RDS."
   default     = false
+}
+
+variable "rds_high_swap_usage_threshold" {
+  type        = string
+  description = "The threshold for the max swap usage before the alarm gets triggered (if enabled)."
+  default     = "256000000" // ~256 MB
 }
 
 variable "rds_create_anomaly_alarm" {
