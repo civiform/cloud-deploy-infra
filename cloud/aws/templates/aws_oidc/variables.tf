@@ -114,8 +114,14 @@ variable "postgres_instance_class" {
 
 variable "postgres_storage_gb" {
   type        = number
-  description = "The gb of storage for postgres instance"
+  description = "The gb of storage for postgres instance. If max_allocated_storage is configured, this argument represents the initial storage allocation and differences from the configuration will be ignored automatically when Storage Autoscaling occurs."
   default     = 5
+}
+
+variable "postgres_max_allocated_storage_gb" {
+  type        = number
+  description = "(Optional) When configured, the upper limit to which Amazon RDS can automatically scale the storage of postgres. Configuring this will automatically ignore differences to allocated_storage. Must be greater than or equal to allocated_storage or 0 to disable Storage Autoscaling."
+  default     = null
 }
 
 variable "postgres_backup_retention_days" {
@@ -176,6 +182,24 @@ variable "rds_create_anomaly_alarm" {
   type        = bool
   description = "Whether or not to create an anomaly alarm for RDS (fairly noisy)."
   default     = false
+}
+
+variable "aws_db_storage_type" {
+  type        = string
+  description = "(Optional) One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (general purpose SSD that needs iops independently) or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp2' if not."
+  default     = null
+}
+
+variable "aws_db_storage_throughput" {
+  type        = number
+  description = "(Optional) The storage throughput value for the DB instance. Can only be set when storage_type is 'gp3'. Cannot be specified if the allocated_storage value is below a per-engine threshold. See the [RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage) for details."
+  default     = null
+}
+
+variable "aws_db_iops" {
+  type        = number
+  description = "(Optional) The amount of provisioned IOPS. Setting this implies a storage_type of 'io1'. Can only be set when storage_type is 'io1' or 'gp3'. Cannot be specified for gp3 storage if the allocated_storage value is below a per-engine threshold. See the [RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage) for details."
+  default     = null
 }
 
 variable "staging_program_admin_notification_mailing_list" {
