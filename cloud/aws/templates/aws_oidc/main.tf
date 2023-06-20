@@ -63,6 +63,21 @@ data "aws_db_instance" "civiform" {
   ]
 }
 
+module "aws-rds-alarms" {
+  storage_encrypted             = true
+  source                        = "lorenzoaiello/rds-alarms/aws"
+  version                       = "2.2.0"
+  db_instance_id                = data.aws_db_instance.civiform.id
+  create_high_cpu_alarm         = var.rds_create_high_cpu_alarm
+  create_high_queue_depth_alarm = var.rds_create_high_queue_depth_alarm
+  create_low_disk_space_alarm   = var.rds_create_low_disk_space_alarm
+  create_low_memory_alarm       = var.rds_create_low_memory_alarm
+  create_low_cpu_credit_alarm   = var.rds_create_low_cpu_credit_alarm
+  create_low_disk_burst_alarm   = var.rds_create_low_disk_burst_alarm
+  create_swap_alarm             = var.rds_create_swap_alarm
+  create_anomaly_alarm          = var.rds_create_anomaly_alarm
+}
+
 module "email_service" {
   for_each = toset([
     var.sender_email_address,
