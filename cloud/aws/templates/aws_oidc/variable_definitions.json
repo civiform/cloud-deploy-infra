@@ -244,7 +244,7 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
-=======
+  },
   "AWS_DB_STORAGE_TYPE": {
     "required": false,
     "secret": false,
