@@ -191,6 +191,54 @@
     "tfvar": true,
     "type": "string"
   },
+  "RDS_CREATE_HIGH_CPU_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_HIGH_QUEUE_DEPTH_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_LOW_DISK_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_LOW_MEMORY_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_LOW_CPU_CREDIT_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_LOW_DISK_BURST_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_SWAP_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_CREATE_ANOMALY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "ECS_TASK_CPU": {
     "required": false,
     "secret": false,

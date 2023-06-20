@@ -64,14 +64,14 @@ module "aws-rds-alarms" {
   source                        = "lorenzoaiello/rds-alarms/aws"
   version                       = "2.2.0"
   db_instance_id                = data.aws_db_instance.civiform.id
-  create_high_cpu_alarm         = true
-  create_high_queue_depth_alarm = true
-  create_low_disk_space_alarm   = true
-  create_low_memory_alarm       = true
-  create_low_cpu_credit_alarm   = false
-  create_low_disk_burst_alarm   = false
-  create_swap_alarm             = false
-  create_anomaly_alarm          = false
+  create_high_cpu_alarm         = var.rds_create_high_cpu_alarm
+  create_high_queue_depth_alarm = var.rds_create_high_queue_depth_alarm
+  create_low_disk_space_alarm   = var.rds_create_low_disk_space_alarm
+  create_low_memory_alarm       = var.rds_create_low_memory_alarm
+  create_low_cpu_credit_alarm   = var.rds_create_low_cpu_credit_alarm
+  create_low_disk_burst_alarm   = var.rds_create_low_disk_burst_alarm
+  create_swap_alarm             = var.rds_create_swap_alarm
+  create_anomaly_alarm          = var.rds_create_anomaly_alarm
 }
 
 module "email_service" {

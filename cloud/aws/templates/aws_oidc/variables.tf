@@ -130,6 +130,54 @@ variable "postgres_restore_snapshot_identifier" {
   default     = null
 }
 
+variable "rds_create_high_cpu_alarm" {
+  type        = bool
+  description = "Whether or not to create a high CPU alarm for RDS."
+  default     = true
+}
+
+variable "rds_create_high_queue_depth_alarm" {
+  type        = bool
+  description = "Whether or not to create a high queue depth alarm for RDS."
+  default     = true
+}
+
+variable "rds_create_low_disk_space_alarm" {
+  type        = bool
+  description = "Whether or not to create a low disk space alarm for RDS."
+  default     = true
+}
+
+variable "rds_create_low_memory_alarm" {
+  type        = bool
+  description = "Whether or not to create a low memory free alarm for RDS."
+  default     = true
+}
+
+variable "rds_create_low_cpu_credit_alarm" {
+  type        = bool
+  description = "Whether or not to create a low CPU credit alarm for RDS."
+  default     = false
+}
+
+variable "rds_create_low_disk_burst_alarm" {
+  type        = bool
+  description = "Whether or not to create a low disk burst alarm for RDS."
+  default     = false
+}
+
+variable "rds_create_swap_alarm" {
+  type        = bool
+  description = "Whether or not to create a high swap usage alarm for RDS."
+  default     = false
+}
+
+variable "rds_create_anomaly_alarm" {
+  type        = bool
+  description = "Whether or not to create an anomaly alarm for RDS (fairly noisy)."
+  default     = false
+}
+
 variable "staging_program_admin_notification_mailing_list" {
   type        = string
   description = "Admin notification mailing list for staging"
