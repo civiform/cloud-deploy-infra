@@ -179,6 +179,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "POSTGRES_MAX_ALLOCATED_STORAGE_GB": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "POSTGRES_BACKUP_RETENTION_DAYS": {
     "required": false,
     "secret": false,
@@ -190,6 +196,24 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "AWS_DB_STORAGE_TYPE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "AWS_DB_STORAGE_THROUGHPUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "AWS_DB_IOPS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   },
   "ECS_TASK_CPU": {
     "required": false,

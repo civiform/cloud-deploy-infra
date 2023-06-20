@@ -35,6 +35,10 @@ resource "aws_db_instance" "civiform" {
   deletion_protection             = local.deletion_protection
   instance_class                  = var.postgres_instance_class
   allocated_storage               = var.postgres_storage_gb
+  max_allocated_storage           = var.postgres_max_allocated_storage_gb
+  storage_type                    = var.aws_db_storage_type
+  storage_throughput              = var.aws_db_storage_throughput
+  iops                            = var.aws_db_iops
   engine                          = "postgres"
   engine_version                  = "12"
   username                        = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
