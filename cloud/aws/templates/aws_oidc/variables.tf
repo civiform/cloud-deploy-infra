@@ -238,6 +238,12 @@ variable "rds_create_anomaly_alarm" {
   default     = false
 }
 
+variable "rds_max_used_transaction_ids_high_threshold" {
+  type        = string
+  description = "The threshold for the maximum transaction IDS before the alarm gets triggered. This is to prevent [transaciton ID wraparound](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)"
+  default     = "1000000000" // 1 billion. Half of total.
+}
+
 variable "aws_db_storage_type" {
   type        = string
   description = "(Optional) One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (general purpose SSD that needs iops independently) or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp2' if not."
