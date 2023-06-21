@@ -235,7 +235,7 @@ class ConfigLoader:
                 return self._fetch_json_val(
                     "https://api.github.com/repos/civiform/civiform/branches/main",
                     "commit", "sha")
-            elif "SNAPSHOT" in tag:
+            if "SNAPSHOT" in tag:
                 short_sha = tag.split("-")[1]
                 return self._fetch_json_val(
                     f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}",
@@ -251,7 +251,7 @@ class ConfigLoader:
 
     def _fetch_json_val(self, url, field_one, field_two=None) -> str:
 
-        print(f"Fetching json from url {url}".)
+        print(f"Fetching json from url {url}.")
         response = requests.get(url)
 
         if response.status_code == 200:
