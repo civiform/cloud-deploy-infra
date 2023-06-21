@@ -226,10 +226,9 @@ class ConfigLoader:
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
-
         tag = tag.strip()
         print(f"Resolving commit sha for tag {tag}.")
-    
+
         try:
             if "SNAPSHOT" in tag:
                 short_sha = tag.split("-")[1]
@@ -247,31 +246,27 @@ class ConfigLoader:
 
     def _fetch_json_val(self, url, field_one, field_two=None) -> str | None:
         print(f"Fetching json from url {url}.")
-
         response = requests.get(url)
+
         if response.status_code == 200:
-            return self._apply_json_fields(response.json(), field_one, field_two)            
+            return self._apply_json_fields(response.json(), field_one, field_two)
         else:
             raise self.VersionNotFoundError(
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
 
-    def _apply_json_fields(self, json, field_one, field_two) -> str | None:
-        print("in apply_json_fields")
-        if (field_two is not None):
-            try:
-                print("parsing with both fields")
+    def _apply_json_fields(self, json, field_one, field_two) -> str:
+        error_string = f"Error parsing json with fields [{field_one}]"
+
+        try:
+            if (field_two is not None):
+                error_string+=f"[{field_two}]"
                 return json[field_one][field_two]
-            except:
-                print(f"Error parsing json with fields '{field_one}' and '{field_two}'. json: {response.json()}")
-                return None
-        else:
-            try:
-                print("parsing with one field")
+            else:
                 return json[field_one]
-            except:
-                print(f"Error parsing json with field '{field_one}'. json: {response.json()}")
-                return None
+        except:
+            print(f"{error_string}. json: {json}")
+            return None
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:
