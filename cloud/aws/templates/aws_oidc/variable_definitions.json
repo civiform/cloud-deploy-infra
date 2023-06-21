@@ -197,11 +197,29 @@
     "tfvar": true,
     "type": "string"
   },
+  "RDS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_ALARM_STATISTIC_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "RDS_CREATE_HIGH_CPU_ALARM": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "RDS_MAX_CPU_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   },
   "RDS_CREATE_HIGH_QUEUE_DEPTH_ALARM": {
     "required": false,
@@ -209,11 +227,23 @@
     "tfvar": true,
     "type": "bool"
   },
+  "RDS_DISK_QUEUE_DEPTH_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "RDS_CREATE_LOW_DISK_SPACE_ALARM": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "RDS_DISK_FREE_STORAGE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   },
   "RDS_CREATE_LOW_MEMORY_SPACE_ALARM": {
     "required": false,
@@ -221,11 +251,23 @@
     "tfvar": true,
     "type": "bool"
   },
+  "RDS_LOW_MEMORY_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "RDS_CREATE_LOW_CPU_CREDIT_ALARM": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "RDS_LOW_CPU_CREDIT_BALANCE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   },
   "RDS_CREATE_LOW_DISK_BURST_ALARM": {
     "required": false,
@@ -233,11 +275,29 @@
     "tfvar": true,
     "type": "bool"
   },
+  "RDS_DISK_BURST_BALANCE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "RDS_CREATE_SWAP_ALARM": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "RDS_HIGH_SWAP_USAGE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_MAX_USED_TRANSACTION_IDS_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   },
   "RDS_CREATE_ANOMALY_ALARM": {
     "required": false,
