@@ -251,7 +251,7 @@ class ConfigLoader:
         response = requests.get(url)
         if response.status_code == 200:
             try:
-                return _apply_json_fields(json, field_one, field_two)
+                return self._apply_json_fields(json, field_one, field_two)
             except:
                 print(f"Error parsing json with fields {field_one} {field_two}. json: {response.json()}")
                 return None
