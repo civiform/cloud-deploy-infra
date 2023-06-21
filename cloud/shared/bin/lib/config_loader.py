@@ -116,7 +116,7 @@ class ConfigLoader:
 
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
-        env_var_docs = self._download_env_var_docs(self.get_civiform_version())
+        env_var_docs = self._download_env_var_docs(os.environ['TF_VAR_image_tag'])
         if env_var_docs is None:
             return {}
 
@@ -399,14 +399,6 @@ class ConfigLoader:
 
     def get_base_url(self):
         return self._config_fields.get("BASE_URL")
-
-    # TODO() Make the configuration option required as part of the validation
-    # instead of manually checking for it here.
-    def get_civiform_version(self):
-        v = self._config_fields.get("CIVIFORM_VERSION")
-        if v is None:
-            exit("CIVIFORM_VERSION is required to be set in the config file")
-        return v
 
     def get_template_dir(self):
         template_dir = self._config_fields.get("TERRAFORM_TEMPLATE_DIR")
