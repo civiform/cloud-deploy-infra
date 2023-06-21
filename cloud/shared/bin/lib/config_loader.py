@@ -215,7 +215,7 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _get_commit_sha_for_tag(self, tag: str) -> str:
+    def _get_commit_sha_for_tag(self, tag: str) -> str | None:
         """Get the commit SHA for the release specified in the tag.
         
           The tag can be a release version number such as "v1.24.0", a specific docker snapshot 
@@ -228,7 +228,8 @@ class ConfigLoader:
         """
 
         tag = tag.strip()
-
+        print(f"Resolving commit sha for tag {tag}.")
+    
         try:
             if tag == "latest":
                 return self._fetch_json_val(
@@ -249,14 +250,17 @@ class ConfigLoader:
             return None
 
     def _fetch_json_val(self, url, field_one, field_two=None) -> str:
+
+        print(f"Fetching json from url {url}".)
         response = requests.get(url)
+
         if response.status_code == 200:
             try:
                 return response.json(
                 )[field_one] if field_two is None else response.json(
                 )[field_one][field_two]
             except:
-                print(f"Error parsing json with fields {field_one} {field_two}")
+                print(f"Error parsing json with fields {field_one} {field_two}. json: {response.json()}")
                 return None
         else:
             raise self.VersionNotFoundError(

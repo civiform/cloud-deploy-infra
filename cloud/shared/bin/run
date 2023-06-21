@@ -43,10 +43,10 @@ function fetch_json_val() {
 
 commit_sha=""
 
-if [[ ${tag} == "latest" ]]; then
+if [[ "${tag}" == "latest" ]]; then
   # If tag is "latest" get the commit sha from the tip of main
   commit_sha=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/branches/main" "['commit']['sha']")
-elif [[ ${tag} == *"SNAPSHOT"* ]]; then
+elif [[ "${tag}" == *"SNAPSHOT"* ]]; then
   # In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the
   # shortened commit sha. Use this to get the full commit sha.
   split_tag=(${tag//-/ })
