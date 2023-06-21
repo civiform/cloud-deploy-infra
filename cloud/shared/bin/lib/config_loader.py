@@ -262,8 +262,10 @@ class ConfigLoader:
 
     def _apply_json_fields(self, json, field_one, field_two) -> str:
         if (field_two is not None):
+            print("parsing with both fields")
             return json[field_one][field_two]
         else:
+            print("parsing with one field")
             return json[field_one]
 
     def _validate_civiform_server_env_vars(
