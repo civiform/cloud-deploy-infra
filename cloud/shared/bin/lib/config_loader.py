@@ -8,6 +8,7 @@ import typing
 import urllib.error
 import urllib.request
 from typing import List
+from typing import Optional
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
@@ -216,7 +217,7 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _get_commit_sha_for_tag(self, tag: str) -> str | None:
+    def _get_commit_sha_for_tag(self, tag: str) -> Optional[str]:
         """Get the commit SHA for the release specified in the tag.
         
           The tag can be a release version number such as "v1.24.0", a specific docker snapshot 
@@ -245,7 +246,7 @@ class ConfigLoader:
             print(e)
             return None
 
-    def _fetch_json_val(self, url, field_one, field_two=None) -> str | None:
+    def _fetch_json_val(self, url, field_one, field_two=None) -> Optional[str]:
         print(f"Fetching json from url {url}.")
         response = requests.get(url)
 
@@ -257,7 +258,7 @@ class ConfigLoader:
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
 
-    def _apply_json_fields(self, json, field_one, field_two) -> str:
+    def _apply_json_fields(self, json, field_one, field_two) -> Optional[str]:
         error_string = f"Error parsing json with fields [{field_one}]"
 
         try:
