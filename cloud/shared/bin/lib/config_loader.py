@@ -231,10 +231,6 @@ class ConfigLoader:
         print(f"Resolving commit sha for tag {tag}.")
     
         try:
-            if tag == "latest":
-                return self._fetch_json_val(
-                    "https://api.github.com/repos/civiform/civiform/branches/main",
-                    "commit", "sha")
             if "SNAPSHOT" in tag:
                 short_sha = tag.split("-")[1]
                 return self._fetch_json_val(
@@ -249,16 +245,13 @@ class ConfigLoader:
             print(e)
             return None
 
-    def _fetch_json_val(self, url, field_one, field_two=None) -> str:
-
+    def _fetch_json_val(self, url, field_one, field_two=None) -> str | None:
         print(f"Fetching json from url {url}.")
-        response = requests.get(url)
 
+        response = requests.get(url)
         if response.status_code == 200:
             try:
-                return response.json(
-                )[field_one] if field_two is None else response.json(
-                )[field_one][field_two]
+                return _apply_json_fields(json, field_one, field_two)
             except:
                 print(f"Error parsing json with fields {field_one} {field_two}. json: {response.json()}")
                 return None
@@ -266,6 +259,12 @@ class ConfigLoader:
             raise self.VersionNotFoundError(
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
+
+    def _apply_json_fields(self, json, field_one, field_two) -> str:
+        if (field_two is not None):
+            return json[field_one][field_two]
+        else:
+            return json[field_one]
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:
