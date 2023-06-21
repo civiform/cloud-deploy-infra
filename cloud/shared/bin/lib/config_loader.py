@@ -116,7 +116,8 @@ class ConfigLoader:
 
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
-        env_var_docs = self._download_env_var_docs(os.environ['TF_VAR_image_tag'])
+        env_var_docs = self._download_env_var_docs(
+            os.environ['TF_VAR_image_tag'])
         if env_var_docs is None:
             return {}
 
@@ -249,7 +250,8 @@ class ConfigLoader:
         response = requests.get(url)
 
         if response.status_code == 200:
-            return self._apply_json_fields(response.json(), field_one, field_two)
+            return self._apply_json_fields(
+                response.json(), field_one, field_two)
         else:
             raise self.VersionNotFoundError(
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
@@ -260,7 +262,7 @@ class ConfigLoader:
 
         try:
             if (field_two is not None):
-                error_string+=f"[{field_two}]"
+                error_string += f"[{field_two}]"
                 return json[field_one][field_two]
             else:
                 return json[field_one]
