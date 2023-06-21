@@ -179,6 +179,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "POSTGRES_MAX_ALLOCATED_STORAGE_GB": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "POSTGRES_BACKUP_RETENTION_DAYS": {
     "required": false,
     "secret": false,
@@ -190,6 +196,132 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "RDS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_ALARM_STATISTIC_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_HIGH_CPU_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_MAX_CPU_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_HIGH_QUEUE_DEPTH_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_QUEUE_DEPTH_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_DISK_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_FREE_STORAGE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_MEMORY_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_LOW_MEMORY_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_CPU_CREDIT_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_LOW_CPU_CREDIT_BALANCE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_DISK_BURST_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_BURST_BALANCE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_SWAP_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_HIGH_SWAP_USAGE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_MAX_USED_TRANSACTION_IDS_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_ANOMALY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "AWS_DB_STORAGE_TYPE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "AWS_DB_STORAGE_THROUGHPUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "AWS_DB_IOPS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   },
   "ECS_TASK_CPU": {
     "required": false,

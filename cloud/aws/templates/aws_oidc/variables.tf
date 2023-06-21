@@ -114,8 +114,14 @@ variable "postgres_instance_class" {
 
 variable "postgres_storage_gb" {
   type        = number
-  description = "The gb of storage for postgres instance"
+  description = "The gb of storage for postgres instance. If max_allocated_storage is configured, this argument represents the initial storage allocation and differences from the configuration will be ignored automatically when Storage Autoscaling occurs."
   default     = 5
+}
+
+variable "postgres_max_allocated_storage_gb" {
+  type        = number
+  description = "(Optional) When configured, the upper limit to which Amazon RDS can automatically scale the storage of postgres. Configuring this will automatically ignore differences to allocated_storage. Must be greater than or equal to allocated_storage or 0 to disable Storage Autoscaling."
+  default     = null
 }
 
 variable "postgres_backup_retention_days" {
@@ -127,6 +133,132 @@ variable "postgres_backup_retention_days" {
 variable "postgres_restore_snapshot_identifier" {
   type        = string
   description = "If not null, destroys the current database, replacing it with a new one restored from the provided snapshot"
+  default     = null
+}
+
+variable "rds_alarm_evaluation_period" {
+  type        = string
+  description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
+  default     = "5"
+}
+
+variable "rds_alarm_statistic_period" {
+  type        = string
+  description = "The length of time to use to evaluate the metric or expression to create each individual data point for an RDS alarm. It is expressed in seconds."
+  default     = "60"
+}
+
+variable "rds_create_high_cpu_alarm" {
+  type        = bool
+  description = "Whether or not to create a high CPU alarm for RDS."
+  default     = true
+}
+
+variable "rds_max_cpu_utilization_threshold" {
+  type        = string
+  description = "The threshold for max CPU utilization for the database before the alarm gets triggered (if enabled)."
+  default     = "90"
+}
+
+variable "rds_create_high_queue_depth_alarm" {
+  type        = bool
+  description = "Whether or not to create a high queue depth alarm for RDS."
+  default     = true
+}
+
+variable "rds_disk_queue_depth_high_threshold" {
+  type        = string
+  description = "The threshold for the disk queue depth before the alarm gets triggered (if enabled)."
+  default     = "64"
+}
+
+variable "rds_create_low_disk_space_alarm" {
+  type        = bool
+  description = "Whether or not to create a low disk space alarm for RDS."
+  default     = true
+}
+
+variable "rds_disk_free_storage_low_threshold" {
+  type        = string
+  description = "The threshold for the free disk storage space (in bytes) before the alarm gets triggered (if enabled)."
+  default     = "5368709120" // 5 GB
+}
+
+variable "rds_create_low_memory_alarm" {
+  type        = bool
+  description = "Whether or not to create a low memory free alarm for RDS."
+  default     = true
+}
+
+variable "rds_low_memory_threshold" {
+  type        = string
+  description = "The threshold for the low freeable memory (in bytes) before the alarm gets triggered (if enabled)."
+  default     = "256000000" // ~256 MB
+}
+
+variable "rds_create_low_cpu_credit_alarm" {
+  type        = bool
+  description = "Whether or not to create a low CPU credit alarm for RDS."
+  default     = false
+}
+
+variable "rds_low_cpu_credit_balance_threshold" {
+  type        = string
+  description = "The threshold for the low CPU credit balance before the alarm gets triggered (if enabled)."
+  default     = "100"
+}
+
+variable "rds_create_low_disk_burst_alarm" {
+  type        = bool
+  description = "Whether or not to create a low disk burst alarm for RDS."
+  default     = false
+}
+
+variable "rds_disk_burst_balance_low_threshold" {
+  type        = string
+  description = "The threshold for the low disk burst balance before the alarm gets triggered (if enabled)."
+  default     = "100"
+}
+
+variable "rds_create_swap_alarm" {
+  type        = bool
+  description = "Whether or not to create a high swap usage alarm for RDS."
+  default     = false
+}
+
+variable "rds_high_swap_usage_threshold" {
+  type        = string
+  description = "The threshold for the max swap usage before the alarm gets triggered (if enabled)."
+  default     = "256000000" // ~256 MB
+}
+
+variable "rds_create_anomaly_alarm" {
+  type        = bool
+  description = "Whether or not to create an anomaly alarm for RDS (fairly noisy)."
+  default     = false
+}
+
+variable "rds_max_used_transaction_ids_high_threshold" {
+  type        = string
+  description = "The threshold for the maximum transaction IDS before the alarm gets triggered. This is to prevent [transaciton ID wraparound](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)"
+  default     = "1000000000" // 1 billion. Half of total.
+}
+
+variable "aws_db_storage_type" {
+  type        = string
+  description = "(Optional) One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (general purpose SSD that needs iops independently) or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp2' if not."
+  default     = null
+}
+
+variable "aws_db_storage_throughput" {
+  type        = number
+  description = "(Optional) The storage throughput value for the DB instance. Can only be set when storage_type is 'gp3'. Cannot be specified if the allocated_storage value is below a per-engine threshold. See the [RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage) for details."
+  default     = null
+}
+
+variable "aws_db_iops" {
+  type        = number
+  description = "(Optional) The amount of provisioned IOPS. Setting this implies a storage_type of 'io1'. Can only be set when storage_type is 'io1' or 'gp3'. Cannot be specified for gp3 storage if the allocated_storage value is below a per-engine threshold. See the [RDS User Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#gp3-storage) for details."
   default     = null
 }
 
