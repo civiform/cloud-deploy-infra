@@ -250,23 +250,28 @@ class ConfigLoader:
 
         response = requests.get(url)
         if response.status_code == 200:
-            try:
-                return self._apply_json_fields(json, field_one, field_two)
-            except:
-                print(f"Error parsing json with fields {field_one} {field_two}. json: {response.json()}")
-                return None
+            return self._apply_json_fields(response.json(), field_one, field_two)            
         else:
             raise self.VersionNotFoundError(
                 f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
 
-    def _apply_json_fields(self, json, field_one, field_two) -> str:
+    def _apply_json_fields(self, json, field_one, field_two) -> str | None:
+        print("in apply_json_fields")
         if (field_two is not None):
-            print("parsing with both fields")
-            return json[field_one][field_two]
+            try:
+                print("parsing with both fields")
+                return json[field_one][field_two]
+            except:
+                print(f"Error parsing json with fields '{field_one}' and '{field_two}'. json: {response.json()}")
+                return None
         else:
-            print("parsing with one field")
-            return json[field_one]
+            try:
+                print("parsing with one field")
+                return json[field_one]
+            except:
+                print(f"Error parsing json with field '{field_one}'. json: {response.json()}")
+                return None
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:
