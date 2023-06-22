@@ -8,6 +8,7 @@ import typing
 import urllib.error
 import urllib.request
 from typing import List
+from typing import Optional
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
@@ -116,7 +117,8 @@ class ConfigLoader:
 
         # Download the env-var-docs.json if there is a version that corresponds to the
         # civiform version of this deployment.
-        env_var_docs = self._download_env_var_docs(self.get_civiform_version())
+        env_var_docs = self._download_env_var_docs(
+            os.environ['TF_VAR_image_tag'])
         if env_var_docs is None:
             return {}
 
@@ -140,7 +142,7 @@ class ConfigLoader:
         civiform version of this deployment. The env-var-docs.json defines all server variables. 
         """
         try:
-            commit_sha = self._get_commit_sha_for_release(civiform_version)
+            commit_sha = self._get_commit_sha_for_tag(civiform_version)
         except:
             return None
         url = f"https://raw.githubusercontent.com/civiform/civiform/{commit_sha}/server/conf/env-var-docs.json"
@@ -152,6 +154,7 @@ class ConfigLoader:
             exit(f"Could not download {url}: {e}")
         env_var_docs_text = env_var_docs_bytes.decode("utf-8")
         env_var_docs = io.StringIO(env_var_docs_text)
+        print("Downloaded env-var-docs.json")
         return env_var_docs
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
@@ -214,51 +217,59 @@ class ConfigLoader:
 
         return validation_errors
 
-    def _get_commit_sha_for_release(self, tag: str) -> str:
+    def _get_commit_sha_for_tag(self, tag: str) -> Optional[str]:
         """Get the commit SHA for the release specified in the tag.
         
-          The tag is a release version number such as "v1.24.0".
+          The tag can be a release version number such as "v1.24.0", a specific docker snapshot 
+          tag such as "SNAPSHOT-920bc49-1685642238" (where the middle secion is the shortened 
+          sha for the commit the docker image was built from), or the string "latest".
 
           We are calling the GitHub API with unauthenticated requests, which are rate-limited.
           The rate limit allows for up to 60 requests per hour associated with the originating 
           IP address.
         """
         tag = tag.strip()
-        if tag == 'latest':
-            # Translate "latest" into a version number
-            tag = self._get_latest_version_number()
+        print(f"Resolving commit sha for tag {tag}.")
 
-        release_url = f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}"
-        release_response = requests.get(release_url)
+        try:
+            if "SNAPSHOT" in tag:
+                short_sha = tag.split("-")[1]
+                return self._fetch_json_val(
+                    f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}",
+                    "sha")
+            else:
+                tag_url = self._fetch_json_val(
+                    f"https://api.github.com/repos/civiform/civiform/git/refs/tags/{tag}",
+                    "object", "url")
+                return self._fetch_json_val(tag_url, "object", "sha")
+        except self.VersionNotFoundError as e:
+            print(e)
+            return None
 
-        if release_response.status_code == 200:
-            return self._get_commit_sha_for_tag(
-                release_response.json()["object"]["sha"])
-        else:
-            raise self.VersionNotFoundError(
-                f"The commit sha for version {tag} could not be found. Are you using a valid tag such as latest or a valid version number like v1.0.0? {release_response.status_code} - {release_response.json()['message']}"
-            )
-
-    def _get_latest_version_number(self) -> str:
-        url = "https://api.github.com/repos/civiform/civiform/releases/latest"
+    def _fetch_json_val(self, url, field_one, field_two=None) -> Optional[str]:
+        print(f"Fetching json from url {url}.")
         response = requests.get(url)
+
         if response.status_code == 200:
-            return response.json()["tag_name"]
+            return self._apply_json_fields(
+                response.json(), field_one, field_two)
         else:
             raise self.VersionNotFoundError(
-                f"Error: 'latest' could not be translated to a release tag. {response.status_code} - {response.json()['message']}"
+                f"Error: could not resolve json at {url}. {response.status_code} - {response.json()['message']}"
             )
 
-    def _get_commit_sha_for_tag(self, tag_commit_sha: str) -> str:
-        tag_url = f"https://api.github.com/repos/civiform/civiform/git/tags/{tag_commit_sha}"
-        tag_response = requests.get(tag_url)
-        if tag_response.status_code == 200:
-            commit_sha = tag_response.json()["object"]["sha"]
-            return commit_sha
-        else:
-            raise self.VersionNotFoundError(
-                f"The commit sha {commit_sha} could not be found. {tag_response.status_code} - {tag_response.json()['message']}"
-            )
+    def _apply_json_fields(self, json, field_one, field_two) -> Optional[str]:
+        error_string = f"Error parsing json with fields [{field_one}]"
+
+        try:
+            if (field_two is not None):
+                error_string += f"[{field_two}]"
+                return json[field_one][field_two]
+            else:
+                return json[field_one]
+        except:
+            print(f"{error_string}. json: {json}")
+            return None
 
     def _validate_civiform_server_env_vars(
             self, env_var_docs: dict, config_fields: dict) -> List[str]:
@@ -281,6 +292,8 @@ class ConfigLoader:
                 continue
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
+            # Validation for 'index-list' is not implemented at this time because
+            # 'index-list' does not yet support subtyping.
             if variable.type == "string":
                 if variable.values is not None:
                     if config_value not in variable.values:
@@ -310,12 +323,6 @@ class ConfigLoader:
                         f"'{name}' is required to be either 'true' or 'false', got {config_value}"
                     )
                     continue
-
-            # TODO(#4612): Add support for validation of items in an index-list.
-            # An Index-list variables VAR is represented as a comma-separated string.
-            # Individual fields in VAR can NOT currently be set the same way as on the
-            # server by setting VAR.0=value0, VAR.1=value1 etc. Supporting this may not
-            # be required, but validation should be supported.
 
         return validation_errors
 
@@ -397,14 +404,6 @@ class ConfigLoader:
 
     def get_base_url(self):
         return self._config_fields.get("BASE_URL")
-
-    # TODO() Make the configuration option required as part of the validation
-    # instead of manually checking for it here.
-    def get_civiform_version(self):
-        v = self._config_fields.get("CIVIFORM_VERSION")
-        if v is None:
-            exit("CIVIFORM_VERSION is required to be set in the config file")
-        return v
 
     def get_template_dir(self):
         template_dir = self._config_fields.get("TERRAFORM_TEMPLATE_DIR")
