@@ -151,7 +151,7 @@ variable "rds_alarm_statistic_period" {
 variable "rds_create_high_cpu_alarm" {
   type        = bool
   description = "Whether or not to create a high CPU alarm for RDS."
-  default     = true
+  default     = false
 }
 
 variable "rds_max_cpu_utilization_threshold" {
@@ -163,7 +163,7 @@ variable "rds_max_cpu_utilization_threshold" {
 variable "rds_create_high_queue_depth_alarm" {
   type        = bool
   description = "Whether or not to create a high queue depth alarm for RDS."
-  default     = true
+  default     = false
 }
 
 variable "rds_disk_queue_depth_high_threshold" {
@@ -175,7 +175,7 @@ variable "rds_disk_queue_depth_high_threshold" {
 variable "rds_create_low_disk_space_alarm" {
   type        = bool
   description = "Whether or not to create a low disk space alarm for RDS."
-  default     = true
+  default     = false
 }
 
 variable "rds_disk_free_storage_low_threshold" {
@@ -187,7 +187,7 @@ variable "rds_disk_free_storage_low_threshold" {
 variable "rds_create_low_memory_alarm" {
   type        = bool
   description = "Whether or not to create a low memory free alarm for RDS."
-  default     = true
+  default     = false
 }
 
 variable "rds_low_memory_threshold" {

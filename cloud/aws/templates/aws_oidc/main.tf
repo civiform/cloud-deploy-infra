@@ -68,7 +68,6 @@ module "aws-rds-alarms" {
   version                                         = "2.2.0"
   db_instance_id                                  = data.aws_db_instance.civiform.id
   db_instance_class                               = var.postgres_instance_class
-  engine                                          = "postgres"
   evaluation_period                               = var.rds_alarm_evaluation_period
   statistic_period                                = var.rds_alarm_statistic_period
   create_high_cpu_alarm                           = var.rds_create_high_cpu_alarm
