@@ -40,6 +40,7 @@ if [[ "${tag}" == "latest" ]]; then
     echo "Latest snapshot tag not found." 2>&1
     exit 1
   fi
+  echo "Resolved 'latest' to snapshot tag ${snapshot_tag}"
   tag="${snapshot_tag}"
 fi
 
@@ -71,6 +72,7 @@ else
     "['object']['url']")
   commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
 fi
+echo "Fetched commit sha ${commit_sha}"
 
 dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 
