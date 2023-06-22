@@ -18,3 +18,6 @@ def run(config):
 
     aws = AwsCli(config)
     aws.wait_for_ecs_service_healthy()
+    lb_dns = aws.get_load_balancer_dns(f'{config.app_prefix}-lb')
+    base_url = config.get_base_url()
+    print(f'Server is available at {lb_dns}. Ensure your CNAME record for {base_url} is correct.')
