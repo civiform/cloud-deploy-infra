@@ -19,7 +19,8 @@ _CIVIFORM_RELEASE_TAG_REGEX = re.compile(r'^v?[0-9]+\.[0-9]+\.[0-9]+$')
 
 
 def main():
-    _overwrite_checkout_file()
+    if not os.getenv("GITHUB_ACTIONS") == "true":
+        _overwrite_checkout_file()
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
