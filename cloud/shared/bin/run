@@ -31,11 +31,13 @@ while getopts s:c:t: flag; do
 done
 
 # if the tag is "latest", resolve it to the specific snapshot tag from Docker
+# Go templating is used to parse the snapshot tag from the json returned by docker inspect
 if [[ "${tag}" == "latest" ]]; then
   docker pull --platform linux/x86_64 docker.io/civiform/civiform:latest
   snapshot_tag="$(docker inspect docker.io/civiform/civiform:latest \
-    | grep 'CIVIFORM_IMAGE_TAG' \
-    | grep -oE 'SNAPSHOT-\w+-\d+')"
+    --format='{{range .Config.Env}}
+      {{if eq (printf "%.19s" .) "CIVIFORM_IMAGE_TAG="}}
+      {{slice . 19}}{{end}}{{end}}')"
   if [[ -z "${snapshot_tag}" ]]; then
     echo "Latest snapshot tag not found." 2>&1
     exit 1
