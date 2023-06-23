@@ -1,11 +1,10 @@
-output "lb_https_listeners_arns" {
-  description = "List of HTTPS Listeners ARNs"
-  value       = [for listener in aws_lb_listener.lb_https_listeners : listener.arn]
+output "https_listener_arn" {
+  description = "The ARN of the HTTPS listener for the loadbalancer"
+  value       = aws_lb_listener.lb_https_listeners.arn
 }
-
-output "aws_lb_lb_arn" {
+output "aws_lb_civiform_lb_arn" {
   description = "The ARN of the load balancer (matches id)."
-  value       = aws_lb.lb.arn
+  value       = aws_lb.civiform_lb.arn
 }
 
 output "aws_security_group_lb_access_sg_id" {

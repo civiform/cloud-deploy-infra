@@ -1,6 +1,7 @@
 # This is a collection of resources that we used to rely on
 # cn-terraform/ecs-fargate-service/aws to provide, but this module
 # frequently broke us, so we include the necessary resources here instead.
+# The resources have been streamlined for our purposes.
 #
 # In places where we were not defining variables, the defaults from
 # https://github.com/cn-terraform/terraform-aws-ecs-fargate-service/blob/a1c2ea9fddb0ce682d6dac2e9af6b615a994e494/variables.tf
@@ -12,11 +13,18 @@
 #------------------------------------------------------------------------------
 data "aws_elb_service_account" "default" {}
 
+locals {
+  # While we don't really need to do this, it keeps resource names consistent
+  # with previous deploys to avoid destroying and recreating a bunch of
+  # resources.
+  name_prefix = "${var.app_prefix}-civiform"
+}
+
 #------------------------------------------------------------------------------
 # APPLICATION LOAD BALANCER
 #------------------------------------------------------------------------------
-resource "aws_lb" "lb" {
-  name = substr("${var.name_prefix}-lb", 0, 31)
+resource "aws_lb" "civiform_lb" {
+  name = substr("${local.name_prefix}-lb", 0, 31)
 
   internal                         = false
   load_balancer_type               = "application"
@@ -29,68 +37,89 @@ resource "aws_lb" "lb" {
   ip_address_type                  = "ipv4"
   security_groups                  = [aws_security_group.lb_access_sg.id]
 
-  tags = {
-    Name = "${var.name_prefix}-lb"
-    Type = "Civiform Fargate Service"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name = "${local.name_prefix}-lb"
+    },
+  )
+}
+
+moved {
+  from = module.ecs-alb[0].aws_lb.lb
+  to   = aws_lb.civiform_lb
 }
 
 #------------------------------------------------------------------------------
 # ACCESS CONTROL TO APPLICATION LOAD BALANCER
 #------------------------------------------------------------------------------
 resource "aws_security_group" "lb_access_sg" {
-  name        = "${var.name_prefix}-lb-access-sg"
+  name        = "${local.name_prefix}-lb-access-sg"
   description = "Controls access to the Load Balancer"
   vpc_id      = var.vpc_id
+
   egress {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = {
-    Name = "${var.name_prefix}-lb-access-sg"
-    Type = "Civiform Fargate Service"
-  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${local.name_prefix}-lb-access-sg"
+    },
+  )
+}
+
+moved {
+  from = module.ecs-alb[0].aws_security_group.lb_access_sg
+  to   = aws_security_group.lb_access_sg
 }
 
 resource "aws_security_group_rule" "ingress_through_http" {
-  for_each          = var.lb_http_ports
   security_group_id = aws_security_group.lb_access_sg.id
   type              = "ingress"
-  from_port         = each.value.listener_port
-  to_port           = each.value.listener_port
+  from_port         = 80
+  to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   prefix_list_ids   = []
 }
 
+moved {
+  from = module.ecs-alb[0].aws_security_group_rule.ingress_through_http["default_http"]
+  to   = aws_security_group_rule.ingress_through_http
+}
+
 resource "aws_security_group_rule" "ingress_through_https" {
-  for_each          = var.lb_https_ports
   security_group_id = aws_security_group.lb_access_sg.id
   type              = "ingress"
-  from_port         = each.value.listener_port
-  to_port           = each.value.listener_port
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   prefix_list_ids   = []
+}
+
+moved {
+  from = module.ecs-alb[0].aws_security_group_rule.ingress_through_https["default_http"]
+  to   = aws_security_group_rule.ingress_through_https
 }
 
 #------------------------------------------------------------------------------
 # AWS LOAD BALANCER - Target Groups
 #------------------------------------------------------------------------------
-resource "aws_lb_target_group" "lb_http_tgs" {
-  for_each = {
-    for name, config in var.lb_http_ports : name => config
-    if lookup(config, "type", "") == "" || lookup(config, "type", "") == "forward"
-  }
-  name                          = "${var.name_prefix}-http-${each.value.target_group_port}"
-  port                          = each.value.target_group_port
-  protocol                      = lookup(each.value, "target_group_protocol", "HTTP")
+resource "aws_lb_target_group" "lb_https_tgs" {
+  name                          = "${var.app_prefix}-https-${var.https_target_port}"
+  port                          = var.https_target_port
+  protocol                      = "HTTP"
   vpc_id                        = var.vpc_id
   deregistration_delay          = 300
   slow_start                    = 0
   load_balancing_algorithm_type = "round_robin"
+  target_type                   = "ip"
 
   stickiness {
     type            = "lb_cookie"
@@ -102,187 +131,86 @@ resource "aws_lb_target_group" "lb_http_tgs" {
     enabled             = true
     interval            = 10
     path                = "/playIndex"
-    protocol            = lookup(each.value, "target_group_protocol", "HTTP")
+    protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
     matcher             = "200"
   }
-  target_type = "ip"
-  tags = {
-    Name = "${var.name_prefix}-http-${each.value.target_group_port}"
-    Type = "Civiform Fargate Service"
-  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${local.name_prefix}-https-${var.https_target_port}"
+    },
+  )
+
   lifecycle {
     create_before_destroy = true
   }
-  depends_on = [aws_lb.lb]
+
+  depends_on = [aws_lb.civiform_lb]
 }
 
-resource "aws_lb_target_group" "lb_https_tgs" {
-  for_each = {
-    for name, config in var.lb_https_ports : name => config
-    if lookup(config, "type", "") == "" || lookup(config, "type", "") == "forward"
-  }
-  name                          = "${var.name_prefix}-https-${each.value.target_group_port}"
-  port                          = each.value.target_group_port
-  protocol                      = lookup(each.value, "target_group_protocol", "HTTPS")
-  vpc_id                        = var.vpc_id
-  deregistration_delay          = 300
-  slow_start                    = 0
-  load_balancing_algorithm_type = "round_robin"
-  stickiness {
-    type            = "lb_cookie"
-    cookie_duration = 86400
-    enabled         = true
-  }
-  health_check {
-    enabled             = true
-    interval            = 10
-    path                = "/playIndex"
-    protocol            = lookup(each.value, "target_group_protocol", "HTTPS")
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    matcher             = "200"
-  }
-  target_type = "ip"
-  tags = {
-    Name = "${var.name_prefix}-https-${each.value.target_group_port}"
-    Type = "Civiform Fargate Service"
-  }
-  lifecycle {
-    create_before_destroy = true
-  }
-  depends_on = [aws_lb.lb]
+moved {
+  from = module.ecs-alb[0].aws_lb_target_group.lb_https_tgs["default_http"]
+  to   = aws_lb_target_group.lb_https_tgs
 }
 
 #------------------------------------------------------------------------------
 # AWS LOAD BALANCER - Listeners
 #------------------------------------------------------------------------------
 resource "aws_lb_listener" "lb_http_listeners" {
-  for_each          = var.lb_http_ports
-  load_balancer_arn = aws_lb.lb.arn
-  port              = each.value.listener_port
+  load_balancer_arn = aws_lb.civiform_lb.arn
+  port              = 80
   protocol          = "HTTP"
 
-  dynamic "default_action" {
-    for_each = lookup(each.value, "type", "") == "redirect" ? [1] : []
-    content {
-      type = "redirect"
-
-      redirect {
-        host        = lookup(each.value, "host", "#{host}")
-        path        = lookup(each.value, "path", "/#{path}")
-        port        = lookup(each.value, "port", "#{port}")
-        protocol    = lookup(each.value, "protocol", "#{protocol}")
-        query       = lookup(each.value, "query", "#{query}")
-        status_code = lookup(each.value, "status_code", "HTTP_301")
-      }
+  default_action {
+    type = "redirect"
+    redirect {
+      host        = "#{host}"
+      path        = "/#{path}"
+      port        = 443
+      protocol    = "HTTPS"
+      query       = "#{query}"
+      status_code = "HTTP_301"
     }
   }
 
-  dynamic "default_action" {
-    for_each = lookup(each.value, "type", "") == "fixed-response" ? [1] : []
-    content {
-      type = "fixed-response"
+  tags = var.tags
+}
 
-      fixed_response {
-        content_type = lookup(each.value, "content_type", "text/plain")
-        message_body = lookup(each.value, "message_body", "Fixed response content")
-        status_code  = lookup(each.value, "status_code", "200")
-      }
-    }
-  }
-
-  # We fallback to using forward type action if type is not defined
-  dynamic "default_action" {
-    for_each = (lookup(each.value, "type", "") == "" || lookup(each.value, "type", "") == "forward") ? [1] : []
-    content {
-      target_group_arn = aws_lb_target_group.lb_http_tgs[each.key].arn
-      type             = "forward"
-    }
-  }
-
-  tags = {
-    Name = "${var.name_prefix} Civiform Fargate Service"
-    Type = "Civiform Fargate Service"
-  }
+moved {
+  from = module.ecs-alb[0].aws_lb_listener.lb_http_listeners["default_http"]
+  to   = aws_lb_listener.lb_http_listeners
 }
 
 resource "aws_lb_listener" "lb_https_listeners" {
-  for_each          = var.lb_https_ports
-  load_balancer_arn = aws_lb.lb.arn
-  port              = each.value.listener_port
+  load_balancer_arn = aws_lb.civiform_lb.arn
+  port              = 443
   protocol          = "HTTPS"
   ssl_policy        = var.ssl_policy
   certificate_arn   = var.default_certificate_arn
 
-  dynamic "default_action" {
-    for_each = lookup(each.value, "type", "") == "redirect" ? [1] : []
-    content {
-      type = "redirect"
-
-      redirect {
-        host        = lookup(each.value, "host", "#{host}")
-        path        = lookup(each.value, "path", "/#{path}")
-        port        = lookup(each.value, "port", "#{port}")
-        protocol    = lookup(each.value, "protocol", "#{protocol}")
-        query       = lookup(each.value, "query", "#{query}")
-        status_code = lookup(each.value, "status_code", "HTTP_301")
-      }
-    }
+  default_action {
+    target_group_arn = aws_lb_target_group.lb_https_tgs.arn
+    type             = "forward"
   }
 
-  dynamic "default_action" {
-    for_each = lookup(each.value, "type", "") == "fixed-response" ? [1] : []
-    content {
-      type = "fixed-response"
+  tags = var.tags
+}
 
-      fixed_response {
-        content_type = lookup(each.value, "content_type", "text/plain")
-        message_body = lookup(each.value, "message_body", "Fixed response content")
-        status_code  = lookup(each.value, "status_code", "200")
-      }
-    }
-  }
-
-  # We fallback to using forward type action if type is not defined
-  dynamic "default_action" {
-    for_each = (lookup(each.value, "type", "") == "" || lookup(each.value, "type", "") == "forward") ? [1] : []
-    content {
-      target_group_arn = aws_lb_target_group.lb_https_tgs[each.key].arn
-      type             = "forward"
-    }
-  }
-
-  tags = {
-    Name = "${var.name_prefix} Civiform Fargate Service"
-    Type = "Civiform Fargate Service"
-  }
+moved {
+  from = module.ecs-alb[0].aws_lb_listener.lb_https_listeners["default_http"]
+  to   = aws_lb_listener.lb_https_listeners
 }
 ### end ecs-alb replacement
 
 #------------------------------------------------------------------------------
 # AWS ECS SERVICE
 #------------------------------------------------------------------------------
-locals {
-  lb_http_tgs_map_arn_port = zipmap(
-    [for tg in aws_lb_target_group.lb_http_tgs : tg.arn],
-    [for tg in aws_lb_target_group.lb_http_tgs : tostring(tg.port)]
-  )
-
-  lb_https_tgs_map_arn_port = zipmap(
-    [for tg in aws_lb_target_group.lb_https_tgs : tg.arn],
-    [for tg in aws_lb_target_group.lb_https_tgs : tostring(tg.port)]
-  )
-
-  lb_http_tgs_ports = [for tg in aws_lb_target_group.lb_http_tgs : tostring(tg.port)]
-
-  lb_https_tgs_ports = [for tg in aws_lb_target_group.lb_https_tgs : tostring(tg.port)]
-}
 resource "aws_ecs_service" "service" {
-  name = "${var.name_prefix}-service"
+  name = "${local.name_prefix}-service"
   # capacity_provider_strategy - (Optional) The capacity provider strategy to use for the service. Can be one or more. Defined below.
   cluster                            = var.ecs_cluster_arn
   deployment_maximum_percent         = 200
@@ -293,55 +221,48 @@ resource "aws_ecs_service" "service" {
   health_check_grace_period_seconds  = 20
   launch_type                        = "FARGATE"
   force_new_deployment               = false
+  platform_version                   = "1.4.0"
+  propagate_tags                     = "SERVICE"
+  task_definition                    = var.task_definition_arn
 
-  dynamic "load_balancer" {
-    for_each = local.lb_http_tgs_map_arn_port
-    content {
-      target_group_arn = load_balancer.key
-      container_name   = var.name_prefix
-      container_port   = load_balancer.value
-    }
-  }
-  dynamic "load_balancer" {
-    for_each = local.lb_https_tgs_map_arn_port
-    content {
-      target_group_arn = load_balancer.key
-      container_name   = var.name_prefix
-      container_port   = load_balancer.value
-    }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.lb_https_tgs.arn
+    container_name   = local.name_prefix
+    container_port   = tostring(aws_lb_target_group.lb_https_tgs.port)
   }
   network_configuration {
-
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
     subnets          = var.private_subnets
     assign_public_ip = false
   }
+
   deployment_circuit_breaker {
     enable   = false
     rollback = false
   }
-  platform_version = "1.4.0"
-  propagate_tags   = "SERVICE"
 
-  task_definition = var.task_definition_arn
-  tags = {
-    Name = "${var.name_prefix}-ecs-tasks-sg"
-    Type = "Civiform Fargate Service"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name = "${local.name_prefix}-ecs-tasks-sg"
+    },
+  )
 }
 
 #------------------------------------------------------------------------------
 # AWS SECURITY GROUP - ECS Tasks, allow traffic only from Load Balancer
 #------------------------------------------------------------------------------
 resource "aws_security_group" "ecs_tasks_sg" {
-  name        = "${var.name_prefix}-ecs-tasks-sg"
+  name        = "${local.name_prefix}-ecs-tasks-sg"
   description = "Allow inbound access from the LB only"
   vpc_id      = var.vpc_id
 
-  tags = {
-    Name = "${var.name_prefix}-ecs-tasks-sg"
-    Type = "Civiform Fargate Service"
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name = "${local.name_prefix}-ecs-tasks-sg"
+    },
+  )
 }
 
 resource "aws_security_group_rule" "egress" {
@@ -354,20 +275,24 @@ resource "aws_security_group_rule" "egress" {
 }
 
 resource "aws_security_group_rule" "ingress_through_http_and_https" {
-  for_each                 = toset(concat(local.lb_https_tgs_ports, local.lb_http_tgs_ports))
   security_group_id        = aws_security_group.ecs_tasks_sg.id
   type                     = "ingress"
-  from_port                = each.key
-  to_port                  = each.key
+  from_port                = tostring(aws_lb_target_group.lb_https_tgs.port)
+  to_port                  = tostring(aws_lb_target_group.lb_https_tgs.port)
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.lb_access_sg.id
+}
+
+moved {
+  from = aws_security_group_rule.ingress_through_http_and_https["9000"]
+  to   = aws_security_group_rule.ingress_through_http_and_https
 }
 
 module "ecs-autoscaling" {
   source  = "cn-terraform/ecs-service-autoscaling/aws"
   version = "1.0.6"
 
-  name_prefix               = var.name_prefix
+  name_prefix               = local.name_prefix
   ecs_cluster_name          = var.ecs_cluster_name
   ecs_service_name          = aws_ecs_service.service.name
   max_cpu_threshold         = var.max_cpu_threshold
@@ -378,8 +303,10 @@ module "ecs-autoscaling" {
   min_cpu_period            = var.min_cpu_period
   scale_target_max_capacity = var.scale_target_max_capacity
   scale_target_min_capacity = var.scale_target_min_capacity
-  tags = {
-    Name = "${var.name_prefix} Civiform Fargate Service"
-    Type = "Civiform Fargate Service"
-  }
+  tags                      = var.tags
+}
+
+moved {
+  from = module.ecs-autoscaling[0]
+  to   = module.ecs-autoscaling
 }

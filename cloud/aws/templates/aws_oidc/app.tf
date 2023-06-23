@@ -352,7 +352,7 @@ resource "aws_ecs_task_definition" "td" {
 
 module "ecs_fargate_service" {
   source                    = "../../modules/ecs_fargate_service"
-  name_prefix               = "${var.app_prefix}-civiform"
+  app_prefix                = var.app_prefix
   desired_count             = var.fargate_desired_task_count
   default_certificate_arn   = var.ssl_certificate_arn
   ssl_policy                = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
@@ -371,27 +371,7 @@ module "ecs_fargate_service" {
   min_cpu_period            = var.ecs_min_cpu_period
   scale_target_max_capacity = var.ecs_scale_target_max_capacity
   scale_target_min_capacity = var.ecs_scale_target_min_capacity
-
-
-  lb_http_ports = {
-    default_http = {
-      type          = "redirect"
-      listener_port = 80
-      port          = 443
-      protocol      = "HTTPS"
-      host          = "#{host}"
-      path          = "/#{path}"
-      query         = "#{query}"
-      status_code   = "HTTP_301"
-    }
-  }
-  lb_https_ports = {
-    default_http = {
-      listener_port         = 443
-      target_group_port     = var.port
-      target_group_protocol = "HTTP"
-    }
-  }
+  https_target_port         = var.port
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"
@@ -400,8 +380,7 @@ module "ecs_fargate_service" {
 }
 
 resource "aws_lb_listener_rule" "block_external_traffic_to_metrics_rule" {
-  count        = length(module.ecs_fargate_service.lb_https_listeners_arns)
-  listener_arn = module.ecs_fargate_service.lb_https_listeners_arns[count.index]
+  listener_arn = module.ecs_fargate_service.https_listener_arn
 
   action {
     type = "fixed-response"
@@ -418,4 +397,9 @@ resource "aws_lb_listener_rule" "block_external_traffic_to_metrics_rule" {
       values = ["/metrics"]
     }
   }
+}
+
+moved {
+  from = aws_lb_listener_rule.block_external_traffic_to_metrics_rule[0]
+  to   = aws_lb_listener_rule.block_external_traffic_to_metrics_rule
 }
