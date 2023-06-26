@@ -2,7 +2,7 @@
 # Misc
 #------------------------------------------------------------------------------
 variable "app_prefix" {
-  description = "App prefix for naming resources on AWS. For most resources, -civiform is added to this string."
+  description = "App prefix for naming resources in AWS. For most resources, -civiform is appended to this string."
 }
 
 #------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ variable "ecs_cluster_arn" {
 }
 
 variable "desired_count" {
-  description = "(Optional) The number of instances of the task definition to place and keep running. Defaults to 0."
+  description = "(Optional) The number of instances of the task definition to place and keep running. Defaults to 1."
   type        = number
   default     = 1
 }
