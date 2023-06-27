@@ -113,8 +113,7 @@ def _overwrite_checkout_file():
     )
     filedata = filedata.replace(
         'CMD_NAME_PATH="cloud/shared/bin/run"',
-        'CMD_NAME_PATH="cloud/shared/bin/run.py"'
-        )
+        'CMD_NAME_PATH="cloud/shared/bin/run.py"')
 
     # Write the file out again
     with open('../bin/lib/checkout.sh', 'w') as file:
