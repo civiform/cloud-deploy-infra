@@ -108,12 +108,13 @@ def _overwrite_checkout_file():
 
     # Replace args and command path name
     filedata = filedata.replace(
-        'args=("--command=${CMD_NAME}" "--tag=${CIVIFORM_VERSION}" "--config=${CONFIG_FILE_ABSOLUTE_PATH}")',
-        'args=("-c${CMD_NAME}" "-t${CIVIFORM_VERSION}" "-s${CONFIG_FILE_ABSOLUTE_PATH}")'
+        'args=("-c${CMD_NAME}" "-t${CIVIFORM_VERSION}" "-s${CONFIG_FILE_ABSOLUTE_PATH}")',
+        'args=("--command=${CMD_NAME}" "--tag=${CIVIFORM_VERSION}" "--config=${CONFIG_FILE_ABSOLUTE_PATH}")'
     )
     filedata = filedata.replace(
-        'CMD_NAME_PATH="cloud/shared/bin/run.py"',
-        'CMD_NAME_PATH="cloud/shared/bin/run"')
+        'CMD_NAME_PATH="cloud/shared/bin/run"',
+        'CMD_NAME_PATH="cloud/shared/bin/run.py"'
+        )
 
     # Write the file out again
     with open('../bin/lib/checkout.sh', 'w') as file:
