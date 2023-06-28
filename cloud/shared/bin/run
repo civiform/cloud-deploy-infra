@@ -37,10 +37,14 @@ if [[ "${tag}" == "latest" ]]; then
   docker pull --platform linux/x86_64 docker.io/civiform/civiform:latest
   snapshot_tag="$(docker inspect docker.io/civiform/civiform:latest \
     --format='{{range .Config.Env}}{{if eq (printf "%.19s" .) "CIVIFORM_IMAGE_TAG="}}{{slice . 19}}{{end}}{{end}}')"
+
   if [[ -z "${snapshot_tag}" ]]; then
-    echo "Latest snapshot tag not found." 2>&1
+    # Adding a newline before the error message helps it stand out to the user
+    echo 1>&2
+    echo "Latest snapshot tag not found." 1>&2
     exit 1
   fi
+
   echo "Resolved 'latest' to snapshot tag ${snapshot_tag}"
   tag="${snapshot_tag}"
 fi
@@ -48,14 +52,23 @@ fi
 #######################################
 # Get the value in a JSON document at the given URL.
 # Arguments:
-#   1: URL of the JSON document
-#   2: Path of the value in bracket notation e.g. "['object']['sha']"
+#   1: Identifier for the object getting fetched
+#   2: URL of the JSON document
+#   3: Path of the value in bracket notation e.g. "['object']['sha']"
 # Returns:
 #   Value found at the specified path in the JSON document
 #######################################
 function fetch_json_val() {
-  curl -s "${1}" \
-    | python3 -c "import sys, json; print(json.load(sys.stdin)${2})"
+  local response="$(curl -s "${2}")"
+
+  if echo "${response}" | grep -q '"message": "Not Found"'; then
+    # Adding a newline before the error message helps it stand out to the user
+    echo 1>&2
+    echo "No matching CiviForm version found for \"${1}\"" 1>&2
+    exit 1
+  fi
+
+  echo "${response}" | python3 -c "import sys, json; print(json.load(sys.stdin)${3})"
 }
 
 commit_sha=""
@@ -65,13 +78,31 @@ if [[ "${tag}" == "SNAPSHOT"* ]]; then
   # shortened commit sha. Use this to get the full commit sha.
   split_tag=(${tag//-/ })
   short_sha=${split_tag[1]}
-  commit_sha=$(fetch_json_val "https://api.github.com/repos/civiform/civiform/commits/${short_sha}" "['sha']")
+  commit_sha=$(fetch_json_val "${tag}" "https://api.github.com/repos/civiform/civiform/commits/${short_sha}" "['sha']")
 else
-  # tag is a specific version of CiviForm (eg. v1.2.3), get the commit sha at the tip of that version
+  # Tag is a specific version of CiviForm (e.g. v1.2.3)
+
+  # Validate that the tag provided at least looks like a release tag. If the
+  # tag is the right format but does not refer to an actual release this
+  # won't catch it.
+  if [[ ! "${tag}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    # Adding a newline before the error message helps it stand out to the user
+    echo
+    echo "Invalid value for CIVIFORM_VERSION provided: \"${tag}\"" 1>&2
+    exit 1
+  fi
+
+  # If the tag is missing a "v" prefix then add it
+  if [[ "${tag}" != v* ]]; then
+    tag="v${tag}"
+  fi
+
+  #  Get the commit sha at the tip of the provided version
   tag_url=$(fetch_json_val \
+    "${tag}" \
     "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
     "['object']['url']")
-  commit_sha=$(fetch_json_val ${tag_url} "['object']['sha']")
+  commit_sha=$(fetch_json_val ${tag} ${tag_url} "['object']['sha']")
 fi
 echo "Fetched commit sha ${commit_sha}"
 
