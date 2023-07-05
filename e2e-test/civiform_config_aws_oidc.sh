@@ -64,7 +64,7 @@ export CIVIC_ENTITY_FULL_NAME="E2E Test City"
 
 # REQUIRED
 # The email address to contact for support with using Civiform. Ex. "Civiform@CityOfRochester.gov
-export CIVIC_ENTITY_SUPPORT_EMAIL_ADDRESS="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
+export CIVIC_ENTITY_SUPPORT_EMAIL_ADDRESS="civiform-deploy-e2e-tests@exygy.com"
 
 # REQUIRED
 # A link to an image of the civic entity logo that includes the entity name, to be used in the header for the "Get Benefits" page
@@ -81,36 +81,36 @@ export FAVICON_URL="https://civiform.us/favicon.png"
 
 # REQUIRED
 # The email address to use for the "from" field in emails sent from CiviForm.
-export SENDER_EMAIL_ADDRESS="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
+export SENDER_EMAIL_ADDRESS="civiform-deploy-e2e-tests@exygy.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the program administrator's email, as would happen in prod.
-export STAGING_PROGRAM_ADMIN_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
+export STAGING_PROGRAM_ADMIN_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the trusted intermediary's email, as would happen in prod.
-export STAGING_TI_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
+export STAGING_TI_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the applicant's email, as would happen in prod.
-export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-cloud-deploy-infra-test-notifications@googlegroups.com"
+export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
 
 # REQUIRED
 # The domain name for this CiviForm deployment, including the protocol.
 # E.g. "https://civiform.seattle.gov"
-export BASE_URL="https://cloud-deploy-infra-tests-0.civiform.dev"
+export BASE_URL="https://civiform-deploy-e2e-tests.civiform.dev"
 
 # OPTIONAL
 # When set enables demo mode for the civiform application. Should be set for
 # staging but not prod. The value is hostname without protocol and should correspond
 # BASE_URl. Example: "civiform.seattle.gov"
-export STAGING_HOSTNAME="cloud-deploy-infra-tests-0.civiform.dev"
+export STAGING_HOSTNAME="civiform-deploy-e2e-tests.civiform.dev"
 
 # OPTIONAL
 # The time zone to be used when rendering any times within the CiviForm
@@ -205,9 +205,9 @@ export APP_PREFIX="e2e-test" # max 19 chars, only numbers, letters, dashes, and 
 # in AWS web console: https://console.aws.amazon.com/acm/home#/certificates/list
 # WARNING: certificate needs to be created in the same region as AWS_REGION above, make sure
 # select correct region in web AWS console when creating certificate.
-export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:178882378957:certificate/9f50d2b2-0d9c-44d5-9f01-2889f71d8ace"
+export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:296877675213:certificate/28384db9-4577-4ac5-af1d-5e8ab39bd54c"
 
-# RERUIRED
+# REQUIRED
 # Number of Civiform server tasks to run. This value can be set to 0 to shutdown servers.
 # It can be useful, for example, when server continiously fails on startup: set this to 0
 # to shutdown servers while figuring out the error.

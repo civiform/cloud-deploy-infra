@@ -3,14 +3,19 @@ regions:
   - global
 
 account-blocklist:
-  - "664198874744" # Google.org Works AWS account, holds long-lived staging deployments. Should never be nuked.
+  - "664198874744"
+  - "305584670637" 
+  - "496466114051"
+  - "559421412203"
+  - "859704899281"
+  - "098472360576"
 
 accounts:
-  "178882378957": # cloud-deploy-infra-tests-0 AWS account.
+  "296877675213": # civiform-deploy-e2e-tests AWS account.
     filters:
       ACMCertificate:
         - property: "DomainName"
-          value: "cloud-deploy-infra-tests-0.civiform.dev"
+          value: "civiform-deploy-e2e-tests.civiform.dev"
       IAMOpenIDConnectProvider:
         - type: contains
           value: "oidc-provider/token.actions.githubusercontent.com"
