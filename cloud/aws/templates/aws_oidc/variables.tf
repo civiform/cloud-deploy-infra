@@ -163,7 +163,7 @@ variable "rds_max_cpu_utilization_threshold" {
 variable "rds_create_high_queue_depth_alarm" {
   type        = bool
   description = "Whether or not to create a high queue depth alarm for RDS."
-  default     = false
+  default     = true
 }
 
 variable "rds_disk_queue_depth_high_threshold" {
