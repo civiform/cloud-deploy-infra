@@ -55,13 +55,13 @@ class AwsCli:
         Polls the CiviForm ECS service, waiting for the PRIMARY deployment to
         have rolloutStatus of COMPLETED.
 
-        Gives up after 30 tries, sleeps 30 seconds between each try.
+        Gives up after 60 tries, sleeps 30 seconds between each try.
         """
         print(
             "\nWaiting for CiviForm ECS service to become healthy.\n"
             f"Service URL: {self._get_url_of_ecs_service()}")
 
-        tries = 30
+        tries = 60
         while True:
             state = self._ecs_service_state()
             if state == "COMPLETED":
