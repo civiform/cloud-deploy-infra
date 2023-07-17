@@ -41,8 +41,8 @@ jobs:
         name: Authenticate to AWS
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          # Role in cloud-deploy-infra-tests-0 account.
-          role-to-assume: arn:aws:iam::178882378957:role/e2e-test-runner
+          # Role in civiform-deploy-e2e-tests account.
+          role-to-assume: arn:aws:iam::296877675213:role/e2e-test-runner
           aws-region: us-east-1
 
       - name: Pre nuke
