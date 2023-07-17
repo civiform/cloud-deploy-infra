@@ -63,33 +63,53 @@ data "aws_db_instance" "civiform" {
   ]
 }
 
-module "aws-rds-alarms" {
-  source                                          = "lorenzoaiello/rds-alarms/aws"
-  version                                         = "2.2.0"
-  db_instance_id                                  = data.aws_db_instance.civiform.id
-  db_instance_class                               = var.postgres_instance_class
-  evaluation_period                               = var.rds_alarm_evaluation_period
-  statistic_period                                = var.rds_alarm_statistic_period
-  actions_alarm                                   = var.rds_alarm_triggered_actions
-  actions_ok                                      = var.rds_alarm_cleared_actions
-  tags                                            = var.rds_alarm_tags
-  create_high_cpu_alarm                           = var.rds_create_high_cpu_alarm
-  cpu_utilization_too_high_threshold              = var.rds_max_cpu_utilization_threshold
-  create_high_queue_depth_alarm                   = var.rds_create_high_queue_depth_alarm
-  disk_queue_depth_too_high_threshold             = var.rds_disk_queue_depth_high_threshold
-  create_low_disk_space_alarm                     = var.rds_create_low_disk_space_alarm
-  disk_free_storage_space_too_low_threshold       = var.rds_disk_free_storage_low_threshold
-  create_low_memory_alarm                         = var.rds_create_low_memory_alarm
-  memory_freeable_too_low_threshold               = var.rds_low_memory_threshold
-  create_low_cpu_credit_alarm                     = var.rds_create_low_cpu_credit_alarm
-  cpu_credit_balance_too_low_threshold            = var.rds_low_cpu_credit_balance_threshold
-  create_low_disk_burst_alarm                     = var.rds_create_low_disk_burst_alarm
-  disk_burst_balance_too_low_threshold            = var.rds_disk_burst_balance_low_threshold
-  create_swap_alarm                               = var.rds_create_swap_alarm
-  memory_swap_usage_too_high_threshold            = var.rds_high_swap_usage_threshold
-  create_anomaly_alarm                            = var.rds_create_anomaly_alarm
-  maximum_used_transaction_ids_too_high_threshold = var.rds_max_used_transaction_ids_high_threshold
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization_too_high" {
+  count               = var.rds_create_high_cpu_alarm ? 1 : 0
+  alarm_name          = "rds-${data.aws_db_instance.civiform.id}-highCPUUtilization"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = var.rds_alarm_evaluation_period
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/RDS"
+  period              = var.rds_alarm_statistic_period
+  statistic           = "Average"
+  threshold           = var.rds_max_cpu_utilization_threshold
+  alarm_description   = "Average database CPU utilization is too high."
+  alarm_actions       = var.rds_alarm_triggered_actions
+  ok_actions          = var.rds_alarm_cleared_actions
+
+  dimensions = {
+    DBInstanceIdentifier = data.aws_db_instance.civiform.id
+  }
+  tags = var.rds_alarm_tags
 }
+
+#module "aws-rds-alarms" {
+#  source                                          = "lorenzoaiello/rds-alarms/aws"
+#  version                                         = "2.2.0"
+#  db_instance_id                                  = data.aws_db_instance.civiform.id
+#  db_instance_class                               = var.postgres_instance_class
+#  evaluation_period                               = var.rds_alarm_evaluation_period
+#  statistic_period                                = var.rds_alarm_statistic_period
+#  actions_alarm                                   = var.rds_alarm_triggered_actions
+#  actions_ok                                      = var.rds_alarm_cleared_actions
+#  tags                                            = var.rds_alarm_tags
+#  create_high_cpu_alarm                           = false
+#  cpu_utilization_too_high_threshold              = var.rds_max_cpu_utilization_threshold
+#  create_high_queue_depth_alarm                   = var.rds_create_high_queue_depth_alarm
+#  disk_queue_depth_too_high_threshold             = var.rds_disk_queue_depth_high_threshold
+#  create_low_disk_space_alarm                     = var.rds_create_low_disk_space_alarm
+#  disk_free_storage_space_too_low_threshold       = var.rds_disk_free_storage_low_threshold
+#  create_low_memory_alarm                         = var.rds_create_low_memory_alarm
+#  memory_freeable_too_low_threshold               = var.rds_low_memory_threshold
+#  create_low_cpu_credit_alarm                     = var.rds_create_low_cpu_credit_alarm
+#  cpu_credit_balance_too_low_threshold            = var.rds_low_cpu_credit_balance_threshold
+#  create_low_disk_burst_alarm                     = var.rds_create_low_disk_burst_alarm
+#  disk_burst_balance_too_low_threshold            = var.rds_disk_burst_balance_low_threshold
+#  create_swap_alarm                               = var.rds_create_swap_alarm
+#  memory_swap_usage_too_high_threshold            = var.rds_high_swap_usage_threshold
+#  create_anomaly_alarm                            = var.rds_create_anomaly_alarm
+#  maximum_used_transaction_ids_too_high_threshold = var.rds_max_used_transaction_ids_high_threshold
+#}
 
 module "email_service" {
   for_each = toset([
