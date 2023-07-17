@@ -169,7 +169,7 @@ variable "rds_alarm_tags" {
 variable "rds_create_high_cpu_alarm" {
   type        = bool
   description = "Whether or not to create a high CPU alarm for RDS."
-  default     = false
+  default     = true
 }
 
 variable "rds_max_cpu_utilization_threshold" {
