@@ -70,6 +70,9 @@ module "aws-rds-alarms" {
   db_instance_class                               = var.postgres_instance_class
   evaluation_period                               = var.rds_alarm_evaluation_period
   statistic_period                                = var.rds_alarm_statistic_period
+  actions_alarm                                   = var.rds_alarm_triggered_actions
+  actions_ok                                      = var.rds_alarm_cleared_actions
+  tags                                            = var.rds_alarm_tags
   create_high_cpu_alarm                           = var.rds_create_high_cpu_alarm
   cpu_utilization_too_high_threshold              = var.rds_max_cpu_utilization_threshold
   create_high_queue_depth_alarm                   = var.rds_create_high_queue_depth_alarm

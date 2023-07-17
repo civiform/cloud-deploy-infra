@@ -209,6 +209,24 @@
     "tfvar": true,
     "type": "string"
   },
+  "RDS_ALARM_TRIGGERED_ACTIONS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "list"
+  },
+  "RDS_ALARM_CLEARED_ACTIONS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "list"
+  },
+  "RDS_ALARM_TAGS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "dict"
+  },
   "RDS_CREATE_HIGH_CPU_ALARM": {
     "required": false,
     "secret": false,

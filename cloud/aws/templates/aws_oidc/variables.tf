@@ -148,6 +148,24 @@ variable "rds_alarm_statistic_period" {
   default     = "60"
 }
 
+variable "rds_alarm_triggered_actions" {
+  type        = list(any)
+  description = "A list of actions to take when rds alarms are triggered."
+  default     = []
+}
+
+variable "rds_alarm_cleared_actions" {
+  type        = list(any)
+  description = "A list of actions to take when rds alarms are cleared."
+  default     = []
+}
+
+variable "rds_alarm_tags" {
+  type        = map(string)
+  description = "Tags to attach to each rds alarm."
+  default     = {}
+}
+
 variable "rds_create_high_cpu_alarm" {
   type        = bool
   description = "Whether or not to create a high CPU alarm for RDS."

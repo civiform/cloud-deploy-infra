@@ -280,7 +280,7 @@ class ConfigLoader:
                         f"'{name}' is required but not set")
                 continue
 
-            # Variable types are 'string', 'int', 'bool', or 'index-list'.
+            # Variable types are 'string', 'int', 'bool', or 'index-list', 'list', 'dict'.
             if variable.type == "string":
                 if variable.values is not None:
                     if config_value not in variable.values:
@@ -308,6 +308,20 @@ class ConfigLoader:
                 if config_value not in ["true", "false"]:
                     validation_errors.append(
                         f"'{name}' is required to be either 'true' or 'false', got {config_value}"
+                    )
+                    continue
+
+            if variable.type == "list":
+                if not isinstance(config_value, list):
+                    validation_errors.append(
+                        f"'{name}' is required to be a list, got {config_value}"
+                    )
+                    continue
+
+            if variable.type == "dict":
+                if not isinstance(config_value, dict):
+                    validation_errors.append(
+                        f"'{name}' is required to be a map, got {config_value}"
                     )
                     continue
 
