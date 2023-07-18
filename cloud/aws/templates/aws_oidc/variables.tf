@@ -181,7 +181,7 @@ variable "rds_max_cpu_utilization_threshold" {
 variable "rds_create_high_queue_depth_alarm" {
   type        = bool
   description = "Whether or not to create a high queue depth alarm for RDS."
-  default     = false
+  default     = true
 }
 
 variable "rds_disk_queue_depth_high_threshold" {
@@ -216,7 +216,7 @@ variable "rds_low_memory_threshold" {
 
 variable "rds_create_low_cpu_credit_alarm" {
   type        = bool
-  description = "Whether or not to create a low CPU credit alarm for RDS."
+  description = "Whether or not to create a low CPU credit alarm for RDS. This alarm type only applies for T-type database instances."
   default     = false
 }
 
