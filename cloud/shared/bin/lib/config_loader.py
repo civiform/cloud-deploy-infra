@@ -184,7 +184,10 @@ class ConfigLoader:
 
             if config_value is None:
                 is_required = definition.get("required", False)
-                if is_required:
+                is_writeable = definition.get("mode") == "ADMIN_WRITEABLE"
+                # Vars that are admin writeable are set via the admin setting panel
+                # and are not required in the config
+                if is_required and not is_writeable:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
