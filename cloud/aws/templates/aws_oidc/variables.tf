@@ -193,7 +193,7 @@ variable "rds_disk_queue_depth_high_threshold" {
 variable "rds_create_low_disk_space_alarm" {
   type        = bool
   description = "Whether or not to create a low disk space alarm for RDS."
-  default     = false
+  default     = true
 }
 
 variable "rds_disk_free_storage_low_threshold" {
@@ -205,7 +205,7 @@ variable "rds_disk_free_storage_low_threshold" {
 variable "rds_create_low_memory_alarm" {
   type        = bool
   description = "Whether or not to create a low memory free alarm for RDS."
-  default     = false
+  default     = true
 }
 
 variable "rds_low_memory_threshold" {
@@ -253,6 +253,24 @@ variable "rds_high_swap_usage_threshold" {
 variable "rds_create_anomaly_alarm" {
   type        = bool
   description = "Whether or not to create an anomaly alarm for RDS (fairly noisy)."
+  default     = false
+}
+
+variable "rds_anomaly_bandwidth" {
+  type        = string
+  description = "The width of the anomaly band, default 2.  Higher numbers means less sensitive."
+  default     = "2"
+}
+
+variable "rds_anomaly_period" {
+  type        = string
+  default     = "600"
+  description = "The number of seconds that make each evaluation period for anomaly detection."
+}
+
+variable "rds_create_transaction_id_wraparound_alarm" {
+  type        = bool
+  description = "Whether or not to create a transaction ID wraparound alarm for postgres. More information can be found [here](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)."
   default     = false
 }
 
