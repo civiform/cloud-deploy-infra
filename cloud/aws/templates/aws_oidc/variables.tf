@@ -198,7 +198,7 @@ variable "rds_low_memory_threshold" {
 
 variable "rds_create_low_cpu_credit_alarm" {
   type        = bool
-  description = "Whether or not to create a low CPU credit alarm for RDS."
+  description = "Whether or not to create a low CPU credit alarm for RDS. This alarm type only applies for T-type database instances."
   default     = false
 }
 

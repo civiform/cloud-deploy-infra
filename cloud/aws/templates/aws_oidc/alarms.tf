@@ -17,7 +17,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_too_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_credit_balance_too_low" {
-  count               = var.rds_create_low_cpu_credit_alarm ? length(regexall("(t2|t3)", var.postgres_instance_class)) > 0 ? 1 : 0 : 0
+  count               = var.rds_create_low_cpu_credit_alarm ? length(regexall("(t2|t3|t4)", var.postgres_instance_class)) > 0 ? 1 : 0 : 0
   alarm_name          = "rds-${data.aws_db_instance.civiform.id}-lowCPUCreditBalance"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = var.rds_alarm_evaluation_period
@@ -26,7 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_credit_balance_too_low" {
   period              = var.rds_alarm_statistic_period
   statistic           = "Average"
   threshold           = var.rds_low_cpu_credit_balance_threshold
-  alarm_description   = "Average database CPU credit balance is too low, a negative performance impact is imminent."
+  alarm_description   = "Average database CPU credit balance is too low, a negative performance impact is imminent. When this alarm triggers, the database [instance class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html) should be increased."
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
