@@ -127,7 +127,7 @@ resource "aws_cloudwatch_metric_alarm" "connection_count_anomalous" {
   comparison_operator = "GreaterThanUpperThreshold"
   evaluation_periods  = var.rds_alarm_evaluation_period
   threshold_metric_id = "e1"
-  alarm_description   = "Anomalous database connection count detected. Something unusual is happening."
+  alarm_description   = "Anomalous database connection count detected. Check the monitoring graphs and logs for any suspicious activity."
 
   metric_query {
     id          = "e1"
