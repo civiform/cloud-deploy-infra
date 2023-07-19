@@ -238,6 +238,24 @@ variable "rds_create_anomaly_alarm" {
   default     = false
 }
 
+variable "rds_anomaly_bandwidth" {
+  type        = string
+  description = "The width of the anomaly band, default 2.  Higher numbers means less sensitive."
+  default     = "2"
+}
+
+variable "rds_anomaly_period" {
+  type        = string
+  default     = "600"
+  description = "The number of seconds that make each evaluation period for anomaly detection."
+}
+
+variable "rds_create_transaction_id_wraparound_alarm" {
+  type        = bool
+  description = "Whether or not to create a transaction ID wraparound alarm for postgres. More information can be found [here](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)."
+  default     = false
+}
+
 variable "rds_max_used_transaction_ids_high_threshold" {
   type        = string
   description = "The threshold for the maximum transaction IDS before the alarm gets triggered. This is to prevent [transaciton ID wraparound](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)"

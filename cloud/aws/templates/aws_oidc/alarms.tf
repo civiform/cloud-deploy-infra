@@ -119,3 +119,51 @@ resource "aws_cloudwatch_metric_alarm" "memory_swap_usage_too_high" {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
   }
 }
+
+// Connection Count
+resource "aws_cloudwatch_metric_alarm" "connection_count_anomalous" {
+  count               = var.rds_create_anomaly_alarm ? 1 : 0
+  alarm_name          = "rds-${data.aws_db_instance.civiform.id}-anomalousConnectionCount"
+  comparison_operator = "GreaterThanUpperThreshold"
+  evaluation_periods  = var.rds_alarm_evaluation_period
+  threshold_metric_id = "e1"
+  alarm_description   = "Anomalous database connection count detected. Check the monitoring graphs and logs for any suspicious activity."
+
+  metric_query {
+    id          = "e1"
+    expression  = "ANOMALY_DETECTION_BAND(m1, ${var.rds_anomaly_bandwidth})"
+    label       = "DatabaseConnections (Expected)"
+    return_data = "true"
+  }
+
+  metric_query {
+    id          = "m1"
+    return_data = "true"
+    metric {
+      metric_name = "DatabaseConnections"
+      namespace   = "AWS/RDS"
+      period      = var.rds_anomaly_period
+      stat        = "Average"
+      unit        = "Count"
+
+      dimensions = {
+        DBInstanceIdentifier = data.aws_db_instance.civiform.id
+      }
+    }
+  }
+}
+
+// Early Warning System for Transaction ID Wraparound for postgres
+resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
+  count               = var.rds_create_transaction_id_wraparound_alarm ? 1 : 0
+  alarm_name          = "rds-${data.aws_db_instance.civiform.id}-maximumUsedTransactionIDs"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = var.rds_alarm_evaluation_period
+  metric_name         = "MaximumUsedTransactionIDs"
+  namespace           = "AWS/RDS"
+  period              = var.rds_alarm_statistic_period
+  statistic           = "Average"
+  threshold           = var.rds_max_used_transaction_ids_high_threshold
+  alarm_description   = "Nearing a possible critical transaction ID wraparound. More info [here](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)"
+}
+
