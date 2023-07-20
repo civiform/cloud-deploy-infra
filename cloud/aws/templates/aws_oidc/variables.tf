@@ -364,6 +364,18 @@ variable "applicant_oidc_last_name_attribute" {
   default     = null
 }
 
+variable "applicant_register_uri" {
+  type        = string
+  description = "The URL applicants are redirected to for creating an account with the identity provider."
+  default     = null
+}
+
+variable "applicant_portal_name" {
+  type        = string
+  description = "The name of the authentication provider applicants use to login. This value is displayed to the applicants to help them understand which account to use."
+  default     = null
+}
+
 variable "civiform_applicant_idp" {
   type        = string
   description = "Applicant IDP"
