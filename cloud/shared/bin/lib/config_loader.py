@@ -184,10 +184,7 @@ class ConfigLoader:
 
             if config_value is None:
                 is_required = definition.get("required", False)
-                is_writeable = definition.get("mode") == "ADMIN_WRITEABLE"
-                # Vars that are admin writeable are set via the admin settings panel
-                # and are not required in the config
-                if is_required and not is_writeable:
+                if is_required:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
@@ -289,7 +286,9 @@ class ConfigLoader:
             # variable_definitions.json files as the source for the values. env_var_docs does
             # not currently include required field. Therefore this code will never run.
             if config_value is None:
-                if variable.required:
+                # Vars that are admin writeable are set via the admin settings panel
+                # and are not required in the config
+                if variable.required and not variable.mode.name == "ADMIN_WRITEABLE":
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue

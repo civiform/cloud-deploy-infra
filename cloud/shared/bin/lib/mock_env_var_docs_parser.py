@@ -19,6 +19,9 @@ import importlib
 import typing
 from typing import List, Union
 from unittest.mock import MagicMock
+from enum import Enum
+
+Mode = Enum('Mode', ['HIDDEN', 'ADMIN_READABLE', 'ADMIN_WRITEABLE'])
 
 
 @dataclasses.dataclass
@@ -36,9 +39,10 @@ class Variable:
     description: str
     type: str
     required: bool
-    values: Union[List[str], None] = None
-    regex: Union[str, None] = None
-    regex_tests: Union[List[RegexTest], None] = None
+    values: Union[List[str], None]
+    regex: Union[str, None]
+    regex_tests: Union[List[RegexTest], None]
+    mode: Mode
 
 
 @dataclasses.dataclass
@@ -69,7 +73,9 @@ def install_mock_env_var_docs_package(self, mock_import_module):
             callable: typing.Callable[[Node], None]) -> List[NodeParseError]:
         node = Node(
             "test-variable-node",
-            Variable("description", "string", False, [], "", []))
+            Variable(
+                "description", "string", False, [], "", [],
+                Mode.ADMIN_READABLE))
         callable(node)
         return []
 

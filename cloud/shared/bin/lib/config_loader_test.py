@@ -15,7 +15,7 @@ from urllib.request import urlopen
 from cloud.shared.bin.lib.config_loader import (
     CIVIFORM_SERVER_VARIABLES_KEY, ConfigLoader)
 from cloud.shared.bin.lib.mock_env_var_docs_parser import (
-    Variable, import_mock_env_var_docs_parser,
+    Variable, Mode, import_mock_env_var_docs_parser,
     install_mock_env_var_docs_package)
 """
 Tests for the ConfigLoader, calls the I/O methods to match the actual
@@ -212,7 +212,6 @@ class TestConfigLoader(unittest.TestCase):
             "FOO_4": "24"
         }
         civiform_server_env_vars = {}
-
         # See comments on the specifics we pass correct values for
         civiform_server_env_vars["FOO_0"] = env_var_docs_parser.Variable(
             description='description',
@@ -220,35 +219,40 @@ class TestConfigLoader(unittest.TestCase):
             required=False,
             values=None,  # with no specified values
             regex=None,  # or regex to check
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
             description='description',
             type='bool',  # boolean, needs boolean value
             required=True,  # and required -> has to be present
             values=None,
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
             description='description',
             type='string',  # string 
             required=True,
             values="value1, value2",  # with specific values
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
             description='description',
             type='string',  # string 
             required=True,
             values=None,
             regex="gr(a|e)y",  # that matches a regex
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
             description='description',
             type='int',  # int has to be int value
             required=True,
             values=None,
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
@@ -276,35 +280,49 @@ class TestConfigLoader(unittest.TestCase):
             required=True,  # Required but missing in values
             values=None,
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_1"] = env_var_docs_parser.Variable(
             description='description',
             type='bool',  # Boolean, but value is other
             required=True,
             values=None,
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_2"] = env_var_docs_parser.Variable(
             description='description',
             type='string',  # string 
             required=True,
             values="value1, value2",  # does not stick to specific values
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_3"] = env_var_docs_parser.Variable(
             description='description',
             type='string',  # string 
             required=True,
             values=None,
-            regex="gr(a|e)y",  # does not matche regex
-            regex_tests=None)
+            regex="gr(a|e)y",  # does not match regex
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
         civiform_server_env_vars["FOO_4"] = env_var_docs_parser.Variable(
             description='description',
             type='int',  # int has, but is not int value
             required=True,
             values=None,
             regex=None,
-            regex_tests=None)
+            regex_tests=None,
+            mode=Mode.ADMIN_READABLE)
+        civiform_server_env_vars["FOO_5"] = env_var_docs_parser.Variable(
+            description='description',
+            type='string',
+            required=
+            True,  # Required but mode is ADMIN_WRITEABLE so should be ignored
+            values=None,
+            regex=None,
+            regex_tests=None,
+            mode=Mode.ADMIN_WRITEABLE)
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
@@ -350,7 +368,8 @@ class TestConfigLoader(unittest.TestCase):
                 required=True,
                 values=None,
                 regex=None,
-                regex_tests=None)
+                regex_tests=None,
+                mode=Mode.ADMIN_READABLE)
         config_loader._civiform_server_env_var_docs[
             "FOO_1"] = env_var_docs_parser.Variable(
                 description='description',
@@ -358,7 +377,8 @@ class TestConfigLoader(unittest.TestCase):
                 required=True,
                 values=None,
                 regex=None,
-                regex_tests=None)
+                regex_tests=None,
+                mode=Mode.ADMIN_READABLE)
         config_loader._config_fields = config_fields = {
             "FOO_0": "item0, item1, item2",
             "FOO_1": "normal string"
@@ -411,7 +431,8 @@ class TestConfigLoader(unittest.TestCase):
                             required=False,
                             values=[],
                             regex='',
-                            regex_tests=[])
+                            regex_tests=[],
+                            mode=Mode.ADMIN_READABLE)
                 }, env_var_docs)
 
     @patch('urllib.request.urlopen')
