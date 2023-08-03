@@ -181,7 +181,7 @@ variable "rds_create_low_disk_space_alarm" {
 variable "rds_disk_free_storage_low_threshold" {
   type        = string
   description = "The threshold for the free disk storage space (in bytes) before the alarm gets triggered (if enabled)."
-  default     = "5368709120" // 5 GB
+  default     = "500000000" // ~500 MB
 }
 
 variable "rds_create_low_memory_alarm" {
@@ -193,7 +193,7 @@ variable "rds_create_low_memory_alarm" {
 variable "rds_low_memory_threshold" {
   type        = string
   description = "The threshold for the low freeable memory (in bytes) before the alarm gets triggered (if enabled)."
-  default     = "256000000" // ~256 MB
+  default     = "150000000" // ~150 MB
 }
 
 variable "rds_create_low_cpu_credit_alarm" {
