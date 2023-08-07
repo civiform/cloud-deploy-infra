@@ -90,7 +90,9 @@ def validate_tag(tag):
     print(
         f'''
         If you would like to continue deployment, please type YES below.
-        Continue: ''', end='', flush=True)
+        Continue: ''',
+        end='',
+        flush=True)
     resp = input()
     return resp.lower().strip() == 'yes'
 
