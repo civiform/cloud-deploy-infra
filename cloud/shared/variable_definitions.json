@@ -6,19 +6,19 @@
     "type": "string"
   },
   "CIVIC_ENTITY_FULL_NAME": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": true,
     "type": "string"
   },
   "CIVIC_ENTITY_SHORT_NAME": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": true,
     "type": "string"
   },
   "CIVIC_ENTITY_SUPPORT_EMAIL_ADDRESS": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": true,
     "type": "string"
@@ -74,6 +74,18 @@
     "type": "string"
   },
   "APPLICANT_OIDC_LOGOUT_CLIENT_PARAM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "APPLICANT_REGISTER_URI": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "APPLICANT_PORTAL_NAME": {
     "required": false,
     "secret": false,
     "tfvar": true,
