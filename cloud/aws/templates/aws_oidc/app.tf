@@ -121,7 +121,6 @@ module "civiform_server_container_def" {
     FAVICON_URL                          = var.favicon_url
     AWS_REGION                           = var.aws_region
     CIVIFORM_APPLICANT_IDP               = var.civiform_applicant_idp
-    ADMIN_SETTINGS_PANEL_ENABLED         = false
     APPLICANT_OIDC_PROVIDER_NAME         = var.applicant_oidc_provider_name
     APPLICANT_OIDC_RESPONSE_MODE         = var.applicant_oidc_response_mode
     APPLICANT_OIDC_RESPONSE_TYPE         = var.applicant_oidc_response_type
