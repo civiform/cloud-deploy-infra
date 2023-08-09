@@ -9,7 +9,7 @@ FROM bellsoft/liberica-openjre-debian:11.0.19-7 as arm64
 
 FROM ${TARGETARCH}
 
-COPY --from=hashicorp/terraform:1.4.6 /bin/terraform /usr/local/bin/
+COPY --from=hashicorp/terraform:1.5.5 /bin/terraform /usr/local/bin/
 COPY --from=amazon/aws-cli:2.11.20 /usr/local /usr/local
 COPY --from=amazon/aws-cli:2.11.20 /aws /aws
 # TODO(#3222): Add Azure CLI and make sure It works with arm64.
