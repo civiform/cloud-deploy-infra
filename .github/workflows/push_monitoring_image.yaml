@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - id: file_changes
-        uses: tj-actions/changed-files@v35
+        uses: tj-actions/changed-files@v37
         with:
           json: 'true'
       - name: Set up Docker Buildx
