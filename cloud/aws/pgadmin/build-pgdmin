@@ -2,36 +2,36 @@
 
 # Builds the customized pgadmin Docker image.
 #
-#set -e
-#set +x
-#
-#readonly SHORT_SHA="$(git rev-parse --short HEAD)"
-#readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
-#readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
-#readonly IMAGE="pgadmin"
+set -e
+set +x
+
+readonly SHORT_SHA="$(git rev-parse --short HEAD)"
+readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
+readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
+readonly IMAGE="pgadmin"
 #readonly PLATFORM="linux/arm64"
-#
-#PLATFORM_ARG=()
-#if [[ -n "${PLATFORM}" ]]; then
-#  PLATFORM_ARG=(--platform "${PLATFORM}")
-#fi
-#readonly PLATFORM_ARG
-#
-#echo "start ${IMAGE} build"
-#docker buildx create --use
-#docker buildx build --push \
-#  "${PLATFORM_ARG[@]}" \
-#  -t "docker.io/civiform/${IMAGE}:latest" \
-#  -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
-#  -f pgadmin.Dockerfile .
-#
 
+PLATFORM_ARG=()
+if [[ -n "${PLATFORM}" ]]; then
+  PLATFORM_ARG=(--platform "${PLATFORM}")
+fi
+readonly PLATFORM_ARG
 
-docker build \
-  -t docker.io/civiform/pgadmin:latest \
+echo "start ${IMAGE} build"
+docker buildx create --use
+docker buildx build --push \
+  "${PLATFORM_ARG[@]}" \
+  -t "docker.io/civiform/${IMAGE}:latest" \
+  -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
   -f pgadmin.Dockerfile .
 
-docker push docker.io/civiform/pgadmin:latest
+
+
+#docker build \
+#  -t docker.io/civiform/pgadmin:latest \
+#  -f pgadmin.Dockerfile .
+#
+#docker push docker.io/civiform/pgadmin:latest
 
 #if [[ ! -f "${1}" ]]; then
 #  echo "Usage: bin/dev-restore-db DUMP_FILE_NAME"
