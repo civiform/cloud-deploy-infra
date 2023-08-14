@@ -79,6 +79,7 @@ resource "aws_ecs_service" "pgadmin" {
   task_definition = aws_ecs_task_definition.pgadmin.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  enable_execute_command  = true
   network_configuration {
     subnets = var.subnet_ids
     security_groups = [
@@ -146,6 +147,9 @@ resource "aws_iam_role" "civiform_pgadmin_task_execution_role" {
     }
 JSON
   tags               = local.tags
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
 }
 resource "aws_iam_role_policy_attachment" "civiform_pgadmin_task_execution_role_policy_attach" {
   role       = aws_iam_role.civiform_pgadmin_task_execution_role.name
