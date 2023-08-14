@@ -147,6 +147,25 @@ resource "aws_iam_role" "civiform_pgadmin_task_execution_role" {
     }
 JSON
   tags               = local.tags
+}
+resource "aws_iam_role" "civiform_pgadmin_task_role" {
+  name               = "${local.name_prefix}-task-role"
+  assume_role_policy = <<JSON
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole",
+            "Sid": ""
+        }
+      ]
+    }
+JSON
+  tags               = local.tags
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
