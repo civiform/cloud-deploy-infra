@@ -2,6 +2,7 @@ import shlex
 import subprocess
 import json
 import time
+import inspect
 from typing import Dict
 
 from cloud.aws.templates.aws_oidc.bin import resources
@@ -50,10 +51,12 @@ class AwsCli:
             f"ecs update-service --force-new-deployment --cluster={self._ecs_cluster} --service={self._ecs_service}"
         )
 
-    def wait_for_ecs_service_healthy(self):
+    def wait_for_ecs_service_healthy(self, previous_deployment_id):
         """
         Polls the CiviForm ECS service, waiting for the PRIMARY deployment to
-        have rolloutStatus of COMPLETED.
+        have rolloutStatus of COMPLETED. If the PRIMARY deployment ID ends up
+        being equal to the previous_deployment_id, then the deployment failed
+        and we've rolled back.
 
         Gives up after 60 tries, sleeps 30 seconds between each try.
         """
@@ -61,21 +64,57 @@ class AwsCli:
             "\nWaiting for CiviForm ECS service to become healthy.\n"
             f"Service URL: {self._get_url_of_ecs_service()}")
 
+        error_text = inspect.cleandoc(
+            """
+            go to the Service URL printed above and click on the logs tab.
+            More details at https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system/terraform-aws-deployment#inspecting-logs
+            For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities
+            """)
+
+        tracked_deployment_id = None
         tries = 60
         while True:
-            state = self._ecs_service_state()
+            info = self.ecs_service_state()
+            id = info["id"]
+            state = info["state"]
+            tracked_deployment_id = id if tracked_deployment_id is None else tracked_deployment_id
+            if id == previous_deployment_id:
+                print(
+                    "ERROR: It appears that the deployment has failed and we've rolled back to the previous working deployment.\n"
+                    "This usually means the new tasks are crash-looping and we've rolled back to the previous deployment.\n"
+                    "To view the logs to see what happened, " + error_text)
+                raise Exception("deployment rolled back")
+
             if state == "COMPLETED":
+                # If the ID of the deployment that is COMPLETED is not the one we've been
+                # waiting for, then:
+                #   - This is a deployment that bypassed the "deployment is already in progress"
+                #     check from deploy.py, so we didn't get previous_deployment_id
+                #   - That deployment that was in progress somehow passed before we started this deployment
+                #   - This deployment failed
+                #   - We've rolled back to that previous successful deployment
+                # Or something else unexpected as happened, which we want to flag here too.
+                if id != tracked_deployment_id:
+                    print(
+                        "ERROR: The deployment that is now COMPLETED has a different ID than the one we were waiting for.\n"
+                        "This probably means the new tasks are crash-looping and we've rolled back to the previous deployment.\n"
+                        "To view the logs to see what happened, " + error_text)
+                    raise Exception("deployment completed with different ID")
                 print("Service is healthy.")
                 return
+
+            if state == "FAILED":
+                print(
+                    "ERROR: Service deployment has failed. This usually means the new tasks are crash-looping.\n"
+                    "To view the logs to see what happened, " + error_text)
+                raise Exception("service failed")
 
             tries -= 1
             if tries == 0:
                 print(
-                    "\nERROR: service did not become healthy in expected amount of time. This usually means the new tasks are crash-looping, but can mean the check timed out before the service finished starting.\n"
-                    "To check the health of the service, go to the Service URL printed above and click on the logs tab.\n"
-                    "To see the task logs, follow https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system/terraform-aws-deployment#inspecting-logs\n"
-                    "For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities"
-                )
+                    "ERROR: service did not become healthy in expected amount of time.\n"
+                    "This usually means the new tasks are crash-looping, but can mean the check timed out before the service finished starting.\n"
+                    "To check the health of the service, " + error_text)
                 raise Exception(
                     "service did not become healthy in expected duration")
 
@@ -84,16 +123,15 @@ class AwsCli:
             )
             time.sleep(30)
 
-    def _ecs_service_state(self) -> str:
+    def ecs_service_state(self) -> Dict:
         """
-        Returns the rolloutState of the PRIMARY ECS service deployment. If
+        Returns the ID and rolloutState of the PRIMARY ECS service deployment. If
         the CiviForm service is not found or there is no PRIMARY deployment
-        found, "NONE" is returned.
+        found, an empty dictionary is returned.
 
         An ECS service has many deployments. Each deployment has a status of
         PRIMARY, ACTIVE, or INACTIVE. There can only be one deployment with the
-        PRIMARY status. A deployment with this status is the most recent
-        deployment.
+        PRIMARY status.
 
         Each deployment has a rolloutState of COMPLETED, FAILED, or IN_PROGRESS.
         The deployment becomes COMPLETED when all its containers pass their
@@ -106,6 +144,12 @@ class AwsCli:
         COMPLETED, the ACTIVE deployment stops its tasks and goes to the
         INACTIVE state.
 
+        Because we have the deployment circuit breaker enabled, if a deployment
+        fails, it will roll back to the last successful deployment and mark it
+        as PRIMARY again. This is why we also provide the ID in this function, so
+        that we can detect if the new deployment was successful, or if we've
+        rolled back.
+
         https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Deployment.html.
         """
         res = self._call_cli(
@@ -114,13 +158,16 @@ class AwsCli:
 
         services = res["services"]
         if services == None or len(services) != 1:
-            return "NONE"
+            return {}
 
         for deployment in services[0]["deployments"]:
             if deployment["status"] == "PRIMARY":
-                return deployment["rolloutState"]
+                return {
+                    "id": deployment["id"],
+                    "state": deployment["rolloutState"]
+                }
 
-        return "NONE"
+        return {}
 
     def _get_url_of_ecs_service(self) -> str:
         return f"https://{self.config.aws_region}.console.aws.amazon.com/ecs/v2/clusters/{self._ecs_cluster}/services/{self._ecs_service}/deployments"
