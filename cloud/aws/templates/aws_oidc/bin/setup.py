@@ -61,7 +61,7 @@ class Setup(AwsSetupTemplate):
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
         self._maybe_change_default_db_password()
-        self._aws_cli.wait_for_ecs_service_healthy(None)
+        self._aws_cli.wait_for_ecs_service_healthy()
         self._print_final_message()
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):

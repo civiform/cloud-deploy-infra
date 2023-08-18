@@ -51,7 +51,7 @@ class AwsCli:
             f"ecs update-service --force-new-deployment --cluster={self._ecs_cluster} --service={self._ecs_service}"
         )
 
-    def wait_for_ecs_service_healthy(self, previous_deployment_id):
+    def wait_for_ecs_service_healthy(self):
         """
         Polls the CiviForm ECS service, waiting for the PRIMARY deployment to
         have rolloutStatus of COMPLETED. If the PRIMARY deployment ID ends up
@@ -74,32 +74,18 @@ class AwsCli:
         tracked_deployment_id = None
         tries = 60
         while True:
-            info = self.ecs_service_state()
+            info = self._ecs_service_state()
             id = info["id"]
             state = info["state"]
             tracked_deployment_id = id if tracked_deployment_id is None else tracked_deployment_id
-            if id == previous_deployment_id:
-                print(
-                    "ERROR: It appears that the deployment has failed and we've rolled back to the previous working deployment.\n"
-                    "This usually means the new tasks are crash-looping and we've rolled back to the previous deployment.\n"
-                    "To view the logs to see what happened, " + error_text)
-                raise Exception("deployment rolled back")
 
             if state == "COMPLETED":
-                # If the ID of the deployment that is COMPLETED is not the one we've been
-                # waiting for, then:
-                #   - This is a deployment that bypassed the "deployment is already in progress"
-                #     check from deploy.py, so we didn't get previous_deployment_id
-                #   - That deployment that was in progress somehow passed before we started this deployment
-                #   - This deployment failed
-                #   - We've rolled back to that previous successful deployment
-                # Or something else unexpected as happened, which we want to flag here too.
                 if id != tracked_deployment_id:
                     print(
                         "ERROR: The deployment that is now COMPLETED has a different ID than the one we were waiting for.\n"
                         "This probably means the new tasks are crash-looping and we've rolled back to the previous deployment.\n"
                         "To view the logs to see what happened, " + error_text)
-                    raise Exception("deployment completed with different ID")
+                    raise Exception("Deployment completed with different ID")
                 print("Service is healthy.")
                 return
 
@@ -107,7 +93,7 @@ class AwsCli:
                 print(
                     "ERROR: Service deployment has failed. This usually means the new tasks are crash-looping.\n"
                     "To view the logs to see what happened, " + error_text)
-                raise Exception("service failed")
+                raise Exception("Service failed")
 
             tries -= 1
             if tries == 0:
@@ -116,14 +102,14 @@ class AwsCli:
                     "This usually means the new tasks are crash-looping, but can mean the check timed out before the service finished starting.\n"
                     "To check the health of the service, " + error_text)
                 raise Exception(
-                    "service did not become healthy in expected duration")
+                    "Service did not become healthy in expected duration")
 
             print(
                 f"  Service in state {state}. Retrying ({tries} left) in 30 seconds..."
             )
             time.sleep(30)
 
-    def ecs_service_state(self) -> Dict:
+    def _ecs_service_state(self) -> Dict:
         """
         Returns the ID and rolloutState of the PRIMARY ECS service deployment. If
         the CiviForm service is not found or there is no PRIMARY deployment
