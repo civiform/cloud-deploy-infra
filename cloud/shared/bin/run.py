@@ -14,6 +14,7 @@ from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
+from cloud.shared.bin.lib import terraform
 
 _CIVIFORM_RELEASE_TAG_REGEX = re.compile(r'^v?[0-9]+\.[0-9]+\.[0-9]+$')
 
@@ -32,6 +33,9 @@ def main():
         '--config',
         default='civiform_config.sh',
         help='Path to CiviForm deployment config file.')
+    parser.add_argument(
+        '--force-unlock',
+        help='Lock ID to force unlock before performing the Terraform apply.')
 
     args = parser.parse_args()
     if args.tag:
@@ -54,6 +58,12 @@ def main():
 
     # Setup backend
     backend_setup.setup_backend(config)
+
+    # Run the command to force unlock the TF state lock
+    if args.force_unlock:
+        print("Force unlocking the Terraform state")
+        terraform.force_unlock(config, args.force_unlock)
+
 
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")

@@ -19,7 +19,7 @@ set -o pipefail
 source cloud/shared/bin/python_env_setup
 
 # Get the arguments that we want to pass to run.py
-while getopts s:c:t: flag; do
+while getopts s:c:t:u: flag; do
   case "${flag}" in
     # The civiform_config file that contains the values to configure the deployment
     s) source_config=${OPTARG} ;;
@@ -27,6 +27,8 @@ while getopts s:c:t: flag; do
     c) command=${OPTARG} ;;
     # The tag of the image that should be used for this deployment (e.g. "latest")
     t) tag=${OPTARG} ;;
+    # The Terraform lock ID to force unlock
+    u) force_unlock_id=${OPTARG} ;;
   esac
 done
 
@@ -115,4 +117,9 @@ echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}\
 
 initialize_python_env $dependencies_file_path
 
-cloud/shared/bin/run.py --command $command --tag $tag --config $source_config
+force_unlock_arg=""
+if [[ -n "${force_unlock_id}" ]]; then
+  force_unlock_arg="--force-unlock ${force_unlock_id}"
+fi
+
+cloud/shared/bin/run.py --command $command --tag $tag --config $source_config $force_unlock_arg
