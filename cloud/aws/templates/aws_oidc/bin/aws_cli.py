@@ -55,8 +55,8 @@ class AwsCli:
         """
         Polls the CiviForm ECS service, waiting for the PRIMARY deployment to
         have rolloutStatus of COMPLETED. If the PRIMARY deployment ID ends up
-        being equal to the previous_deployment_id, then the deployment failed
-        and we've rolled back.
+        being different than the ID we attempting to deploy, then the deployment
+        failed and we've rolled back.
 
         Gives up after 60 tries, sleeps 30 seconds between each try.
         """
@@ -71,16 +71,16 @@ class AwsCli:
             For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities
             """)
 
-        tracked_deployment_id = None
+        current_deployment_id = None
         tries = 60
         while True:
             info = self._ecs_service_state()
             id = info["id"]
             state = info["state"]
-            tracked_deployment_id = id if tracked_deployment_id is None else tracked_deployment_id
+            current_deployment_id = id if current_deployment_id is None else current_deployment_id
 
             if state == "COMPLETED":
-                if id != tracked_deployment_id:
+                if id != current_deployment_id:
                     print(
                         "ERROR: The deployment that is now COMPLETED has a different ID than the one we were waiting for.\n"
                         "This probably means the new tasks are crash-looping and we've rolled back to the previous deployment.\n"
