@@ -74,11 +74,12 @@ resource "aws_security_group" "pgadmin_tasks" {
 
 # Run a pgadmin container via a ecs service.
 resource "aws_ecs_service" "pgadmin" {
-  name            = local.name_prefix
-  cluster         = var.ecs_cluster_arn
-  task_definition = aws_ecs_task_definition.pgadmin.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                   = local.name_prefix
+  cluster                = var.ecs_cluster_arn
+  task_definition        = aws_ecs_task_definition.pgadmin.arn
+  desired_count          = 1
+  launch_type            = "FARGATE"
+  enable_execute_command = true
   network_configuration {
     subnets = var.subnet_ids
     security_groups = [
@@ -146,6 +147,28 @@ resource "aws_iam_role" "civiform_pgadmin_task_execution_role" {
     }
 JSON
   tags               = local.tags
+}
+resource "aws_iam_role" "civiform_pgadmin_task_role" {
+  name               = "${local.name_prefix}-task-role"
+  assume_role_policy = <<JSON
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole",
+            "Sid": ""
+        }
+      ]
+    }
+JSON
+  tags               = local.tags
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
 }
 resource "aws_iam_role_policy_attachment" "civiform_pgadmin_task_execution_role_policy_attach" {
   role       = aws_iam_role.civiform_pgadmin_task_execution_role.name
