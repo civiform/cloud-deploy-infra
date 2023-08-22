@@ -18,5 +18,3 @@ docker buildx build --push \
   -t "docker.io/civiform/${IMAGE}:latest" \
   -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
   -f pgadmin.Dockerfile .
-
-
