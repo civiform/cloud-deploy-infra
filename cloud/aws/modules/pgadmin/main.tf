@@ -74,12 +74,12 @@ resource "aws_security_group" "pgadmin_tasks" {
 
 # Run a pgadmin container via a ecs service.
 resource "aws_ecs_service" "pgadmin" {
-  name            = local.name_prefix
-  cluster         = var.ecs_cluster_arn
-  task_definition = aws_ecs_task_definition.pgadmin.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-  enable_execute_command  = true
+  name                   = local.name_prefix
+  cluster                = var.ecs_cluster_arn
+  task_definition        = aws_ecs_task_definition.pgadmin.arn
+  desired_count          = 1
+  launch_type            = "FARGATE"
+  enable_execute_command = true
   network_configuration {
     subnets = var.subnet_ids
     security_groups = [
