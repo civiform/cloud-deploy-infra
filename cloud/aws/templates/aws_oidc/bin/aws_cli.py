@@ -109,6 +109,23 @@ class AwsCli:
             )
             time.sleep(30)
 
+    def fix_digest_value(self, value):
+        """
+        Sets the lock file digest value in DynamoDB to the given value.
+
+        If something goes wrong during deployment, especially when a user has
+        force-unlocked due to a previous issue and then multiple apply actions
+        are happening at once, the digest value for the Terraform lock file in
+        S3 can be incorrect. This function lets us set the digest value to
+        the correct value, as given by the error message of a previous
+        Terraform command, without having to go into the AWS console to
+        set it manually.
+        """
+        table=f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
+        file=f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
+        command=f'dynamodb put-item --table-name={table} --item=\'{{"LockID":{{"S":"{file}/tfstate/terraform.tfstate-md5"}},"Digest":{{"S":"{value}"}}}}\''
+        self._call_cli(command, False)
+
     def _ecs_service_state(self) -> Dict:
         """
         Returns the ID and rolloutState of the PRIMARY ECS service deployment. If
@@ -169,7 +186,12 @@ class AwsCli:
     def get_url_of_s3_bucket(self, bucket_name: str) -> str:
         return f"https://{self.config.aws_region}.console.aws.amazon.com/s3/buckets/{bucket_name}"
 
-    def _call_cli(self, command: str) -> Dict:
-        command = f"aws --output=json --region={self.config.aws_region} " + command
+    def _call_cli(self, command: str, output: bool = True) -> Dict:
+        base = f"aws --region={self.config.aws_region} "
+        if output:
+            base += "--output=json "
+        command = base + command
         out = subprocess.check_output(shlex.split(command))
-        return json.loads(out.decode("ascii"))
+        if output:
+            return json.loads(out.decode("ascii"))
+        return

@@ -41,7 +41,16 @@ def perform_init(config_loader: ConfigLoader,
                                        config_loader.backend_vars_filename)):
             init_cmd += f' -backend-config={config_loader.backend_vars_filename}'
     print(f" - Run {init_cmd}")
-    subprocess.check_call(shlex.split(init_cmd))
+    #subprocess.check_call(shlex.split(init_cmd))
+    output, exit_code = capture_stderr(init_cmd)
+    if exit_code:
+        # This is AWS-specific, and should be modified when we have actual
+        # Azure deployments
+        if 'state data in S3 does not have the expected content' in output:
+            match = re.search(r'value: ([0-9a-f]{32})', output)
+            if match:
+                print(f"To fix the above error, rerun this command with \"--fix-digest={match.group(match.lastindex)}\"")
+            exit(exit_code)
     
 # We specifically don't want to capture stdout here. When running in interactive mode,
 # we'd miss the prompt to enter "yes" to continue on a terraform apply, even if we're

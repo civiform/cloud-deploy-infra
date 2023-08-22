@@ -15,6 +15,7 @@ from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
 from cloud.shared.bin.lib import terraform
+from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 _CIVIFORM_RELEASE_TAG_REGEX = re.compile(r'^v?[0-9]+\.[0-9]+\.[0-9]+$')
 
@@ -36,6 +37,9 @@ def main():
     parser.add_argument(
         '--force-unlock',
         help='Lock ID to force unlock before performing the Terraform apply.')
+    parser.add_argument(
+        '--fix-digest',
+        help='Digest value to set in the DynamoDB table to fix when an error occured and this value was not updated on a previous deploy. Only works on AWS deployments.')
 
     args = parser.parse_args()
     if args.tag:
@@ -63,6 +67,11 @@ def main():
     if args.force_unlock:
         print("Force unlocking the Terraform state")
         terraform.force_unlock(config, args.force_unlock)
+
+    if args.fix_digest:
+        print(f"Fixing the lock file digest value in DynamoDB, setting it to {args.fix_digest}")
+        aws = AwsCli(config)
+        aws.fix_digest_value(args.fix_digest)
 
 
     # Write the passthrough vars to a temporary file
