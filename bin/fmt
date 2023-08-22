@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# DOC: Format terraform, python, and shell script files.
+
+if which -s terraform; then
+  echo "Formatting Terraform files"
+  terraform fmt -recursive -write
+else
+  echo "Terraform not found. Skipping."
+fi
+
+if which -s shfmt; then
+  echo "Formatting shell scripts"
+  shfmt -bn -ci -i 2 -w -l $(shfmt -f .)
+else
+  echo "Shfmt not found. Skipping."
+fi
+
+if which -s yapf; then
+  echo "Formatting python files"
+  yapf \
+    --verbose \
+    --style='{based_on_style: google, SPLIT_BEFORE_FIRST_ARGUMENT:true}' \
+    --in-place \
+    --recursive \
+    .
+else
+  echo "Yapf not found. Skipping."
+fi
