@@ -236,9 +236,15 @@ resource "aws_ecs_service" "service" {
     assign_public_ip = false
   }
 
+  # The circuit breaker will mark the deployment as failed when the service does
+  # not come up or is not marked as healthy after 10 tries. This prevents the
+  # deployment from pulling the civiform image over and over, which can cause
+  # DockerHub rate limiting. The 10 tries is the minimum value given that
+  # desired_count < 20 (desired_count is probably 1 for our use case).
+  # https://docs.aws.amazon.com/AmazonECS/latest/userguide/deployment-circuit-breaker.html
   deployment_circuit_breaker {
-    enable   = false
-    rollback = false
+    enable   = true
+    rollback = true
   }
 
   tags = merge(
