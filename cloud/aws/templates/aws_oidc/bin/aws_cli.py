@@ -121,9 +121,9 @@ class AwsCli:
         Terraform command, without having to go into the AWS console to
         set it manually.
         """
-        table=f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
-        file=f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
-        command=f'dynamodb put-item --table-name={table} --item=\'{{"LockID":{{"S":"{file}/tfstate/terraform.tfstate-md5"}},"Digest":{{"S":"{value}"}}}}\''
+        table = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
+        file = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
+        command = f'dynamodb put-item --table-name={table} --item=\'{{"LockID":{{"S":"{file}/tfstate/terraform.tfstate-md5"}},"Digest":{{"S":"{value}"}}}}\''
         self._call_cli(command, False)
 
     def _ecs_service_state(self) -> Dict:
