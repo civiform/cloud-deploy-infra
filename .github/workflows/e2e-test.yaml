@@ -17,6 +17,14 @@ jobs:
     # https://docs.github.com/en/actions/using-jobs/using-concurrency
     concurrency: run-e2e-aws-oidc
     steps:
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+        
+      - name: Install requests
+        run: pip install requests
+        
       - name: Checkout civiform/cloud-deploy-infra
         uses: actions/checkout@v3
         with:

@@ -21,6 +21,14 @@ jobs:
       - name: Check out branch
         uses: actions/checkout@v3
 
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+        
+      - name: Install requests
+        run: pip install requests
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
