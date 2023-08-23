@@ -45,7 +45,6 @@ def perform_init(
                                        config_loader.backend_vars_filename)):
             init_cmd += f' -backend-config={config_loader.backend_vars_filename}'
     print(f" - Run {init_cmd}")
-    #subprocess.check_call(shlex.split(init_cmd))
     output, exit_code = capture_stderr(init_cmd)
     if exit_code:
         # This is AWS-specific, and should be modified when we have actual
@@ -77,8 +76,7 @@ def capture_stderr(cmd):
         return stderr, exit_code
     except KeyboardInterrupt:
         # Allow terraform to gracefully exit if a user Ctrl+C's out of the command
-        #popen.terminate()
-        popen.kill()
+        popen.terminate()
 
 
 # TODO(#2741): When using this for Azure make sure to setup backend bucket prior to calling these functions.
