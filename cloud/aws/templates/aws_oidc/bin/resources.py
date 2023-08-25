@@ -13,6 +13,8 @@ ADFS_CLIENT_ID = 'civiform_adfs_client_id'
 ADFS_SECRET = 'civiform_adfs_secret'
 APPLICANT_OIDC_CLIENT_ID = 'civiform_applicant_oidc_client_id'
 APPLICANT_OIDC_CLIENT_SECRET = 'civiform_applicant_oidc_client_secret'
+ADMIN_OIDC_CLIENT_ID = 'civiform_admin_oidc_client_id'
+ADMIN_OIDC_CLIENT_SECRET = 'civiform_admin_oidc_client_secret'
 POSTGRES_PASSWORD = 'civiform_postgres_password'
 
 # Defined in cloud/aws/templates/aws_oidc/main.tf
