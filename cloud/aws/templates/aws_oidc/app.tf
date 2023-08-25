@@ -70,7 +70,7 @@ module "civiform_server_container_def" {
     {
       name      = "APPLICANT_OIDC_CLIENT_SECRET"
       valueFrom = aws_secretsmanager_secret_version.applicant_oidc_client_secret_secret_version.arn
-    }
+    },
     {
       name      = "ADMIN_OIDC_CLIENT_ID"
       valueFrom = aws_secretsmanager_secret_version.admin_oidc_client_id_secret_version.arn
