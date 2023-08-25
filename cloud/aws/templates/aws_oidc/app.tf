@@ -260,6 +260,8 @@ locals {
               aws_secretsmanager_secret.adfs_client_id_secret.arn,
               aws_secretsmanager_secret.applicant_oidc_client_secret_secret.arn,
               aws_secretsmanager_secret.applicant_oidc_client_id_secret.arn,
+              aws_secretsmanager_secret.admin_oidc_client_secret_secret.arn,
+              aws_secretsmanager_secret.admin_oidc_client_id_secret.arn,
             ]
           },
           {
