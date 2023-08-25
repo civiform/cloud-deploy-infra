@@ -183,27 +183,27 @@ resource "aws_secretsmanager_secret_version" "applicant_oidc_client_id_secret_ve
   secret_string = " "
 }
 
-# Creating a AWS secret for admin_oidc_secret
+# Creating an AWS secret for admin_oidc_secret
 resource "aws_secretsmanager_secret" "admin_oidc_client_secret_secret" {
   name                    = "${var.app_prefix}-civiform_admin_oidc_client_secret"
   kms_key_id              = aws_kms_key.civiform_kms_key.arn
   recovery_window_in_days = local.secret_recovery_window_in_days
 }
 
-# Creating a AWS secret versions for admin_oidc_secret
+# Creating an AWS secret versions for admin_oidc_secret
 resource "aws_secretsmanager_secret_version" "admin_oidc_client_secret_secret_version" {
   secret_id     = aws_secretsmanager_secret.admin_oidc_client_secret_secret.id
   secret_string = " "
 }
 
-# Creating a AWS secret for admin_oidc_client_id
+# Creating an AWS secret for admin_oidc_client_id
 resource "aws_secretsmanager_secret" "admin_oidc_client_id_secret" {
   name                    = "${var.app_prefix}-civiform_admin_oidc_client_id"
   kms_key_id              = aws_kms_key.civiform_kms_key.arn
   recovery_window_in_days = local.secret_recovery_window_in_days
 }
 
-# Creating a AWS secret versions for admin_oidc_client_id
+# Creating an AWS secret versions for admin_oidc_client_id
 resource "aws_secretsmanager_secret_version" "admin_oidc_client_id_secret_version" {
   secret_id     = aws_secretsmanager_secret.admin_oidc_client_id_secret.id
   secret_string = " "
