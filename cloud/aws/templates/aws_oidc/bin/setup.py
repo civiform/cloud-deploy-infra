@@ -32,7 +32,6 @@ class Setup(AwsSetupTemplate):
 
     def __init__(self, config: ConfigLoader):
         super().__init__(config)
-        print('XXX Creating Setup instance')
         self._aws_cli = AwsCli(config)
 
     def get_current_user(self) -> str:
@@ -58,14 +57,11 @@ class Setup(AwsSetupTemplate):
         return True
 
     def post_terraform_setup(self):
-        print('XXX post_terraform_setup start')
         if self.config.is_test():
             print(" - Test. Skipping post terraform setup.")
             return
 
-        print('XXX prompting for secrets')
         for name, doc in SECRETS.items():
-            print(f'XXX processing secret {name}')
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
         self._maybe_change_default_db_password()
