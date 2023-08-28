@@ -18,9 +18,13 @@ SECRETS: Dict[str, str] = {
     resources.ADFS_SECRET:
         'Secret for the ADFS configuration. Enter any value if you do not use ADFS.',
     resources.APPLICANT_OIDC_CLIENT_ID:
-        'Client ID for your OIDC provider. Enter any value if you have not set it up yet.',
+        'Client ID for your OIDC provider for applicants. Enter any value if not applicable.',
     resources.APPLICANT_OIDC_CLIENT_SECRET:
-        'Client secret for your OIDC provider. Enter any value if you have not set it up yet.',
+        'Client secret for your OIDC provider for applicants. Enter any value if not applicable.',
+    resources.ADMIN_OIDC_CLIENT_ID:
+        'Client ID for your OIDC provider for admins. Enter any value if not applicable.',
+    resources.ADMIN_OIDC_CLIENT_SECRET:
+        'Client secret for your OIDC provider for admins. Enter any value if not applicable.',
 }
 
 
