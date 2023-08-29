@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 import re
 import shutil
 import shlex
@@ -8,21 +9,23 @@ from typing import Optional
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
+from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 
 def force_unlock(
         config_loader: ConfigLoader,
         lock_id: str,
-        terraform_template_dir: Optional[str] = None):
+        terraform_template_dir: Optional[str] = None,
+        initialize = True):
     if not terraform_template_dir:
         terraform_template_dir = config_loader.get_template_dir()
 
-    perform_init(config_loader, terraform_template_dir, False)
+    if initialize:
+        perform_init(config_loader, terraform_template_dir, False)
 
     terraform_cmd = f'terraform -chdir={terraform_template_dir} force-unlock -force {lock_id}'
     print(f" - Run {terraform_cmd}")
     subprocess.check_call(shlex.split(terraform_cmd))
-    return True
 
 
 def perform_init(
@@ -46,16 +49,28 @@ def perform_init(
             init_cmd += f' -backend-config={config_loader.backend_vars_filename}'
     print(f" - Run {init_cmd}")
     output, exit_code = capture_stderr(init_cmd)
-    if exit_code:
+    if exit_code > 0:
+        is_tty = sys.stdin.isatty()
         # This is AWS-specific, and should be modified when we have actual
         # Azure deployments
         if 'state data in S3 does not have the expected content' in output:
             match = re.search(r'value: ([0-9a-f]{32})', output)
             if match:
+                digest = match.group(match.lastindex)
+                if is_tty:
+                    answer = input("Would you like to fix this by setting the correct digest value? Ensure that no other deployment processes are in progress. [Y/n] >")
+                    if answer.lower() in ['y', 'yes', '']:
+                        aws = AwsCli(config_loader)
+                        aws.fix_digest_value(digest)
+                        perform_init(config_loader, terraform_template_dir, upgrade)
+                        return
                 print(
                     f"To fix the above error, rerun this command with \"--fix-digest={match.group(match.lastindex)}\""
                 )
+            # Since we've handled the error and printed a message, exit immediately
+            # rather than returning False and having it print a stack trace.
             exit(exit_code)
+        raise RuntimeError("Unhandled error during terraform init. See error message above for details.")
 
 
 # We specifically don't want to capture stdout here. When running in interactive mode,
@@ -82,14 +97,16 @@ def capture_stderr(cmd):
 # TODO(#2741): When using this for Azure make sure to setup backend bucket prior to calling these functions.
 def perform_apply(
         config_loader: ConfigLoader,
-        is_destroy=False,
-        terraform_template_dir: Optional[str] = None):
+        is_destroy = False,
+        terraform_template_dir: Optional[str] = None,
+        initialize = True):
     '''Generates terraform variable files and runs terraform init and apply.'''
     if not terraform_template_dir:
         terraform_template_dir = config_loader.get_template_dir()
     tf_vars_filename = config_loader.tfvars_filename
 
-    perform_init(config_loader, terraform_template_dir)
+    if initialize:
+        perform_init(config_loader, terraform_template_dir)
 
     if os.path.exists(os.path.join(terraform_template_dir, tf_vars_filename)):
         print(
@@ -115,7 +132,8 @@ def perform_apply(
     print(f" - Run {terraform_apply_cmd}")
 
     output, exit_code = capture_stderr(terraform_apply_cmd)
-    if exit_code:
+    if exit_code > 0:
+        is_tty = sys.stdin.isatty()
         if "Error acquiring the state lock" in output:
             # Lock ID is a standard UUID v4 in the form 00000000-0000-0000-0000-000000000000
             match = re.search(
@@ -123,13 +141,19 @@ def perform_apply(
                     output)
             error_text = inspect.cleandoc(
                 """
-                                     The Terraform state lock can not be acquired.
-                                     This can happen if you are running a command in another process, or if another Terraform process exited prematurely. 
-                                     """)
+                The Terraform state lock can not be acquired.
+                This can happen if you are running a command in another process, or if another Terraform process exited prematurely. 
+                """)
             if match:
+                lock_id = match.group(match.lastindex)
+                if is_tty:
+                    answer = input("Would you like to fix this by force-unlocking the Terraform state? Ensure that no other deployment processes are in progress. [Y/n] >")
+                    if answer.lower() in ['y', 'yes', '']:
+                        force_unlock(config_loader, lock_id, terraform_template_dir, False)
+                        return perform_apply(config_loader, is_destroy, terraform_template_dir, False)
                 print(
                     error_text +
-                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by rerunning the same command with \"--force-unlock={match.group(match.lastindex)}\""
+                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by rerunning the same command with \"--force-unlock={lock_id}\""
                 )
             else:
                 print(
@@ -137,7 +161,10 @@ def perform_apply(
                     "\nWe were unable to extract the lock ID from the error text. Inspect the error message above."
                     "\nIf you are sure there are no other Terraform processes running, this error can be fixed by rerunning the same command with \"--force-unlock=<Lock ID>\""
                 )
-        exit(exit_code)
+            # Since we've handled the error and printed a message, exit immediately
+            # rather than returning False and having it print a stack trace.
+            exit(exit_code)
+        return False
 
     return True
 
