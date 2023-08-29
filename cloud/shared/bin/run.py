@@ -38,7 +38,7 @@ def main():
         '--force-unlock',
         help='Lock ID to force unlock before performing the Terraform apply.')
     parser.add_argument(
-        '--fix-digest',
+        '--lock-table-digest-value',
         help=
         'Digest value to set in the DynamoDB table to fix when an error occured and this value was not updated on a previous deploy. Only works on AWS deployments.'
     )
@@ -70,12 +70,12 @@ def main():
         print("Force unlocking the Terraform state")
         terraform.force_unlock(config, args.force_unlock)
 
-    if args.fix_digest:
+    if args.lock_table_digest_value:
         print(
-            f"Fixing the lock file digest value in DynamoDB, setting it to {args.fix_digest}"
+            f"Fixing the lock file digest value in DynamoDB, setting it to {args.lock_table_digest_value}"
         )
         aws = AwsCli(config)
-        aws.fix_digest_value(args.fix_digest)
+        aws.set_lock_table_digest_value(args.lock_table_digest_value)
 
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")

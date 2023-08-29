@@ -126,7 +126,7 @@ if [[ -n "${force_unlock_id}" ]]; then
 fi
 
 if [[ -n "${digest_value}" ]]; then
-  args=("${args[@]}" "--fix-digest" "${digest_value}")
+  args=("${args[@]}" "--lock-table-digest-value" "${digest_value}")
 fi
 
 cloud/shared/bin/run.py "${args[@]}"

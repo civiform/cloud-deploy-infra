@@ -61,11 +61,11 @@ def perform_init(
                     answer = input("Would you like to fix this by setting the correct digest value? Ensure that no other deployment processes are in progress. [Y/n] >")
                     if answer.lower() in ['y', 'yes', '']:
                         aws = AwsCli(config_loader)
-                        aws.fix_digest_value(digest)
+                        aws.set_lock_table_digest_value(digest)
                         perform_init(config_loader, terraform_template_dir, upgrade)
                         return
                 print(
-                    f"To fix the above error, rerun this command with \"--fix-digest={match.group(match.lastindex)}\""
+                    f"To fix the above error, rerun this command with \"--lock-table-digest-value={match.group(match.lastindex)}\""
                 )
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.

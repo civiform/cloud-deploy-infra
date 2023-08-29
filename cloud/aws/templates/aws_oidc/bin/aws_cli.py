@@ -109,9 +109,10 @@ class AwsCli:
             )
             time.sleep(30)
 
-    def fix_digest_value(self, value):
+    def set_lock_table_digest_value(self, value):
         """
-        Sets the lock file digest value in DynamoDB to the given value.
+        Sets the lock file digest value in DynamoDB to the given value. This
+        digest value is a checksum of the Terraform state file stored in S3.
 
         If something goes wrong during deployment, especially when a user has
         force-unlocked due to a previous issue and then multiple apply actions
