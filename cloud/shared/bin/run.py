@@ -40,7 +40,7 @@ def main():
     parser.add_argument(
         '--lock-table-digest-value',
         help=
-        'Digest value to set in the DynamoDB table to fix when an error occured and this value was not updated on a previous deploy. Only works on AWS deployments.'
+        'Digest value for the Terraform lock table to set in DynamoDB. If multiple processes are doing a deploy, or an error occurred in a previous deploy that prevented Terraform from cleaning up after itself, this value may need updating. Only works on AWS deployments.'
     )
 
     args = parser.parse_args()
