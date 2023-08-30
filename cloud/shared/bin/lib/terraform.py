@@ -21,7 +21,7 @@ def force_unlock(
         terraform_template_dir = config_loader.get_template_dir()
 
     if initialize:
-        perform_init(config_loader, terraform_template_dir, False) # initialize = False
+        perform_init(config_loader, terraform_template_dir, False) # upgrade = False
 
     terraform_cmd = f'terraform -chdir={terraform_template_dir} force-unlock -force {lock_id}'
     print(f" - Run {terraform_cmd}")
@@ -65,7 +65,7 @@ def perform_init(
                         perform_init(config_loader, terraform_template_dir, upgrade)
                         return
                 print(
-                    f"To fix the above error, rerun this command with \"--lock-table-digest-value={match.group(match.lastindex)}\""
+                    f"To fix the above error, set the LOCK_TABLE_DIGEST_VALUE environment variable to \"{digest}\" and rerun this command."
                 )
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.
@@ -153,13 +153,13 @@ def perform_apply(
                         return perform_apply(config_loader, is_destroy, terraform_template_dir, False) # initialize = False
                 print(
                     error_text +
-                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by rerunning the same command with \"--force-unlock={lock_id}\""
+                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by setting the FORCE_UNLOCK_ID environment variable to \"{lock_id}\" and rerunning the same command."
                 )
             else:
                 print(
                     error_text +
                     "\nWe were unable to extract the lock ID from the error text. Inspect the error message above."
-                    "\nIf you are sure there are no other Terraform processes running, this error can be fixed by rerunning the same command with \"--force-unlock=<Lock ID>\""
+                    "\nIf you are sure there are no other Terraform processes running, this error can be fixed by setting the FORCE_UNLOCK_ID environment variable to the lock ID value, and then rerunning the same command."
                 )
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.

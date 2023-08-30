@@ -27,10 +27,6 @@ while getopts s:c:t:u:d: flag; do
     c) command=${OPTARG} ;;
     # The tag of the image that should be used for this deployment (e.g. "latest")
     t) tag=${OPTARG} ;;
-    # The Terraform lock ID to force unlock
-    u) force_unlock_id=${OPTARG} ;;
-    # The Digest value for the DynamoDB table to set
-    d) digest_value=${OPTARG} ;;
   esac
 done
 
@@ -121,12 +117,12 @@ initialize_python_env $dependencies_file_path
 
 args=("--command" "${command}" "--tag" "${tag}" "--config" "${source_config}")
 
-if [[ -n "${force_unlock_id}" ]]; then
-  args=("${args[@]}" "--force-unlock" "${force_unlock_id}")
+if [[ -n "${FORCE_UNLOCK_ID}" ]]; then
+  args=("${args[@]}" "--force-unlock" "${FORCE_UNLOCK_ID}")
 fi
 
-if [[ -n "${digest_value}" ]]; then
-  args=("${args[@]}" "--lock-table-digest-value" "${digest_value}")
+if [[ -n "${LOCK_TABLE_DIGEST_VALUE}" ]]; then
+  args=("${args[@]}" "--lock-table-digest-value" "${LOCK_TABLE_DIGEST_VALUE}")
 fi
 
 cloud/shared/bin/run.py "${args[@]}"
