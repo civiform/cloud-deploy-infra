@@ -21,7 +21,7 @@ def force_unlock(
         terraform_template_dir = config_loader.get_template_dir()
 
     if initialize:
-        perform_init(config_loader, terraform_template_dir, False)
+        perform_init(config_loader, terraform_template_dir, False) # initialize = False
 
     terraform_cmd = f'terraform -chdir={terraform_template_dir} force-unlock -force {lock_id}'
     print(f" - Run {terraform_cmd}")
@@ -149,8 +149,8 @@ def perform_apply(
                 if is_tty:
                     answer = input("Would you like to fix this by force-unlocking the Terraform state? Ensure that no other deployment processes are in progress. [Y/n] >")
                     if answer.lower() in ['y', 'yes', '']:
-                        force_unlock(config_loader, lock_id, terraform_template_dir, False)
-                        return perform_apply(config_loader, is_destroy, terraform_template_dir, False)
+                        force_unlock(config_loader, lock_id, terraform_template_dir, False) # initialize = False
+                        return perform_apply(config_loader, is_destroy, terraform_template_dir, False) # initialize = False
                 print(
                     error_text +
                     f"\nIf you are sure there are no other Terraform processes running, this can be fixed by rerunning the same command with \"--force-unlock={lock_id}\""
