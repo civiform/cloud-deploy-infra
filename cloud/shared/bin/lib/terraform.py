@@ -16,12 +16,13 @@ def force_unlock(
         config_loader: ConfigLoader,
         lock_id: str,
         terraform_template_dir: Optional[str] = None,
-        initialize = True):
+        initialize=True):
     if not terraform_template_dir:
         terraform_template_dir = config_loader.get_template_dir()
 
     if initialize:
-        perform_init(config_loader, terraform_template_dir, False) # upgrade = False
+        perform_init(
+            config_loader, terraform_template_dir, False)  # upgrade = False
 
     terraform_cmd = f'terraform -chdir={terraform_template_dir} force-unlock -force {lock_id}'
     print(f" - Run {terraform_cmd}")
@@ -58,11 +59,14 @@ def perform_init(
             if match:
                 digest = match.group(match.lastindex)
                 if is_tty:
-                    answer = input("Would you like to fix this by setting the correct digest value? Ensure that no other deployment processes are in progress. [Y/n] >")
+                    answer = input(
+                        "Would you like to fix this by setting the correct digest value? Ensure that no other deployment processes are in progress. [Y/n] >"
+                    )
                     if answer.lower() in ['y', 'yes', '']:
                         aws = AwsCli(config_loader)
                         aws.set_lock_table_digest_value(digest)
-                        perform_init(config_loader, terraform_template_dir, upgrade)
+                        perform_init(
+                            config_loader, terraform_template_dir, upgrade)
                         return
                 print(
                     f"To fix the above error, set the LOCK_TABLE_DIGEST_VALUE environment variable to \"{digest}\" and rerun this command."
@@ -70,7 +74,9 @@ def perform_init(
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.
             exit(exit_code)
-        raise RuntimeError("Unhandled error during terraform init. See error message above for details.")
+        raise RuntimeError(
+            "Unhandled error during terraform init. See error message above for details."
+        )
 
 
 # We specifically don't want to capture stdout here. When running in interactive mode,
@@ -97,9 +103,9 @@ def capture_stderr(cmd):
 # TODO(#2741): When using this for Azure make sure to setup backend bucket prior to calling these functions.
 def perform_apply(
         config_loader: ConfigLoader,
-        is_destroy = False,
+        is_destroy=False,
         terraform_template_dir: Optional[str] = None,
-        initialize = True):
+        initialize=True):
     '''Generates terraform variable files and runs terraform init and apply.'''
     if not terraform_template_dir:
         terraform_template_dir = config_loader.get_template_dir()
@@ -147,10 +153,16 @@ def perform_apply(
             if match:
                 lock_id = match.group(match.lastindex)
                 if is_tty:
-                    answer = input("Would you like to fix this by force-unlocking the Terraform state? Ensure that no other deployment processes are in progress. [Y/n] >")
+                    answer = input(
+                        "Would you like to fix this by force-unlocking the Terraform state? Ensure that no other deployment processes are in progress. [Y/n] >"
+                    )
                     if answer.lower() in ['y', 'yes', '']:
-                        force_unlock(config_loader, lock_id, terraform_template_dir, False) # initialize = False
-                        return perform_apply(config_loader, is_destroy, terraform_template_dir, False) # initialize = False
+                        force_unlock(
+                            config_loader, lock_id, terraform_template_dir,
+                            False)  # initialize = False
+                        return perform_apply(
+                            config_loader, is_destroy, terraform_template_dir,
+                            False)  # initialize = False
                 print(
                     error_text +
                     f"\nIf you are sure there are no other Terraform processes running, this can be fixed by setting the FORCE_UNLOCK_ID environment variable to \"{lock_id}\" and rerunning the same command."
