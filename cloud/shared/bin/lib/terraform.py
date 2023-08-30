@@ -51,6 +51,7 @@ def perform_init(
     print(f" - Run {init_cmd}")
     output, exit_code = capture_stderr(init_cmd)
     if exit_code > 0:
+        # Determine if we're running interactively
         is_tty = sys.stdin.isatty()
         # This is AWS-specific, and should be modified when we have actual
         # Azure deployments
@@ -69,7 +70,7 @@ def perform_init(
                             config_loader, terraform_template_dir, upgrade)
                         return
                 print(
-                    f"To fix the above error, set the LOCK_TABLE_DIGEST_VALUE environment variable to \"{digest}\" and rerun this command."
+                    f"To fix the above error, rerun the command with LOCK_TABLE_DIGEST_VALUE=\"{digest}\" before it."
                 )
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.
@@ -139,6 +140,7 @@ def perform_apply(
 
     output, exit_code = capture_stderr(terraform_apply_cmd)
     if exit_code > 0:
+        # Determine if we're running interactively
         is_tty = sys.stdin.isatty()
         if "Error acquiring the state lock" in output:
             # Lock ID is a standard UUID v4 in the form 00000000-0000-0000-0000-000000000000
@@ -165,13 +167,13 @@ def perform_apply(
                             False)  # initialize = False
                 print(
                     error_text +
-                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by setting the FORCE_UNLOCK_ID environment variable to \"{lock_id}\" and rerunning the same command."
+                    f"\nIf you are sure there are no other Terraform processes running, this can be fixed by rerunning the command with FORCE_UNLOCK_ID=\"{lock_id}\" before it."
                 )
             else:
                 print(
                     error_text +
                     "\nWe were unable to extract the lock ID from the error text. Inspect the error message above."
-                    "\nIf you are sure there are no other Terraform processes running, this error can be fixed by setting the FORCE_UNLOCK_ID environment variable to the lock ID value, and then rerunning the same command."
+                    "\nIf you are sure there are no other Terraform processes running, this error can be fixed by rerunning the command with FORCE_UNLOCK_ID=<Lock ID> before it."
                 )
             # Since we've handled the error and printed a message, exit immediately
             # rather than returning False and having it print a stack trace.
