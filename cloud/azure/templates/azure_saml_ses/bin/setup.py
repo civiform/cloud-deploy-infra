@@ -2,6 +2,7 @@
 
 import subprocess
 import tempfile
+from typing import Dict
 
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
@@ -27,6 +28,15 @@ class Setup(SetupTemplate):
 
     def should_retry_terraform_apply_once(self):
         return False
+
+    def detect_backend_state_resources(self):
+        # Not yet implemented, so assume
+        # none of the resources exist yet.
+        return {'bucket': None, 'table': None}
+
+    def destroy_backend_resources(self, resources: Dict):
+        # Not yet implemented
+        return
 
     def pre_terraform_setup(self):
         print(" - Setting up the keyvault")

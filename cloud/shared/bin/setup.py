@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import inspect
 from typing import List
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
@@ -31,6 +32,29 @@ def run(config: ConfigLoader, params: List[str]):
     log_args = f"\"{image_tag}\" {current_user}"
 
     try:
+        resources = template_setup.detect_backend_state_resources()
+        if resources['bucket'] or resources['table']:
+            msg = inspect.cleandoc(
+                """
+                ERROR: Terraform backend state resources already exist. You may destroy these resources
+                and recreate them, but you must ensure there are no other deployed resources
+                present. If there are, by recreating the Terraform backend state files,
+                Terraform will lose track of those deployed resources, and subsequent deploys
+                will fail due to the resources already existing.
+
+                Would you like to destroy the backend state resources and recreate them? [y/N] >
+                """)
+            answer = input(msg)
+            if answer in ['y', 'Y', 'yes']:
+                if not template_setup.destroy_backend_resources(resources):
+                    answer = input(
+                        'One or more errors occurred when attempting to delete Terraform backend state resources. You may need to delete S3 bucket and/or the DynamoDB table yourself. Continue anyway? [y/N] >'
+                    )
+                    if answer in ['n', 'N', 'no']:
+                        exit(1)
+            else:
+                exit(1)
+
         print("Starting pre-terraform setup")
         template_setup.pre_terraform_setup()
 
