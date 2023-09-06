@@ -54,7 +54,6 @@ resource "aws_db_instance" "civiform" {
   storage_encrypted               = true
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   performance_insights_enabled    = true
-  create_monitoring_role          = true
 }
 
 # Provide database information for other resources (pgadmin, for example).
