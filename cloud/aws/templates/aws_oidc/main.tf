@@ -53,6 +53,8 @@ resource "aws_db_instance" "civiform" {
   kms_key_id                      = aws_kms_key.civiform_kms_key.arn
   storage_encrypted               = true
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  performance_insights_enabled    = true
+  create_monitoring_role          = true
 }
 
 # Provide database information for other resources (pgadmin, for example).
