@@ -55,6 +55,7 @@ resource "aws_db_instance" "civiform" {
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   performance_insights_enabled    = true
   monitoring_role_arn             = aws_iam_role.civiform_enhanced_monitoring_role.arn
+  monitoring_interval             = 60
 }
 
 # Provide database information for other resources (pgadmin, for example).
