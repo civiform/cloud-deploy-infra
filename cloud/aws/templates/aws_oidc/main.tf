@@ -31,31 +31,30 @@ resource "aws_db_instance" "civiform" {
   }
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
-  snapshot_identifier               = var.postgres_restore_snapshot_identifier
-  deletion_protection               = local.deletion_protection
-  instance_class                    = var.postgres_instance_class
-  allocated_storage                 = var.postgres_storage_gb
-  max_allocated_storage             = var.postgres_max_allocated_storage_gb
-  storage_type                      = var.aws_db_storage_type
-  storage_throughput                = var.aws_db_storage_throughput
-  iops                              = var.aws_db_iops
-  engine                            = "postgres"
-  engine_version                    = "12"
-  username                          = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
-  password                          = aws_secretsmanager_secret_version.postgres_password_secret_version.secret_string
-  vpc_security_group_ids            = [aws_security_group.rds.id]
-  db_subnet_group_name              = module.vpc.database_subnet_group_name
-  parameter_group_name              = aws_db_parameter_group.civiform.name
-  publicly_accessible               = false
-  skip_final_snapshot               = local.skip_final_snapshot
-  final_snapshot_identifier         = "${var.app_prefix}-civiform-db-finalsnapshot"
-  backup_retention_period           = var.postgres_backup_retention_days
-  kms_key_id                        = aws_kms_key.civiform_kms_key.arn
-  storage_encrypted                 = true
-  enabled_cloudwatch_logs_exports   = ["postgresql", "upgrade"]
-  performance_insights_enabled      = true
-  enhanced_monitoring_iam_role_arn  = aws_iam_role.civiform_enhanced_monitoring_role.arn
-  enhanced_monitoring_iam_role_name = aws_iam_role.civiform_enhanced_monitoring_role.name
+  snapshot_identifier             = var.postgres_restore_snapshot_identifier
+  deletion_protection             = local.deletion_protection
+  instance_class                  = var.postgres_instance_class
+  allocated_storage               = var.postgres_storage_gb
+  max_allocated_storage           = var.postgres_max_allocated_storage_gb
+  storage_type                    = var.aws_db_storage_type
+  storage_throughput              = var.aws_db_storage_throughput
+  iops                            = var.aws_db_iops
+  engine                          = "postgres"
+  engine_version                  = "12"
+  username                        = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
+  password                        = aws_secretsmanager_secret_version.postgres_password_secret_version.secret_string
+  vpc_security_group_ids          = [aws_security_group.rds.id]
+  db_subnet_group_name            = module.vpc.database_subnet_group_name
+  parameter_group_name            = aws_db_parameter_group.civiform.name
+  publicly_accessible             = false
+  skip_final_snapshot             = local.skip_final_snapshot
+  final_snapshot_identifier       = "${var.app_prefix}-civiform-db-finalsnapshot"
+  backup_retention_period         = var.postgres_backup_retention_days
+  kms_key_id                      = aws_kms_key.civiform_kms_key.arn
+  storage_encrypted               = true
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  performance_insights_enabled    = true
+  monitoring_role_arn             = aws_iam_role.civiform_enhanced_monitoring_role.arn
 }
 
 # Provide database information for other resources (pgadmin, for example).
