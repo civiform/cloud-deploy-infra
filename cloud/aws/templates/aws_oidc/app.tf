@@ -383,7 +383,6 @@ module "ecs_fargate_service" {
   scale_target_max_capacity = var.ecs_scale_target_max_capacity
   scale_target_min_capacity = var.ecs_scale_target_min_capacity
   https_target_port         = var.port
-  enable_autoscaling        = false
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"
