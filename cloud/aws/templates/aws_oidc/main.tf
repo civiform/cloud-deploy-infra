@@ -56,7 +56,6 @@ resource "aws_db_instance" "civiform" {
   performance_insights_enabled    = true
   monitoring_role_arn             = aws_iam_role.civiform_enhanced_monitoring_role.arn
   monitoring_interval             = 60
-  apply_immediately               = true
 }
 
 # Provide database information for other resources (pgadmin, for example).
