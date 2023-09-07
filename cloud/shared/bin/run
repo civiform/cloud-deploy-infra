@@ -19,7 +19,7 @@ set -o pipefail
 source cloud/shared/bin/python_env_setup
 
 # Get the arguments that we want to pass to run.py
-while getopts s:c:t: flag; do
+while getopts s:c:t:u:d: flag; do
   case "${flag}" in
     # The civiform_config file that contains the values to configure the deployment
     s) source_config=${OPTARG} ;;
@@ -115,4 +115,14 @@ echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}\
 
 initialize_python_env $dependencies_file_path
 
-cloud/shared/bin/run.py --command $command --tag $tag --config $source_config
+args=("--command" "${command}" "--tag" "${tag}" "--config" "${source_config}")
+
+if [[ -n "${FORCE_UNLOCK_ID}" ]]; then
+  args=("${args[@]}" "--force-unlock" "${FORCE_UNLOCK_ID}")
+fi
+
+if [[ -n "${LOCK_TABLE_DIGEST_VALUE}" ]]; then
+  args=("${args[@]}" "--lock-table-digest-value" "${LOCK_TABLE_DIGEST_VALUE}")
+fi
+
+cloud/shared/bin/run.py "${args[@]}"
