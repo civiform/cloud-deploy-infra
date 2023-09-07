@@ -197,7 +197,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
     ClusterName = local.ecs_cluster_name
     ServiceName = local.ecs_service_name
   }
-  alarm_actions = [aws_appautoscaling_policy.scale_up_policy.arn, aws_sns_topic.civiform_alert_topic.arn]
+  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
 
   tags = local.tags
 }
@@ -218,61 +218,11 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
     ClusterName = local.ecs_cluster_name
     ServiceName = local.ecs_service_name
   }
-  alarm_actions = [aws_appautoscaling_policy.scale_down_policy.arn, aws_sns_topic.civiform_alert_topic.arn]
+  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
 
   tags = local.tags
 }
 
-#------------------------------------------------------------------------------
-# AWS Auto Scaling - Scaling Up Policy
-#------------------------------------------------------------------------------
-resource "aws_appautoscaling_policy" "scale_up_policy" {
-  name               = "${local.name_prefix}-scale-up-policy"
-  depends_on         = [aws_appautoscaling_target.scale_target]
-  service_namespace  = "ecs"
-  resource_id        = "service/${local.ecs_cluster_name}/${local.ecs_service_name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  step_scaling_policy_configuration {
-    adjustment_type         = "ChangeInCapacity"
-    cooldown                = 60
-    metric_aggregation_type = "Maximum"
-    step_adjustment {
-      metric_interval_lower_bound = 0
-      scaling_adjustment          = 1
-    }
-  }
-}
-
-#------------------------------------------------------------------------------
-# AWS Auto Scaling - Scaling Down Policy
-#------------------------------------------------------------------------------
-resource "aws_appautoscaling_policy" "scale_down_policy" {
-  name               = "${local.name_prefix}-scale-down-policy"
-  depends_on         = [aws_appautoscaling_target.scale_target]
-  service_namespace  = "ecs"
-  resource_id        = "service/${local.ecs_cluster_name}/${local.ecs_service_name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  step_scaling_policy_configuration {
-    adjustment_type         = "ChangeInCapacity"
-    cooldown                = 60
-    metric_aggregation_type = "Maximum"
-    step_adjustment {
-      metric_interval_upper_bound = 0
-      scaling_adjustment          = -1
-    }
-  }
-}
-
-#------------------------------------------------------------------------------
-# AWS Auto Scaling - Scaling Target
-#------------------------------------------------------------------------------
-resource "aws_appautoscaling_target" "scale_target" {
-  service_namespace  = "ecs"
-  resource_id        = "service/${local.ecs_cluster_name}/${local.ecs_service_name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = var.ecs_scale_target_min_capacity
-  max_capacity       = var.ecs_scale_target_max_capacity
-}
 
 resource "aws_sns_topic" "civiform_alert_topic" {
   name = "civiform-alert-topic"
