@@ -10,6 +10,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_too_high" {
   statistic           = "Average"
   threshold           = var.rds_max_cpu_utilization_threshold
   alarm_description   = "Average database CPU utilization is too high."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -27,6 +28,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_credit_balance_too_low" {
   statistic           = "Average"
   threshold           = var.rds_low_cpu_credit_balance_threshold
   alarm_description   = "Average database CPU credit balance is too low, a negative performance impact is imminent. When this alarm triggers, the database [instance class](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html) should be increased."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -45,6 +47,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_queue_depth_too_high" {
   statistic           = "Average"
   threshold           = var.rds_disk_queue_depth_high_threshold
   alarm_description   = "Average database disk queue depth is too high, performance may be negatively impacted."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -62,6 +65,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_free_storage_space_too_low" {
   statistic           = "Average"
   threshold           = var.rds_disk_free_storage_low_threshold
   alarm_description   = "Average database free storage space is too low and may fill up soon."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -79,6 +83,7 @@ resource "aws_cloudwatch_metric_alarm" "disk_burst_balance_too_low" {
   statistic           = "Average"
   threshold           = var.rds_disk_burst_balance_low_threshold
   alarm_description   = "Average database storage burst balance is too low, a negative performance impact is imminent."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -97,6 +102,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_freeable_too_low" {
   statistic           = "Average"
   threshold           = var.rds_low_memory_threshold
   alarm_description   = "Average database freeable memory is too low, performance may be negatively impacted."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -114,6 +120,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_swap_usage_too_high" {
   statistic           = "Average"
   threshold           = var.rds_high_swap_usage_threshold
   alarm_description   = "Average database swap usage is too high, performance may be negatively impacted."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   dimensions = {
     DBInstanceIdentifier = data.aws_db_instance.civiform.id
@@ -128,6 +135,7 @@ resource "aws_cloudwatch_metric_alarm" "connection_count_anomalous" {
   evaluation_periods  = var.rds_alarm_evaluation_period
   threshold_metric_id = "e1"
   alarm_description   = "Anomalous database connection count detected. Check the monitoring graphs and logs for any suspicious activity."
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 
   metric_query {
     id          = "e1"
@@ -165,5 +173,15 @@ resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
   statistic           = "Average"
   threshold           = var.rds_max_used_transaction_ids_high_threshold
   alarm_description   = "Nearing a possible critical transaction ID wraparound. More info [here](https://aws.amazon.com/blogs/database/implement-an-early-warning-system-for-transaction-id-wraparound-in-amazon-rds-for-postgresql/)"
+  alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 }
 
+resource "aws_sns_topic" "civiform_alert_topic" {
+  name = "civiform-alert-topic"
+}
+
+resource "aws_sns_topic_subscription" "civiform_alert_subscription" {
+  topic_arn = aws_sns_topic.civiform_alert_topic.arn
+  protocol  = "email"
+  endpoint  = "daniellekatz@google.com"
+}
