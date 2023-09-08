@@ -176,52 +176,52 @@ resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
   alarm_actions       = [aws_sns_topic.civiform_alert_topic.arn]
 }
 
-locals {
-  ecs_cluster_name = module.ecs_cluster.aws_ecs_cluster_cluster_name
-  ecs_service_name = "${var.app_prefix} Civiform Fargate Service"
-}
-
-/*#------------------------------------------------------------------------------
-# AWS Auto Scaling - CloudWatch Alarm CPU High
-#------------------------------------------------------------------------------
-resource "aws_cloudwatch_metric_alarm" "cpu_high_email" {
-  alarm_name          = "${local.name_prefix}-cpu-high-email"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = var.ecs_max_cpu_evaluation_period
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/ECS"
-  period              = var.ecs_max_cpu_period
-  statistic           = "Maximum"
-  threshold           = var.ecs_max_cpu_threshold
-  dimensions = {
-    ClusterName = local.ecs_cluster_name
-    ServiceName = local.ecs_service_name
-  }
-  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
-
-  tags = local.tags
-}
-
-#------------------------------------------------------------------------------
-# AWS Auto Scaling - CloudWatch Alarm CPU Low
-#------------------------------------------------------------------------------
-resource "aws_cloudwatch_metric_alarm" "cpu_low_email" {
-  alarm_name          = "${local.name_prefix}-cpu-low-email"
-  comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = var.ecs_min_cpu_evaluation_period
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/ECS"
-  period              = var.ecs_min_cpu_period
-  statistic           = "Average"
-  threshold           = var.ecs_min_cpu_threshold
-  dimensions = {
-    ClusterName = local.ecs_cluster_name
-    ServiceName = local.ecs_service_name
-  }
-  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
-
-  tags = local.tags
-}*/
+#locals {
+#  ecs_cluster_name = module.ecs_cluster.aws_ecs_cluster_cluster_name
+#  ecs_service_name = "${var.app_prefix} Civiform Fargate Service"
+#}
+#
+##------------------------------------------------------------------------------
+## AWS Auto Scaling - CloudWatch Alarm CPU High
+##------------------------------------------------------------------------------
+#resource "aws_cloudwatch_metric_alarm" "cpu_high_email" {
+#  alarm_name          = "${local.name_prefix}-cpu-high-email"
+#  comparison_operator = "GreaterThanOrEqualToThreshold"
+#  evaluation_periods  = var.ecs_max_cpu_evaluation_period
+#  metric_name         = "CPUUtilization"
+#  namespace           = "AWS/ECS"
+#  period              = var.ecs_max_cpu_period
+#  statistic           = "Maximum"
+#  threshold           = var.ecs_max_cpu_threshold
+#  dimensions = {
+#    ClusterName = local.ecs_cluster_name
+#    ServiceName = local.ecs_service_name
+#  }
+#  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
+#
+#  tags = local.tags
+#}
+#
+##------------------------------------------------------------------------------
+## AWS Auto Scaling - CloudWatch Alarm CPU Low
+##------------------------------------------------------------------------------
+#resource "aws_cloudwatch_metric_alarm" "cpu_low_email" {
+#  alarm_name          = "${local.name_prefix}-cpu-low-email"
+#  comparison_operator = "LessThanOrEqualToThreshold"
+#  evaluation_periods  = var.ecs_min_cpu_evaluation_period
+#  metric_name         = "CPUUtilization"
+#  namespace           = "AWS/ECS"
+#  period              = var.ecs_min_cpu_period
+#  statistic           = "Average"
+#  threshold           = var.ecs_min_cpu_threshold
+#  dimensions = {
+#    ClusterName = local.ecs_cluster_name
+#    ServiceName = local.ecs_service_name
+#  }
+#  alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
+#
+#  tags = local.tags
+#}
 
 
 resource "aws_sns_topic" "civiform_alert_topic" {
