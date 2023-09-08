@@ -184,7 +184,7 @@ locals {
 #------------------------------------------------------------------------------
 # AWS Auto Scaling - CloudWatch Alarm CPU High
 #------------------------------------------------------------------------------
-resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+resource "aws_cloudwatch_metric_alarm" "cpu_high_email" {
   alarm_name          = "${local.name_prefix}-cpu-high-email"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = var.ecs_max_cpu_evaluation_period
@@ -205,7 +205,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 #------------------------------------------------------------------------------
 # AWS Auto Scaling - CloudWatch Alarm CPU Low
 #------------------------------------------------------------------------------
-resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+resource "aws_cloudwatch_metric_alarm" "cpu_low_email" {
   alarm_name          = "${local.name_prefix}-cpu-low-email"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.ecs_min_cpu_evaluation_period
