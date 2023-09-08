@@ -181,7 +181,7 @@ locals {
   ecs_service_name = "${var.app_prefix} Civiform Fargate Service"
 }
 
-#------------------------------------------------------------------------------
+/*#------------------------------------------------------------------------------
 # AWS Auto Scaling - CloudWatch Alarm CPU High
 #------------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "cpu_high_email" {
@@ -221,7 +221,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low_email" {
   alarm_actions = [aws_sns_topic.civiform_alert_topic.arn]
 
   tags = local.tags
-}
+}*/
 
 
 resource "aws_sns_topic" "civiform_alert_topic" {
