@@ -170,7 +170,8 @@
       "db.m4.2xlarge",
       "db.m5.large",
       "db.m5.xlarge",
-      "db.m5.2xlarge"
+      "db.m5.2xlarge",
+      "db.m6g.large"
     ]
   },
   "POSTGRES_STORAGE_GB": {
