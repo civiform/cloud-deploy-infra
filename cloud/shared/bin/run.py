@@ -14,6 +14,8 @@ from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
+from cloud.shared.bin.lib import terraform
+from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 _CIVIFORM_RELEASE_TAG_REGEX = re.compile(r'^v?[0-9]+\.[0-9]+\.[0-9]+$')
 
@@ -32,6 +34,14 @@ def main():
         '--config',
         default='civiform_config.sh',
         help='Path to CiviForm deployment config file.')
+    parser.add_argument(
+        '--force-unlock',
+        help='Lock ID to force unlock before performing the Terraform apply.')
+    parser.add_argument(
+        '--lock-table-digest-value',
+        help=
+        'Digest value for the Terraform lock table to set in DynamoDB. If multiple processes are doing a deploy, or an error occurred in a previous deploy that prevented Terraform from cleaning up after itself, this value may need updating. Only works on AWS deployments.'
+    )
 
     args = parser.parse_args()
     if args.tag:
@@ -54,6 +64,18 @@ def main():
 
     # Setup backend
     backend_setup.setup_backend(config)
+
+    # Run the command to force unlock the TF state lock
+    if args.force_unlock:
+        print("Force unlocking the Terraform state")
+        terraform.force_unlock(config, args.force_unlock)
+
+    if args.lock_table_digest_value:
+        print(
+            f"Fixing the lock file digest value in DynamoDB, setting it to {args.lock_table_digest_value}"
+        )
+        aws = AwsCli(config)
+        aws.set_lock_table_digest_value(args.lock_table_digest_value)
 
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")
