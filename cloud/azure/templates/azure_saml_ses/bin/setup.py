@@ -26,9 +26,6 @@ class Setup(SetupTemplate):
     def requires_post_terraform_setup(self):
         return True
 
-    def should_retry_terraform_apply_once(self):
-        return False
-
     def detect_backend_state_resources(self):
         # Not yet implemented, so assume
         # none of the resources exist yet.
