@@ -188,6 +188,10 @@ class AwsCli:
     def get_url_of_s3_bucket(self, bucket_name: str) -> str:
         return f"https://{self.config.aws_region}.console.aws.amazon.com/s3/buckets/{bucket_name}"
 
+    # This is what the aws cli exits with when the resource you
+    # are trying to operate on doesn't exist
+    RESOURCE_NOT_FOUND_CODE = 254
+
     def s3_bucket_encryption(self, bucket_name: str) -> bool:
         result = self._call_cli(
             f's3api get-bucket-encryption --bucket "{bucket_name}"')
@@ -218,32 +222,26 @@ class AwsCli:
             )
             raise
 
-    def dynamodb_table_exists(self, table_name: str) -> bool:
+    def resource_exists(self, resource_type: str, resource_name: str) -> bool:
+        if resource_type == 'bucket':
+            cmd = f's3api head-bucket --bucket "{resource_name}"'
+            type_display_name = 'S3 bucket'
+        elif resource_type == 'table':
+            cmd = f'dynamodb describe-table --table-name "{resource_name}"'
+            type_display_name = 'DynamoDB table'
+        else:
+            raise ValueError(
+                f'{resource_type} is not a type recognized by the resource_exists function'
+            )
         try:
-            self._call_cli(
-                f'dynamodb describe-table --table-name "{table_name}"', False)
+            self._call_cli(cmd, False)
             return True
         except subprocess.CalledProcessError as e:
-            if e.returncode == 254:
-                # This happens when the table does not exist
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
                 return False
             else:
                 print(
-                    f'Error detecting if the DynamoDB table exists: {e.stdout.decode()}'
-                )
-                raise
-
-    def s3_bucket_exists(self, bucket_name: str) -> bool:
-        try:
-            self._call_cli(f's3api head-bucket --bucket "{bucket_name}"', False)
-            return True
-        except subprocess.CalledProcessError as e:
-            if e.returncode == 254:
-                # This happens when the bucket does not exist
-                return False
-            else:
-                print(
-                    f'Error detecting if the S3 bucket exists: {e.stdout.decode()}'
+                    f'Error detecting if the {type_display_name} exists: {e.stdout.decode()}'
                 )
                 raise
 
@@ -283,7 +281,7 @@ class AwsCli:
                 f'kms schedule-key-deletion --key-id {key_id}', False)
             return True
         except subprocess.CalledProcessError as e:
-            if e.returncode == 254:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
                 # Key does not exist, so call it a success
                 return True
             else:
@@ -307,7 +305,7 @@ class AwsCli:
                 f's3api delete-bucket --bucket "{bucket_name}"', False)
             return True
         except subprocess.CalledProcessError as e:
-            if e.returncode == 254:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
                 # Bucket does not exist, so call it a success
                 return True
             else:
@@ -320,7 +318,7 @@ class AwsCli:
                 f'dynamodb delete-table --table-name "{table_name}"', False)
             return True
         except subprocess.CalledProcessError as e:
-            if e.returncode == 254:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
                 # Table does not exist, so call it a success
                 return True
             else:

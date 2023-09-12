@@ -51,14 +51,13 @@ class Setup(AwsSetupTemplate):
         print(' - Checking for existing backend state resources')
         result = {'bucket': None, 'table': None}
         bucket_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
-        bucket_exists = self._aws_cli.s3_bucket_exists(bucket_name)
+        bucket_exists = self._aws_cli.resource_exists('bucket', bucket_name)
         if bucket_exists:
             result['bucket'] = {'name': bucket_name}
-            result['bucket'][
-                'encryption_key'] = self._aws_cli.s3_bucket_encryption(
-                    bucket_name)
+            key_id = self._aws_cli.s3_bucket_encryption(bucket_name)
+            result['bucket']['encryption_key'] = key_id
         table_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
-        if self._aws_cli.dynamodb_table_exists(table_name):
+        if self._aws_cli.resource_exists('table', table_name):
             result['table'] = {'name': table_name}
         return result
 
