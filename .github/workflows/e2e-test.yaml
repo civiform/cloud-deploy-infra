@@ -26,13 +26,13 @@ jobs:
         run: pip install requests
         
       - name: Checkout civiform/cloud-deploy-infra
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: civiform/cloud-deploy-infra
           path: cloud-deploy-infra
 
       - name: Checkout civiform/civiform-deploy
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: civiform/civiform-deploy
           path: civiform-deploy
