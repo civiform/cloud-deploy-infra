@@ -40,6 +40,51 @@ class Setup(AwsSetupTemplate):
             raise RuntimeError('Could not find the logged in user')
         return current_user
 
+    def detect_backend_state_resources(self) -> Dict:
+        """
+        Detects if the S3 bucket and DynamoDB table exist that are set up
+        to store the Terraform backend. Returns a dict with two top-level
+        keys of 'bucket' and 'table'. If either of these don't exist, they
+        will have values of None. Otherwise, they will contain data needed
+        to destroy the resource.
+        """
+        print(' - Checking for existing backend state resources')
+        result = {'bucket': None, 'table': None}
+        bucket_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
+        bucket_exists = self._aws_cli.resource_exists('bucket', bucket_name)
+        if bucket_exists:
+            result['bucket'] = {'name': bucket_name}
+            key_id = self._aws_cli.s3_bucket_encryption(bucket_name)
+            result['bucket']['encryption_key'] = key_id
+        table_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
+        if self._aws_cli.resource_exists('table', table_name):
+            result['table'] = {'name': table_name}
+        return result
+
+    def destroy_backend_resources(self, resources: Dict):
+        """
+        Destroys AWS resources used for storting the Terraform state.
+        Takes a dictionary that is the output of detect_backend_state_resources.
+        Attempts to delete all resources, even if one of the deletions fails.
+        Since we're in a can't-turn-back kind of state once we delete one of
+        these resources, we delete as much as we can so there's less for the user
+        to clean up if something fails.
+        """
+        success = True
+        if resources['bucket']:
+            bucket_name = resources['bucket']['name']
+            success = self._aws_cli.delete_bucket_files(bucket_name) and success
+            if 'encryption_key' in resources['bucket'].keys():
+                success = self._aws_cli.delete_bucket_encryption_key(
+                    resources['bucket']['encryption_key']) and success
+            success = self._aws_cli.delete_bucket_policy(
+                bucket_name) and success
+            success = self._aws_cli.delete_bucket(bucket_name) and success
+        if resources['table']:
+            success = self._aws_cli.delete_table(
+                resources['table']['name']) and success
+        return success
+
     def pre_terraform_setup(self):
         print(' - Running the setup script in terraform')
         self._tf_run_for_aws(is_destroy=False)
