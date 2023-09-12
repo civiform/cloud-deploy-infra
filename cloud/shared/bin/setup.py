@@ -37,10 +37,12 @@ def run(config: ConfigLoader, params: List[str]):
             msg = inspect.cleandoc(
                 """
                 ERROR: Terraform backend state resources already exist. You may destroy these resources
-                and recreate them, but you must ensure there are no other deployed resources
-                present. If there are, by recreating the Terraform backend state files,
-                Terraform will lose track of those deployed resources, and subsequent deploys
-                will fail due to the resources already existing.
+                and recreate them, but you must ensure there are no other deployed resources present.
+                Verify this by checking the AWS console for the presence of any civiform resources.
+                If there are, by recreating the Terraform backend state files, Terraform will lose track 
+                of those deployed resources, and subsequent deploys will fail due to the resources already
+                existing. Running 'bin/run' with the 'destroy' command may clean up these resources for you,
+                but may fail if a previous deployment failed.
 
                 Would you like to destroy the backend state resources and recreate them? [y/N] >
                 """)
