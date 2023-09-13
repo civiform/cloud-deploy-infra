@@ -54,7 +54,7 @@ resource "aws_db_instance" "civiform" {
   storage_encrypted               = true
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   performance_insights_enabled    = var.rds_performance_insights_enabled
-  monitoring_role_arn             = var.rds_enhanced_monitoring_enabled ? aws_iam_role.civiform_enhanced_monitoring_role[count.index].arn : null
+  monitoring_role_arn             = var.rds_enhanced_monitoring_enabled ? aws_iam_role.civiform_enhanced_monitoring_role.arn : null
   monitoring_interval             = var.rds_enhanced_monitoring_enabled ? var.rds_enhanced_monitoring_interval : null
 }
 
@@ -68,7 +68,6 @@ data "aws_db_instance" "civiform" {
 
 # IAM Role for RDS Enhanced Monitoring
 resource "aws_iam_role" "civiform_enhanced_monitoring_role" {
-  count = var.rds_enhanced_monitoring_enabled ? 1 : 0
   name  = "civiform_enhanced_monitoring_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
