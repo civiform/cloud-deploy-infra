@@ -58,18 +58,16 @@ def run(config: ConfigLoader, params: List[str]):
                 exit(1)
 
         print("Starting pre-terraform setup")
-        template_setup.pre_terraform_setup()
+        if not template_setup.pre_terraform_setup():
+            raise Exception("Setting up terraform backend resources failed")
 
         ###############################################################################
         # Terraform Init/Plan/Apply
         ###############################################################################
         print("Starting terraform deploy")
-        try:
-            terraform.perform_apply(config)
-        except subprocess.CalledProcessError:
-            if template_setup.should_retry_terraform_apply_once():
-                print("Initial terraform apply failed, retrying once:")
-                terraform.perform_apply(config)
+        deploy_succeeded = terraform.perform_apply(config)
+        if not deploy_succeeded:
+            raise Exception("Terraform apply failed")
 
         ###############################################################################
         # Post Run Setup Tasks (if needed)
