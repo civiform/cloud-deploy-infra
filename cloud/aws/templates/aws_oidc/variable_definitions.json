@@ -172,7 +172,8 @@
       "db.m5.xlarge",
       "db.m5.2xlarge",
       "db.m6g.large",
-      "db.m6g.xlarge"
+      "db.m6g.xlarge",
+      "db.m6g.2large"
     ]
   },
   "POSTGRES_STORAGE_GB": {
@@ -198,6 +199,24 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "RDS_PERFORMANCE_INSIGHTS_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_ENHANCED_MONITORING_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_ENHANCED_MONITORING_INTERVAL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   },
   "RDS_ALARM_EVALUATION_PERIOD": {
     "required": false,

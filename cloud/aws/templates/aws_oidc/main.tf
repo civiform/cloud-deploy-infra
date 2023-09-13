@@ -53,9 +53,9 @@ resource "aws_db_instance" "civiform" {
   kms_key_id                      = aws_kms_key.civiform_kms_key.arn
   storage_encrypted               = true
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-  performance_insights_enabled    = true
-  monitoring_role_arn             = aws_iam_role.civiform_enhanced_monitoring_role.arn
-  monitoring_interval             = 60
+  performance_insights_enabled    = var.rds_performance_insights_enabled
+  monitoring_role_arn             = var.rds_enhanced_monitoring_enabled ? aws_iam_role.civiform_enhanced_monitoring_role[0].arn : null
+  monitoring_interval             = var.rds_enhanced_monitoring_enabled ? var.rds_enhanced_monitoring_interval : null
 }
 
 # Provide database information for other resources (pgadmin, for example).
@@ -68,8 +68,8 @@ data "aws_db_instance" "civiform" {
 
 # IAM Role for RDS Enhanced Monitoring
 resource "aws_iam_role" "civiform_enhanced_monitoring_role" {
-
-  name = "civiform_enhanced_monitoring_role"
+  count = var.rds_enhanced_monitoring_enabled ? 1 : 0
+  name  = "civiform_enhanced_monitoring_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
