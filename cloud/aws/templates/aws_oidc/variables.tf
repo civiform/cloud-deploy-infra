@@ -136,6 +136,12 @@ variable "postgres_restore_snapshot_identifier" {
   default     = null
 }
 
+variable "rds_alarm_email" {
+  type        = string
+  description = "The address to notify when any enabled RDS alarm alerts. If unset, no emails will be sent."
+  default     = null
+}
+
 variable "rds_alarm_evaluation_period" {
   type        = string
   description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
