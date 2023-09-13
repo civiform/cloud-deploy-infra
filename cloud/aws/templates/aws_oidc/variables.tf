@@ -136,6 +136,24 @@ variable "postgres_restore_snapshot_identifier" {
   default     = null
 }
 
+variable "rds_performance_insights_enabled" {
+  type        = bool
+  description = "Whether or not to enable RDS performance insights for debugging purposes. Note: this may incur charges within AWS."
+  default     = false
+}
+
+variable "rds_enhanced_monitoring_enabled" {
+  type        = bool
+  description = "Whether or not to enable RDS enhanced monitoring for debugging purposes. Note: this may incur charges within AWS."
+  default     = false
+}
+
+variable "rds_enhanced_monitoring_interval" {
+  type        = number
+  description = "The monitoring interval to use for enhanced monitoring, if it is enabled."
+  default     = 60
+}
+
 variable "rds_alarm_evaluation_period" {
   type        = string
   description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
