@@ -1,18 +1,18 @@
 // SNS topic to alert if an alarm gets triggered
 resource "aws_sns_topic" "civiform_alert_topic" {
-  count = var.rds_alarm_email ? 1 : 0
+  count = var.rds_alarm_email != "" ? 1 : 0
   name  = "civiform-alert-topic"
 }
 
 resource "aws_sns_topic_subscription" "civiform_alert_subscription" {
-  count     = var.rds_alarm_email ? 1 : 0
+  count     = var.rds_alarm_email != "" ? 1 : 0
   topic_arn = aws_sns_topic.civiform_alert_topic[0].arn
   protocol  = "email"
   endpoint  = var.rds_alarm_email
 }
 
 locals {
-  rds_alarm_actions = var.rds_alarm_email ? [aws_sns_topic.civiform_alert_topic[0].arn] : []
+  rds_alarm_actions = var.rds_alarm_email != "" ? [aws_sns_topic.civiform_alert_topic[0].arn] : []
 }
 
 // CPU Utilization
