@@ -3,6 +3,7 @@ import subprocess
 import json
 import time
 import inspect
+import re
 from typing import Dict
 
 from cloud.aws.templates.aws_oidc.bin import resources
@@ -187,12 +188,150 @@ class AwsCli:
     def get_url_of_s3_bucket(self, bucket_name: str) -> str:
         return f"https://{self.config.aws_region}.console.aws.amazon.com/s3/buckets/{bucket_name}"
 
+    # This is what the aws cli exits with when the resource you
+    # are trying to operate on doesn't exist
+    RESOURCE_NOT_FOUND_CODE = 254
+
+    def s3_bucket_encryption(self, bucket_name: str) -> bool:
+        result = self._call_cli(
+            f's3api get-bucket-encryption --bucket "{bucket_name}"')
+        try:
+            key_arn = result['ServerSideEncryptionConfiguration']['Rules'][0][
+                'ApplyServerSideEncryptionByDefault']['KMSMasterKeyID']
+            key_match = re.match(
+                r'.*key/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+                key_arn)
+            if key_match:
+                return key_match.groups()[0]
+            else:
+                raise ValueError(
+                    f"KMSMasterKeyID in result from 'aws s3api get-bucket-encryption' did not have the expected format. Output: {result}"
+                )
+        except KeyError:
+            # If the result does not contain the information we're looking for,
+            # then encryption isn't enabled. This is probably okay, but since
+            # we should be setting up encryption every time we are setting up
+            # the backend, print a warning.
+            print(
+                f"WARNING: Could not find the encryption key used for the S3 bucket. It could be that this was not enabled from a failed setup run. Output of 'aws s3api get-bucket-encryption': {result}"
+            )
+            return None
+        except subprocess.CalledProcessError as e:
+            print(
+                f'Error finding encryption state of the S3 bucket: {e.stdout.decode()}'
+            )
+            raise
+
+    def resource_exists(self, resource_type: str, resource_name: str) -> bool:
+        if resource_type == 'bucket':
+            cmd = f's3api head-bucket --bucket "{resource_name}"'
+            type_display_name = 'S3 bucket'
+        elif resource_type == 'table':
+            cmd = f'dynamodb describe-table --table-name "{resource_name}"'
+            type_display_name = 'DynamoDB table'
+        else:
+            raise ValueError(
+                f'{resource_type} is not a type recognized by the resource_exists function'
+            )
+        try:
+            self._call_cli(cmd, False)
+            return True
+        except subprocess.CalledProcessError as e:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
+                return False
+            else:
+                print(
+                    f'Error detecting if the {type_display_name} exists: {e.stdout.decode()}'
+                )
+                raise
+
+    def delete_bucket_files(self, bucket_name: str) -> bool:
+        try:
+            # Because we enable versioning, we have to delete all versions of
+            # all objects, along with their delete markers.
+            file_data = self._call_cli(
+                f's3api list-object-versions --bucket {bucket_name} --output json --query "{{Objects: Versions[].{{Key:Key,VersionId:VersionId}}}}"'
+            )
+            if file_data['Objects']:
+                file_data = str(file_data).replace('\'', '\\"')
+                self._call_cli(
+                    f's3api delete-objects --bucket {bucket_name} --delete "{file_data}"'
+                )
+            delete_markers = self._call_cli(
+                f's3api list-object-versions --bucket {bucket_name} --output json --query "{{Objects: DeleteMarkers[].{{Key:Key,VersionId:VersionId}}}}"'
+            )
+            if delete_markers['Objects']:
+                delete_markers = str(delete_markers).replace('\'', '\\"')
+                self._call_cli(
+                    f's3api delete-objects --bucket {bucket_name} --delete "{delete_markers}"'
+                )
+            return True
+        except subprocess.CalledProcessError as e:
+            print(
+                f'Error attempting to delete all objects from the S3 bucket: {e.stdout.decode()}'
+            )
+            return False
+
+    def delete_bucket_encryption_key(self, key_id: str):
+        try:
+            info = self._call_cli(f'kms describe-key --key-id {key_id}')
+            if info['KeyMetadata']['KeyState'] == 'PendingDeletion':
+                return True
+            self._call_cli(
+                f'kms schedule-key-deletion --key-id {key_id}', False)
+            return True
+        except subprocess.CalledProcessError as e:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
+                # Key does not exist, so call it a success
+                return True
+            else:
+                print(
+                    f'Error deleting S3 bucket encryption key: {e.stdout.decode()}'
+                )
+                return False
+
+    def delete_bucket_policy(self, bucket_name: str) -> bool:
+        try:
+            self._call_cli(
+                f's3api delete-bucket-policy --bucket "{bucket_name}"', False)
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f'Error deleting S3 bucket policy: {e.stdout.decode()}')
+            return False
+
+    def delete_bucket(self, bucket_name: str) -> bool:
+        try:
+            self._call_cli(
+                f's3api delete-bucket --bucket "{bucket_name}"', False)
+            return True
+        except subprocess.CalledProcessError as e:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
+                # Bucket does not exist, so call it a success
+                return True
+            else:
+                print(f'Error deleting bucket: {e.stdout.decode()}')
+                return False
+
+    def delete_table(self, table_name: str) -> bool:
+        try:
+            self._call_cli(
+                f'dynamodb delete-table --table-name "{table_name}"', False)
+            return True
+        except subprocess.CalledProcessError as e:
+            if e.returncode == self.RESOURCE_NOT_FOUND_CODE:
+                # Table does not exist, so call it a success
+                return True
+            else:
+                print(f'Error deleting DynamoDB table: {e.stdout.decode()}')
+                return False
+
     def _call_cli(self, command: str, output: bool = True) -> Dict:
         base = f"aws --region={self.config.aws_region} "
         if output:
             base += "--output=json "
         command = base + command
-        out = subprocess.check_output(shlex.split(command))
+        out = subprocess.check_output(
+            shlex.split(command), stderr=subprocess.STDOUT)
         if output:
             return json.loads(out.decode("ascii"))
         return
