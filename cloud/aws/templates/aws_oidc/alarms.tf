@@ -1,7 +1,7 @@
 // SNS topic to alert if an alarm gets triggered
 resource "aws_sns_topic" "civiform_alert_topic" {
   count = var.rds_alarm_email != "" ? 1 : 0
-  name  = "civiform-alert-topic"
+  name  = "${var.app_prefix}-civiform-alert-topic"
 }
 
 resource "aws_sns_topic_subscription" "civiform_alert_subscription" {
