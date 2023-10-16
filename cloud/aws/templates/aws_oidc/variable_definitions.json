@@ -248,6 +248,18 @@
     "tfvar": true,
     "type": "string"
   },
+  "RDS_CREATE_HIGH_MEMORY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_MAX_MEMORY_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "RDS_CREATE_HIGH_QUEUE_DEPTH_ALARM": {
     "required": false,
     "secret": false,
