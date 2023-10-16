@@ -34,6 +34,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_too_high" {
   }
 }
 
+// Memory Utilization
 resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   count               = var.rds_create_high_memory_alarm ? 1 : 0
   alarm_name          = "rds-${data.aws_db_instance.civiform.id}-highMemoryUtilization"
