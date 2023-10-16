@@ -184,6 +184,18 @@ variable "rds_max_cpu_utilization_threshold" {
   default     = "90"
 }
 
+variable "rds_create_high_memory_alarm" {
+  type        = bool
+  description = "Whether or not to create a high memory alarm for RDS."
+  default     = true
+}
+
+variable "rds_max_memory_utilization_threshold" {
+  type        = string
+  description = "The threshold for max memory utilization for the database before the alarm gets triggered (if enabled)."
+  default     = "80"
+}
+
 variable "rds_create_high_queue_depth_alarm" {
   type        = bool
   description = "Whether or not to create a high queue depth alarm for RDS."

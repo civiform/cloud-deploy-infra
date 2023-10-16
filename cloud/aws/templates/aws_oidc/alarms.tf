@@ -34,6 +34,24 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_too_high" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
+  count               = var.rds_create_high_memory_alarm ? 1 : 0
+  alarm_name          = "rds-${data.aws_db_instance.civiform.id}-highMemoryUtilization"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = var.rds_alarm_evaluation_period
+  metric_name         = "MemoryUtilization"
+  namespace           = "AWS/RDS"
+  period              = var.rds_alarm_statistic_period
+  statistic           = "Average"
+  threshold           = var.rds_max_memory_utilization_threshold
+  alarm_description   = "Average database memory utilization is too high."
+  alarm_actions       = local.rds_alarm_actions
+
+  dimensions = {
+    DBInstanceIdentifier = data.aws_db_instance.civiform.id
+  }
+}
+
 resource "aws_cloudwatch_metric_alarm" "cpu_credit_balance_too_low" {
   count               = var.rds_create_low_cpu_credit_alarm ? length(regexall("(t2|t3|t4)", var.postgres_instance_class)) > 0 ? 1 : 0 : 0
   alarm_name          = "rds-${data.aws_db_instance.civiform.id}-lowCPUCreditBalance"
