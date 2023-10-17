@@ -230,7 +230,7 @@
     "tfvar": true,
     "type": "string"
   },
-  "RDS_ALARM_EMAIL": {
+  "CIVIFORM_ALARM_EMAIL": {
     "required": false,
     "secret": false,
     "tfvar": true,
@@ -243,18 +243,6 @@
     "type": "bool"
   },
   "RDS_MAX_CPU_UTILIZATION_THRESHOLD": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "RDS_CREATE_HIGH_MEMORY_ALARM": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "bool"
-  },
-  "RDS_MAX_MEMORY_UTILIZATION_THRESHOLD": {
     "required": false,
     "secret": false,
     "tfvar": true,
@@ -386,12 +374,6 @@
     "tfvar": true,
     "type": "integer"
   },
-  "ECS_TASK_MEMORY": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "integer"
-  },
   "ECS_MAX_CPU_THRESHOLD": {
     "required": false,
     "secret": false,
@@ -423,6 +405,36 @@
     "type": "string"
   },
   "ECS_MIN_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_TASK_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_CREATE_HIGH_MEMORY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "ECS_MAX_MEMORY_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_STATISTIC_PERIOD": {
     "required": false,
     "secret": false,
     "tfvar": true,

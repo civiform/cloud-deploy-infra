@@ -154,9 +154,9 @@ variable "rds_enhanced_monitoring_interval" {
   default     = 60
 }
 
-variable "rds_alarm_email" {
+variable "civiform_alarm_email" {
   type        = string
-  description = "The address to notify when any enabled RDS alarm alerts. If unset, no emails will be sent."
+  description = "The address to notify when any enabled civiform alarm alerts. If unset, no emails will be sent."
   default     = ""
 }
 
@@ -182,18 +182,6 @@ variable "rds_max_cpu_utilization_threshold" {
   type        = string
   description = "The threshold for max CPU utilization for the database before the alarm gets triggered (if enabled)."
   default     = "90"
-}
-
-variable "rds_create_high_memory_alarm" {
-  type        = bool
-  description = "Whether or not to create a high memory alarm for RDS."
-  default     = true
-}
-
-variable "rds_max_memory_utilization_threshold" {
-  type        = string
-  description = "The threshold for max memory utilization for the database before the alarm gets triggered (if enabled)."
-  default     = "80"
 }
 
 variable "rds_create_high_queue_depth_alarm" {
@@ -517,12 +505,6 @@ variable "ecs_task_cpu" {
   default     = 1024
 }
 
-variable "ecs_task_memory" {
-  type        = number
-  description = "Memory of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_cpu` as well."
-  default     = 6144
-}
-
 variable "ecs_max_cpu_threshold" {
   type        = string
   description = "The threshold for max CPU usage in an ECS task. If the CPU increases above this threshold, there will be a cloudwatch alarm and another ECS task will be added."
@@ -556,6 +538,36 @@ variable "ecs_max_cpu_period" {
 variable "ecs_min_cpu_period" {
   type        = string
   description = "The period in seconds over which the specified statistic is applied for min cpu metric alarm."
+  default     = "60"
+}
+
+variable "ecs_task_memory" {
+  type        = number
+  description = "Memory of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_cpu` as well."
+  default     = 6144
+}
+
+variable "ecs_create_high_memory_alarm" {
+  type        = bool
+  description = "Whether or not to create a high memory alarm for ECS."
+  default     = true
+}
+
+variable "ecs_max_memory_utilization_threshold" {
+  type        = string
+  description = "The threshold for max memory utilization for ECS before the alarm gets triggered (if enabled)."
+  default     = "80"
+}
+
+variable "ecs_alarm_evaluation_period" {
+  type        = string
+  description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
+  default     = "5"
+}
+
+variable "ecs_alarm_statistic_period" {
+  type        = string
+  description = "The length of time to use to evaluate the metric or expression to create each individual data point for an RDS alarm. It is expressed in seconds."
   default     = "60"
 }
 
