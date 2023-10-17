@@ -195,7 +195,7 @@ resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
 
 resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   count               = var.ecs_create_high_memory_alarm ? 1 : 0
-  alarm_name          = "ecs-${module.ecs_cluster.name}-highMemoryUtilization"
+  alarm_name          = "ecs-${module.ecs_cluster.aws_ecs_cluster_cluster_name}-highMemoryUtilization"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.ecs_alarm_evaluation_period
   metric_name         = "MemoryUtilization"
@@ -207,6 +207,6 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   alarm_actions       = local.civiform_alarm_actions
 
   dimensions = {
-    ClusterName = module.ecs_cluster.name
+    ClusterName = module.ecs_cluster.aws_ecs_cluster_cluster_name
   }
 }
