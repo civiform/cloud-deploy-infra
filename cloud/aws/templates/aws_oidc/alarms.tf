@@ -207,6 +207,6 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   alarm_actions       = local.civiform_alarm_actions
 
   dimensions = {
-    ClusterName = module.ecs_cluster.cluster_id
+    ClusterName = module.ecs_cluster.name
   }
 }
