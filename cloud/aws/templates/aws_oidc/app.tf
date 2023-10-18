@@ -350,10 +350,11 @@ resource "aws_ecs_task_definition" "td" {
   cpu    = var.ecs_task_cpu
   memory = var.ecs_task_memory
 
-  container_definitions = jsonencode([
-    module.civiform_server_container_def.json_map_object,
-    module.civiform_metrics_scraper_container_def.json_map_object
-  ])
+  container_definitions = jsonencode(
+    var.monitoring_stack_enabled
+    ? [module.civiform_server_container_def.json_map_object,
+    module.civiform_metrics_scraper_container_def.json_map_object]
+  : [module.civiform_server_container_def.json_map_object])
 
   task_role_arn            = aws_iam_role.civiform_ecs_task_execution_role.arn
   execution_role_arn       = aws_iam_role.civiform_ecs_task_execution_role.arn

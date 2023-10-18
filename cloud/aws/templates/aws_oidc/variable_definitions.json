@@ -154,6 +154,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "MONITORING_STACK_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "POSTGRES_INSTANCE_CLASS": {
     "required": false,
     "secret": false,

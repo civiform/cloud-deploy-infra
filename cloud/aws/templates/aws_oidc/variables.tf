@@ -657,6 +657,12 @@ variable "bypass_login_language_screens" {
   default     = false
 }
 
+variable "monitoring_stack_enabled" {
+  type        = bool
+  description = "If true, Prometheus and Grafana instances are created and the metrics scraper container is included in the ECS task definition."
+  default     = true
+}
+
 variable "phone_question_type_enabled" {
   type        = bool
   description = "Whether to enable the phone question type."
