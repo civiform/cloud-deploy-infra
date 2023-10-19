@@ -19,7 +19,7 @@ resource "aws_grafana_workspace" "CiviForm_metrics" {
 }
 
 resource "aws_iam_role" "grafana_assume_role" {
-  name  = "${var.app_prefix}-grafana-assume-role"
+  name = "${var.app_prefix}-grafana-assume-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -36,7 +36,7 @@ resource "aws_iam_role" "grafana_assume_role" {
 }
 
 resource "aws_iam_policy" "civiform_monitoring_role_policy" {
-  name  = "${var.app_prefix}-civiform-monitoring-role-policy"
+  name = "${var.app_prefix}-civiform-monitoring-role-policy"
   policy = jsonencode(
     {
       "Version" : "2012-10-17",
