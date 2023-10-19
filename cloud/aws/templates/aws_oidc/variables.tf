@@ -659,7 +659,7 @@ variable "bypass_login_language_screens" {
 
 variable "monitoring_stack_enabled" {
   type        = bool
-  description = "If true, Prometheus and Grafana instances are created and the metrics scraper container is included in the ECS task definition."
+  description = "If true, Prometheus and Grafana instances are created."
   default     = true
 }
 
