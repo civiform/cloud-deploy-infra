@@ -4,7 +4,6 @@ resource "aws_prometheus_workspace" "metrics" {
 }
 
 resource "random_id" "grafana_workspace_id" {
-  count       = var.monitoring_stack_enabled ? 1 : 0
   byte_length = 1
 }
 
@@ -20,7 +19,6 @@ resource "aws_grafana_workspace" "CiviForm_metrics" {
 }
 
 resource "aws_iam_role" "grafana_assume_role" {
-  count = var.monitoring_stack_enabled ? 1 : 0
   name  = "${var.app_prefix}-grafana-assume-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -38,7 +36,6 @@ resource "aws_iam_role" "grafana_assume_role" {
 }
 
 resource "aws_iam_policy" "civiform_monitoring_role_policy" {
-  count = var.monitoring_stack_enabled ? 1 : 0
   name  = "${var.app_prefix}-civiform-monitoring-role-policy"
   policy = jsonencode(
     {
@@ -95,7 +92,6 @@ resource "aws_iam_policy" "civiform_monitoring_role_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "civiform_monitoring_role_policies_attach" {
-  count      = var.monitoring_stack_enabled ? 1 : 0
   role       = aws_iam_role.grafana_assume_role.name
   policy_arn = aws_iam_policy.civiform_monitoring_role_policy.arn
 }
