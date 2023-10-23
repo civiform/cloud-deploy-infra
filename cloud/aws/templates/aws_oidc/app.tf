@@ -344,8 +344,8 @@ resource "aws_iam_role_policy_attachment" "civiform_ecs_task_execution_role_cust
   policy_arn = aws_iam_policy.civiform_ecs_task_execution_role_custom_policy[count.index].arn
 }
 
-resource "aws_ecs_task_definition" "td" {
-  family = "${local.name_prefix}-td"
+resource "aws_ecs_task_definition" "civiform_with_monitoring" {
+  family = "${local.name_prefix}-civiform-with-monitoring-td"
 
   cpu    = var.ecs_task_cpu
   memory = var.ecs_task_memory
@@ -362,6 +362,21 @@ resource "aws_ecs_task_definition" "td" {
   tags                     = local.tags
 }
 
+resource "aws_ecs_task_definition" "civiform_only" {
+  family = "${local.name_prefix}-civiform-only-td"
+
+  cpu    = var.ecs_task_cpu
+  memory = var.ecs_task_memory
+
+  container_definitions = jsonencode([module.civiform_server_container_def.json_map_object])
+
+  task_role_arn            = aws_iam_role.civiform_ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.civiform_ecs_task_execution_role.arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  tags                     = local.tags
+}
+
 module "ecs_fargate_service" {
   source                    = "../../modules/ecs_fargate_service"
   app_prefix                = var.app_prefix
@@ -369,7 +384,7 @@ module "ecs_fargate_service" {
   default_certificate_arn   = var.ssl_certificate_arn
   ssl_policy                = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
   vpc_id                    = module.vpc.vpc_id
-  task_definition_arn       = aws_ecs_task_definition.td.arn
+  task_definition_arn       = var.monitoring_stack_enabled ? aws_ecs_task_definition.civiform_with_monitoring.arn : aws_ecs_task_definition.civiform_only.arn
   container_name            = "${var.app_prefix}-civiform"
   ecs_cluster_name          = module.ecs_cluster.aws_ecs_cluster_cluster_name
   ecs_cluster_arn           = module.ecs_cluster.aws_ecs_cluster_cluster_arn
