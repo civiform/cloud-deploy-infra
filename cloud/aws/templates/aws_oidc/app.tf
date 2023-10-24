@@ -147,8 +147,7 @@ module "civiform_server_container_def" {
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs
     PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED = var.program_eligibility_conditions_enabled
     INTAKE_FORM_ENABLED                    = var.intake_form_enabled
-    NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled
-    PHONE_QUESTION_TYPE_ENABLED            = var.phone_question_type_enabled
+    NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled  
     PUBLISH_SINGLE_PROGRAM_ENABLED         = var.publish_single_program_enabled
 
     COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
