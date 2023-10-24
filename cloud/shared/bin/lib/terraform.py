@@ -145,8 +145,8 @@ def perform_apply(
         if "Error acquiring the state lock" in output:
             # Lock ID is a standard UUID v4 in the form 00000000-0000-0000-0000-000000000000
             match = re.search(
-                    r'ID:\s+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
-                    output)
+                r'ID:\s+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+                output)
             error_text = inspect.cleandoc(
                 """
                 The Terraform state lock can not be acquired.
