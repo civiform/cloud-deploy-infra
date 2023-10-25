@@ -663,12 +663,6 @@ variable "monitoring_stack_enabled" {
   default     = true
 }
 
-variable "phone_question_type_enabled" {
-  type        = bool
-  description = "Whether to enable the phone question type."
-  default     = false
-}
-
 variable "esri_address_correction_enabled" {
   type        = bool
   description = "Enables the feature that allows address correction for address questions."

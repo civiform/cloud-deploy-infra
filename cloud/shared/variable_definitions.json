@@ -249,12 +249,6 @@
     "tfvar": true,
     "type": "bool"
   },
-  "PHONE_QUESTION_TYPE_ENABLED": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "bool"
-  },
   "ESRI_ADDRESS_CORRECTION_ENABLED": {
     "required": false,
     "secret": false,
