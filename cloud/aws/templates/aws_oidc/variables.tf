@@ -322,12 +322,6 @@ variable "app_prefix" {
   default     = null
 }
 
-variable "applicant_oidc_response_mode" {
-  type        = string
-  description = "Applicant OIDC login response mode"
-  default     = null
-}
-
 variable "applicant_oidc_response_type" {
   type        = string
   description = "Applicant OIDC login response type"
