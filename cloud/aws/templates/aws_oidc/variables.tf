@@ -322,48 +322,6 @@ variable "app_prefix" {
   default     = null
 }
 
-variable "applicant_oidc_response_type" {
-  type        = string
-  description = "Applicant OIDC login response type"
-  default     = null
-}
-
-variable "applicant_oidc_additional_scopes" {
-  type        = string
-  description = "Applicant OIDC login additional scopes to request"
-  default     = null
-}
-
-variable "applicant_oidc_locale_attribute" {
-  type        = string
-  description = "Applicant OIDC login user locale returned in token"
-  default     = null
-}
-
-variable "applicant_oidc_email_attribute" {
-  type        = string
-  description = "Applicant OIDC login user email returned in token"
-  default     = null
-}
-
-variable "applicant_oidc_first_name_attribute" {
-  type        = string
-  description = "Applicant OIDC login first name (or display name) returned in token"
-  default     = null
-}
-
-variable "applicant_oidc_middle_name_attribute" {
-  type        = string
-  description = "Applicant OIDC login middle name (if not using display name) returned in token"
-  default     = null
-}
-
-variable "applicant_oidc_last_name_attribute" {
-  type        = string
-  description = "Applicant OIDC login last name (if not using display name) returned in token"
-  default     = null
-}
-
 variable "applicant_oidc_provider_logout" {
   type        = bool
   description = "If the applicant OIDC logout should also perform a central logout from the auth provider"

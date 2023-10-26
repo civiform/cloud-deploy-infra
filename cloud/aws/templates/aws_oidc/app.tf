@@ -123,13 +123,6 @@ module "civiform_server_container_def" {
     CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     AWS_REGION                           = var.aws_region
-    APPLICANT_OIDC_RESPONSE_TYPE         = var.applicant_oidc_response_type
-    APPLICANT_OIDC_ADDITIONAL_SCOPES     = var.applicant_oidc_additional_scopes
-    APPLICANT_OIDC_LOCALE_ATTRIBUTE      = var.applicant_oidc_locale_attribute
-    APPLICANT_OIDC_EMAIL_ATTRIBUTE       = var.applicant_oidc_email_attribute
-    APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE  = var.applicant_oidc_first_name_attribute
-    APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE = var.applicant_oidc_middle_name_attribute
-    APPLICANT_OIDC_LAST_NAME_ATTRIBUTE   = var.applicant_oidc_last_name_attribute
     ADFS_DISCOVERY_URI                   = var.adfs_discovery_uri
     ADFS_ADDITIONAL_SCOPES               = var.adfs_additional_scopes
     ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
