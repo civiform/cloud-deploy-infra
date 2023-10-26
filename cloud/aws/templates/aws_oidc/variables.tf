@@ -346,12 +346,6 @@ variable "applicant_oidc_logout_client_param" {
   default     = null
 }
 
-variable "adfs_discovery_uri" {
-  type        = string
-  description = "ADFS Discovery URI"
-  default     = null
-}
-
 variable "adfs_additional_scopes" {
   type        = string
   description = "Additional scopes requested during ADFS authentication flow. In Azure AD should be set to empty"

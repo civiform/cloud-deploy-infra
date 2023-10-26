@@ -123,7 +123,6 @@ module "civiform_server_container_def" {
     CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     AWS_REGION                           = var.aws_region
-    ADFS_DISCOVERY_URI                   = var.adfs_discovery_uri
     ADFS_ADDITIONAL_SCOPES               = var.adfs_additional_scopes
     ADFS_GLOBAL_ADMIN_GROUP              = var.adfs_admin_group
     AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name

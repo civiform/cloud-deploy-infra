@@ -55,12 +55,6 @@
     "value_regex": "https?://[^\\s]+",
     "value_regex_error_message": "needs to be a url that starts with http(s)://."
   },
-  "ADFS_DISCOVERY_URI": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "ADFS_ADDITIONAL_SCOPES": {
     "required": false,
     "secret": false,
