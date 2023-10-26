@@ -58,12 +58,6 @@ variable "civic_entity_logo_with_name_url" {
   default     = "https://raw.githubusercontent.com/civiform/staging-azure-deploy/main/logos/civiform-staging-long.png"
 }
 
-variable "civic_entity_small_logo_url" {
-  type        = string
-  description = "Logo with name used on the applicant-facing program index page"
-  default     = "https://raw.githubusercontent.com/civiform/staging-azure-deploy/main/logos/civiform-staging.png"
-}
-
 variable "favicon_url" {
   type        = string
   description = "Browser Favicon (16x16 or 32x32 pixels, .ico, .png, or .gif) used on all pages"
