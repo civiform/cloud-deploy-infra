@@ -394,12 +394,6 @@ variable "applicant_oidc_logout_client_param" {
   default     = null
 }
 
-variable "applicant_oidc_discovery_uri" {
-  type        = string
-  description = "Discovery URI"
-  default     = null
-}
-
 variable "adfs_discovery_uri" {
   type        = string
   description = "ADFS Discovery URI"

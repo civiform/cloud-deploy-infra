@@ -110,7 +110,6 @@ module "civiform_server_container_def" {
     APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
     APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param
     APPLICANT_OIDC_LOGOUT_CLIENT_PARAM        = var.applicant_oidc_logout_client_param
-    APPLICANT_OIDC_DISCOVERY_URI              = var.applicant_oidc_discovery_uri
 
     CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
     CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
