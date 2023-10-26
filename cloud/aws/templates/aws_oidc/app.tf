@@ -90,11 +90,6 @@ module "civiform_server_container_def" {
     AWS_S3_BUCKET_NAME   = aws_s3_bucket.civiform_files_s3.id
 
     CIVIFORM_VERSION                        = var.image_tag
-    SHOW_CIVIFORM_IMAGE_TAG_ON_LANDING_PAGE = var.show_civiform_image_tag_on_landing_page
-
-    WHITELABEL_CIVIC_ENTITY_SHORT_NAME = var.civic_entity_short_name
-    WHITELABEL_CIVIC_ENTITY_FULL_NAME  = var.civic_entity_full_name
-    WHITELABEL_LOGO_WITH_NAME_URL      = var.civic_entity_logo_with_name_url
 
     SUPPORT_EMAIL_ADDRESS = var.civic_entity_support_email_address
     AWS_SES_SENDER        = var.sender_email_address
@@ -102,42 +97,11 @@ module "civiform_server_container_def" {
     STAGING_ADMIN_LIST                    = var.staging_program_admin_notification_mailing_list
     STAGING_TI_LIST                       = var.staging_ti_notification_mailing_list
     STAGING_APPLICANT_LIST                = var.staging_applicant_notification_mailing_list
-    STAGING_DISABLE_DEMO_MODE_LOGINS      = var.staging_disable_demo_mode_logins
-    STAGING_DISABLE_APPLICANT_GUEST_LOGIN = var.staging_disable_applicant_guest_login
 
-    APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
-    APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
-    APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param
-    APPLICANT_OIDC_LOGOUT_CLIENT_PARAM        = var.applicant_oidc_logout_client_param
-
-    CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
-    CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-
-    # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
-
-    # TODO: Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
-    # duplicates in the civiform_server_environment_variables map. 
     STAGING_HOSTNAME                     = var.staging_hostname
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
     CLIENT_IP_TYPE                       = "FORWARDED"
     AWS_REGION                           = var.aws_region
-
-    BYPASS_LOGIN_LANGUAGE_SCREENS          = var.bypass_login_language_screens
-    ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs
-    PROGRAM_ELIGIBILITY_CONDITIONS_ENABLED = var.program_eligibility_conditions_enabled
-    INTAKE_FORM_ENABLED                    = var.intake_form_enabled
-    NONGATED_ELIGIBILITY_ENABLED           = var.nongated_eligibility_enabled
-    PUBLISH_SINGLE_PROGRAM_ENABLED         = var.publish_single_program_enabled
-
-    COMMON_INTAKE_MORE_RESOURCES_LINK_TEXT = var.common_intake_more_resources_link_text
-    COMMON_INTAKE_MORE_RESOURCES_LINK_HREF = var.common_intake_more_resources_link_href
-
-    ESRI_ADDRESS_CORRECTION_ENABLED  = var.esri_address_correction_enabled
-    ESRI_FIND_ADDRESS_CANDIDATES_URL = var.esri_find_address_candidate_url
-
-    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET = var.civiform_api_keys_ban_global_subnet
-    CIVIFORM_SERVER_METRICS_ENABLED     = var.civiform_server_metrics_enabled
-    FEATURE_FLAG_OVERRIDES_ENABLED      = var.feature_flag_overrides_enabled
   }, var.civiform_server_environment_variables)
 
   port_mappings = [

@@ -28,28 +28,10 @@ variable "scraper_image" {
   default     = "docker.io/civiform/aws-metrics-scraper:latest"
 }
 
-variable "civic_entity_short_name" {
-  type        = string
-  description = "Short name for civic entity (example: Rochester, Seattle)."
-  default     = "Dev Civiform"
-}
-
-variable "civic_entity_full_name" {
-  type        = string
-  description = "Full name for civic entity (example: City of Rochester, City of Seattle)."
-  default     = "City of Dev Civiform"
-}
-
 variable "civic_entity_support_email_address" {
   type        = string
   description = "Email address where applicants can contact civic entity for support with Civiform."
   default     = "azizoval@google.com"
-}
-
-variable "civic_entity_logo_with_name_url" {
-  type        = string
-  description = "Logo with name used on the applicant-facing program index page"
-  default     = "https://raw.githubusercontent.com/civiform/staging-azure-deploy/main/logos/civiform-staging-long.png"
 }
 
 variable "vpc_name" {
@@ -316,30 +298,6 @@ variable "app_prefix" {
   default     = null
 }
 
-variable "applicant_oidc_provider_logout" {
-  type        = bool
-  description = "If the applicant OIDC logout should also perform a central logout from the auth provider"
-  default     = true
-}
-
-variable "applicant_oidc_override_logout_url" {
-  type        = string
-  description = "The URL to use for the OIDC logout endpoint (when applicant_oidc_provider_logout is true).  If not set, uses the `end_session_endpoint` value from the discovery metadata."
-  default     = null
-}
-
-variable "applicant_oidc_post_logout_redirect_param" {
-  type        = string
-  description = "What query parameter to use for sending the redirect uri to the central OIDC provider for logout (when applicant_oidc_provider_logout is true). Defaults to post_logout_redirect_uri"
-  default     = "post_logout_redirect_uri"
-}
-
-variable "applicant_oidc_logout_client_param" {
-  type        = string
-  description = "What query parameter to use for sending the client id to the central OIDC provider for logout (when applicant_oidc_provider_logout is true).  If left blank, doesn't send the client id."
-  default     = null
-}
-
 variable "custom_hostname" {
   type        = string
   description = "The custom hostname this app is deployed on"
@@ -439,42 +397,6 @@ variable "ecs_scale_target_min_capacity" {
   default     = 1
 }
 
-variable "feature_flag_reporting_enabled" {
-  type        = bool
-  description = "Whether or not to enable the reporting feature"
-  default     = false
-}
-
-variable "feature_flag_status_tracking_enabled" {
-  type        = bool
-  description = "When set to true enable Status Tracking."
-  default     = false
-}
-
-variable "civiform_api_keys_ban_global_subnet" {
-  type        = bool
-  description = "Whether to allow 0.0.0.0/0 subnet for API key access."
-  default     = true
-}
-
-variable "civiform_server_metrics_enabled" {
-  type        = bool
-  description = "Whether to enable exporting server metrics on the /metrics route."
-  default     = false
-}
-
-variable "allow_civiform_admin_access_programs" {
-  type        = bool
-  description = "Whether CiviForm admins can view program applications, similar to Program Admins."
-  default     = false
-}
-
-variable "feature_flag_overrides_enabled" {
-  type        = bool
-  description = "Whether feature flags can be override using /dev/feature/.../enable url."
-  default     = false
-}
-
 variable "pgadmin" {
   type        = bool
   description = "Whether to depoy pgadmin or not."
@@ -485,73 +407,8 @@ variable "pgadmin_cidr_allowlist" {
   description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
   default     = []
 }
-variable "show_civiform_image_tag_on_landing_page" {
-  type        = bool
-  description = "Whether to show civiform version on landing page or not."
-  default     = false
-}
-variable "staging_disable_demo_mode_logins" {
-  type        = bool
-  description = "Whether to disable the demo mode login buttons."
-  default     = false
-}
-variable "staging_disable_applicant_guest_login" {
-  type        = bool
-  description = "Whether to disable the guest login button."
-  default     = false
-}
-variable "program_eligibility_conditions_enabled" {
-  type        = bool
-  description = "Whether to enable program eligibility conditions. This feature flag has been removed, so this will be enabled by default for all deployments after v1.26.0."
-  default     = true
-}
-variable "intake_form_enabled" {
-  type        = bool
-  description = "Whether to enable the intake form feature."
-  default     = false
-}
-variable "nongated_eligibility_enabled" {
-  type        = bool
-  description = "Whether to enable the non-gating eligibility feature."
-  default     = false
-}
-variable "common_intake_more_resources_link_text" {
-  type        = string
-  description = "The text for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
-  default     = "Access Arkansas"
-}
-variable "common_intake_more_resources_link_href" {
-  type        = string
-  description = "The HREF for a link on the Common Intake confirmation page that links to more resources. Shown when the applicant is not eligible for any programs in CiviForm."
-  default     = "https://access.arkansas.gov/Learn/Home"
-}
-
-variable "bypass_login_language_screens" {
-  type        = bool
-  description = "Whether to enable the feature removing the login and language screen, landing on the index page."
-  default     = false
-}
-
 variable "monitoring_stack_enabled" {
   type        = bool
   description = "If true, Prometheus and Grafana instances are created."
   default     = true
-}
-
-variable "esri_address_correction_enabled" {
-  type        = bool
-  description = "Enables the feature that allows address correction for address questions."
-  default     = false
-}
-
-variable "esri_find_address_candidate_url" {
-  type        = string
-  description = "The URL CiviForm will use to call Esri’s findAddressCandidates service."
-  default     = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
-}
-
-variable "publish_single_program_enabled" {
-  type        = bool
-  description = "Whether to enable the feature that allows publishing a single program on its own."
-  default     = false
 }

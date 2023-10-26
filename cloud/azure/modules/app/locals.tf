@@ -24,9 +24,6 @@ locals {
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
-    WHITELABEL_CIVIC_ENTITY_SHORT_NAME = var.civic_entity_short_name
-    WHITELABEL_CIVIC_ENTITY_FULL_NAME  = var.civic_entity_full_name
-    WHITELABEL_LOGO_WITH_NAME_URL      = var.civic_entity_logo_with_name_url
     SUPPORT_EMAIL_ADDRESS              = var.civic_entity_support_email_address
 
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
@@ -44,10 +41,6 @@ locals {
 
     ADFS_SECRET                               = data.azurerm_key_vault_secret.adfs_secret.value
     ADFS_CLIENT_ID                            = data.azurerm_key_vault_secret.adfs_client_id.value
-    APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
-    APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
-    APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param
-    APPLICANT_OIDC_LOGOUT_CLIENT_PARAM        = var.applicant_oidc_logout_client_param
 
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
@@ -56,17 +49,6 @@ locals {
     LOGIN_RADIUS_PRIVATE_KEY_PASS = var.saml_private_key_password
 
     CIVIFORM_API_SECRET_SALT = data.azurerm_key_vault_secret.api_secret_salt_key.value
-
-    CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
-    CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
-    CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
-    FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
-
-    # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
-
-    # TODO(#4612) Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
-    # duplicates in the civiform_server_environment_variables map. 
 
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
