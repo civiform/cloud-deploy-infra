@@ -159,12 +159,6 @@
     "tfvar": true,
     "type": "bool"
   },
-  "STAGING_ADD_NOINDEX_META_TAG": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "bool"
-  },
   "STAGING_DISABLE_DEMO_MODE_LOGINS": {
     "required": false,
     "secret": false,

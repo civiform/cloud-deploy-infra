@@ -490,11 +490,6 @@ variable "show_civiform_image_tag_on_landing_page" {
   description = "Whether to show civiform version on landing page or not."
   default     = false
 }
-variable "staging_add_noindex_meta_tag" {
-  type        = bool
-  description = "Whether to add a robots=noindex meta tag, which causes search engines to not list the website. This defaults to false, meaning sites will appear on search."
-  default     = false
-}
 variable "staging_disable_demo_mode_logins" {
   type        = bool
   description = "Whether to disable the demo mode login buttons."
