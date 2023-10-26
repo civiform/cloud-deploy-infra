@@ -121,7 +121,6 @@ module "civiform_server_container_def" {
     STAGING_HOSTNAME                     = var.staging_hostname
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
     CLIENT_IP_TYPE                       = "FORWARDED"
-    CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     AWS_REGION                           = var.aws_region
 
     BYPASS_LOGIN_LANGUAGE_SCREENS          = var.bypass_login_language_screens

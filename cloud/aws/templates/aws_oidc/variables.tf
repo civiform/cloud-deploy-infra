@@ -28,12 +28,6 @@ variable "scraper_image" {
   default     = "docker.io/civiform/aws-metrics-scraper:latest"
 }
 
-variable "civiform_time_zone_id" {
-  type        = string
-  description = "Time zone for Civiform server to use when displaying dates."
-  default     = "America/Los_Angeles"
-}
-
 variable "civic_entity_short_name" {
   type        = string
   description = "Short name for civic entity (example: Rochester, Seattle)."
