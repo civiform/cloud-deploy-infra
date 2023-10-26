@@ -124,7 +124,6 @@ module "civiform_server_container_def" {
     CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     AWS_REGION                           = var.aws_region
-    APPLICANT_OIDC_PROVIDER_NAME         = var.applicant_oidc_provider_name
     APPLICANT_OIDC_RESPONSE_MODE         = var.applicant_oidc_response_mode
     APPLICANT_OIDC_RESPONSE_TYPE         = var.applicant_oidc_response_type
     APPLICANT_OIDC_ADDITIONAL_SCOPES     = var.applicant_oidc_additional_scopes
