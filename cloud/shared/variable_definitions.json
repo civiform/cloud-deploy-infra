@@ -67,12 +67,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "APPLICANT_REGISTER_URI": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "APPLICANT_PORTAL_NAME": {
     "required": false,
     "secret": false,
