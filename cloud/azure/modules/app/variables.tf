@@ -145,11 +145,6 @@ variable "key_vault_name" {
   description = "Name of key vault where secrets are stored."
 }
 
-variable "adfs_admin_group" {
-  type        = string
-  description = "Active Directory Federation Service group name"
-}
-
 variable "ad_groups_attribute_name" {
   type        = string
   description = "Name of the Active Directory claim that returns groups a user is in"

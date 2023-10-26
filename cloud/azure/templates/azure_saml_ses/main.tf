@@ -44,8 +44,6 @@ module "app" {
   civic_entity_support_email_address = var.civic_entity_support_email_address
   civic_entity_logo_with_name_url    = var.civic_entity_logo_with_name_url
 
-  adfs_admin_group = var.adfs_admin_group
-
   saml_keystore_filename     = module.saml_keystore.filename
 
   # These two values need to match for PKCS12 keys

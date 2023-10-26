@@ -73,11 +73,6 @@ variable "custom_hostname" {
   default     = "staging-azure.civiform.dev"
 }
 
-variable "adfs_admin_group" {
-  type        = string
-  description = "Active Directory Federation Service group name"
-}
-
 variable "staging_program_admin_notification_mailing_list" {
   type        = string
   description = "Admin notification mailing list for staging"

@@ -358,12 +358,6 @@ variable "ad_groups_attribute_name" {
   default     = "group"
 }
 
-variable "adfs_admin_group" {
-  type        = string
-  description = "Name a group in ADFS or group id in Azure AD that user must belong to to be considered CiviForm admin"
-  default     = null
-}
-
 variable "custom_hostname" {
   type        = string
   description = "The custom hostname this app is deployed on"

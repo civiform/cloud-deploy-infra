@@ -45,7 +45,6 @@ locals {
     AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
     ADFS_SECRET                               = data.azurerm_key_vault_secret.adfs_secret.value
     ADFS_CLIENT_ID                            = data.azurerm_key_vault_secret.adfs_client_id.value
-    ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
     APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
     APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
     APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param

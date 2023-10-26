@@ -29,12 +29,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "ADFS_ADMIN_GROUP": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "CIVIFORM_APPLICANT_AUTH_PROTOCOL": {
     "required": true,
     "secret": false,
