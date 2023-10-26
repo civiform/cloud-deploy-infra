@@ -145,12 +145,6 @@ variable "key_vault_name" {
   description = "Name of key vault where secrets are stored."
 }
 
-variable "ad_groups_attribute_name" {
-  type        = string
-  description = "Name of the Active Directory claim that returns groups a user is in"
-  default     = "groups"
-}
-
 variable "applicant_oidc_provider_logout" {
   type        = bool
   description = "If the applicant OIDC logout should also perform a central logout from the auth provider"

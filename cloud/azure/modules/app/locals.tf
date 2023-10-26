@@ -42,7 +42,6 @@ locals {
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
-    AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
     ADFS_SECRET                               = data.azurerm_key_vault_secret.adfs_secret.value
     ADFS_CLIENT_ID                            = data.azurerm_key_vault_secret.adfs_client_id.value
     APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
@@ -82,9 +81,6 @@ locals {
     # This allows for the default to include atallclaims and for
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
-
-    AD_GROUPS_ATTRIBUTE_NAME = var.ad_groups_attribute_name
-
   }, var.civiform_server_environment_variables)
   adfs_client_id     = "adfs-client-id"
   adfs_discovery_uri = "adfs-discovery-uri"

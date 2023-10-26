@@ -123,7 +123,6 @@ module "civiform_server_container_def" {
     CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
     AWS_REGION                           = var.aws_region
-    AD_GROUPS_ATTRIBUTE_NAME             = var.ad_groups_attribute_name
 
     BYPASS_LOGIN_LANGUAGE_SCREENS          = var.bypass_login_language_screens
     ALLOW_CIVIFORM_ADMIN_ACCESS_PROGRAMS   = var.allow_civiform_admin_access_programs

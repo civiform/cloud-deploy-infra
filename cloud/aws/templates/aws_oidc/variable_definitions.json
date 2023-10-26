@@ -55,12 +55,6 @@
     "value_regex": "https?://[^\\s]+",
     "value_regex_error_message": "needs to be a url that starts with http(s)://."
   },
-  "AD_GROUPS_ATTRIBUTE_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "SSL_CERTIFICATE_ARN": {
     "required": true,
     "secret": false,

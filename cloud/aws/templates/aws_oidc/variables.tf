@@ -346,12 +346,6 @@ variable "applicant_oidc_logout_client_param" {
   default     = null
 }
 
-variable "ad_groups_attribute_name" {
-  type        = string
-  description = "Key of authentication id_token map that contains list of groups that user belongs to."
-  default     = "group"
-}
-
 variable "custom_hostname" {
   type        = string
   description = "The custom hostname this app is deployed on"
