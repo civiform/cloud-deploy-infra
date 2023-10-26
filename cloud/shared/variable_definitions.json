@@ -67,12 +67,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "APPLICANT_PORTAL_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "CIVIFORM_CLOUD_PROVIDER": {
     "required": true,
     "secret": false,

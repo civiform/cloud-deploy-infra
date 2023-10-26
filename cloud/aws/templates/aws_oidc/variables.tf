@@ -376,12 +376,6 @@ variable "applicant_oidc_last_name_attribute" {
   default     = null
 }
 
-variable "applicant_portal_name" {
-  type        = string
-  description = "The name of the authentication provider applicants use to login. This value is displayed to the applicants to help them understand which account to use."
-  default     = null
-}
-
 variable "applicant_oidc_provider_logout" {
   type        = bool
   description = "If the applicant OIDC logout should also perform a central logout from the auth provider"
