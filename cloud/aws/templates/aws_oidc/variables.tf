@@ -388,12 +388,6 @@ variable "applicant_portal_name" {
   default     = null
 }
 
-variable "civiform_applicant_idp" {
-  type        = string
-  description = "Applicant IDP"
-  default     = null
-}
-
 variable "applicant_oidc_provider_logout" {
   type        = bool
   description = "If the applicant OIDC logout should also perform a central logout from the auth provider"

@@ -55,13 +55,6 @@
     "value_regex": "https?://[^\\s]+",
     "value_regex_error_message": "needs to be a url that starts with http(s)://."
   },
-  "CIVIFORM_APPLICANT_IDP": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "enum",
-    "values": ["idcs", "generic-oidc", "adfs", "disabled", "login-gov", "auth0"]
-  },
   "APPLICANT_OIDC_PROVIDER_NAME": {
     "required": false,
     "secret": false,

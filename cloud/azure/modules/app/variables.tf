@@ -156,13 +156,6 @@ variable "ad_groups_attribute_name" {
   default     = "groups"
 }
 
-variable "civiform_applicant_idp" {
-  type        = string
-  description = "identity provider to use for applicant auth. supported values are idcs and login-radius"
-  default     = "login-radius"
-}
-
-
 variable "applicant_oidc_provider_logout" {
   type        = bool
   description = "If the applicant OIDC logout should also perform a central logout from the auth provider"

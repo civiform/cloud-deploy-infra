@@ -76,7 +76,6 @@ locals {
     BASE_URL               = "placeholder"
     CIVIFORM_TIME_ZONE_ID  = var.civiform_time_zone_id
     AWS_REGION             = var.aws_region
-    CIVIFORM_APPLICANT_IDP = var.civiform_applicant_idp
 
     ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
