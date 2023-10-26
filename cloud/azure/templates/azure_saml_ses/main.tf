@@ -46,8 +46,6 @@ module "app" {
 
   adfs_admin_group = var.adfs_admin_group
 
-  login_radius_api_key       = var.login_radius_api_key
-  login_radius_metadata_uri  = var.login_radius_metadata_uri
   login_radius_saml_app_name = var.login_radius_saml_app_name
   saml_keystore_filename     = module.saml_keystore.filename
 
