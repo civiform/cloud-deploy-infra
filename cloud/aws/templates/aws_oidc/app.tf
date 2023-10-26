@@ -125,7 +125,6 @@ module "civiform_server_container_def" {
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
     CLIENT_IP_TYPE                       = "FORWARDED"
     CIVIFORM_TIME_ZONE_ID                = var.civiform_time_zone_id
-    FAVICON_URL                          = var.favicon_url
     AWS_REGION                           = var.aws_region
     CIVIFORM_APPLICANT_IDP               = var.civiform_applicant_idp
     APPLICANT_OIDC_PROVIDER_NAME         = var.applicant_oidc_provider_name

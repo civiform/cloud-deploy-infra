@@ -75,7 +75,6 @@ locals {
     STAGING_HOSTNAME       = "placeholder"
     BASE_URL               = "placeholder"
     CIVIFORM_TIME_ZONE_ID  = var.civiform_time_zone_id
-    FAVICON_URL            = var.favicon_url
     AWS_REGION             = var.aws_region
     CIVIFORM_APPLICANT_IDP = var.civiform_applicant_idp
 

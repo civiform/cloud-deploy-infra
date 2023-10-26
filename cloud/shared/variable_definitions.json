@@ -29,12 +29,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "FAVICON_URL": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "ADFS_ADMIN_GROUP": {
     "required": false,
     "secret": false,

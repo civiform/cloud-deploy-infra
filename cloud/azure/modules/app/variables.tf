@@ -34,11 +34,6 @@ variable "civic_entity_logo_with_name_url" {
   description = "Logo with name used on the applicant-facing program index page"
 }
 
-variable "favicon_url" {
-  type        = string
-  description = "Browser Favicon (16x16 or 32x32 pixels, .ico, .png, or .gif) used on all pages"
-  default     = "https://civiform.us/favicon.png"
-}
 variable "image_tag" {
   type        = string
   description = "Tag for container image"

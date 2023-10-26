@@ -58,12 +58,6 @@ variable "civic_entity_logo_with_name_url" {
   default     = "https://raw.githubusercontent.com/civiform/staging-azure-deploy/main/logos/civiform-staging-long.png"
 }
 
-variable "favicon_url" {
-  type        = string
-  description = "Browser Favicon (16x16 or 32x32 pixels, .ico, .png, or .gif) used on all pages"
-  default     = "https://civiform.us/favicon.png"
-}
-
 variable "vpc_name" {
   type        = string
   description = "Name of the VPC"
