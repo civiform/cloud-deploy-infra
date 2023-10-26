@@ -118,12 +118,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "LOGIN_RADIUS_SAML_APP_NAME": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "SAML_KEYSTORE_ACCOUNT_NAME": {
     "required": true,
     "secret": false,

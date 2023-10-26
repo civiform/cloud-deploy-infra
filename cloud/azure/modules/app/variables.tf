@@ -185,12 +185,6 @@ variable "civiform_applicant_auth_protocol" {
   description = "auth protocol to use for applicant auth. supported values are oidc and saml"
 }
 
-variable "login_radius_saml_app_name" {
-  type        = string
-  description = "The App Name for the LoginRadius SAML integration"
-  default     = null
-}
-
 variable "saml_keystore_filename" {
   description = "Name of Java Keystore file stored in Azure blob storage"
   default     = null

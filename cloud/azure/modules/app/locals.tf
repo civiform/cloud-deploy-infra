@@ -86,9 +86,6 @@ locals {
 
     AD_GROUPS_ATTRIBUTE_NAME = var.ad_groups_attribute_name
 
-    # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
-    # saml_keystore module
-    LOGIN_RADIUS_SAML_APP_NAME = var.login_radius_saml_app_name
   }, var.civiform_server_environment_variables)
   adfs_client_id     = "adfs-client-id"
   adfs_discovery_uri = "adfs-discovery-uri"
