@@ -98,12 +98,6 @@ variable "civiform_applicant_auth_protocol" {
   description = "auth protocol to use for applicant auth. supported values are oidc and saml"
 }
 
-variable "login_radius_api_key" {
-  type        = string
-  description = "Login Radius API Key"
-  default     = null
-}
-
 variable "login_radius_metadata_uri" {
   type        = string
   description = "LoginRadius endpoint for fetching IdP metadata"
