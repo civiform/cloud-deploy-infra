@@ -50,7 +50,6 @@ locals {
     # but we need to set an initial value for them here so that the ignore_changes block will work
     STAGING_HOSTNAME       = "placeholder"
     BASE_URL               = "placeholder"
-    AWS_REGION             = var.aws_region
 
     ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are

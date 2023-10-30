@@ -97,7 +97,6 @@ module "civiform_server_container_def" {
     STAGING_HOSTNAME                     = var.staging_hostname
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
     CLIENT_IP_TYPE                       = "FORWARDED"
-    AWS_REGION                           = var.aws_region
   }, var.civiform_server_environment_variables)
 
   port_mappings = [
