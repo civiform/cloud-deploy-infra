@@ -91,10 +91,6 @@ module "civiform_server_container_def" {
 
     CIVIFORM_VERSION                        = var.image_tag
 
-    STAGING_TI_LIST                       = var.staging_ti_notification_mailing_list
-    STAGING_APPLICANT_LIST                = var.staging_applicant_notification_mailing_list
-
-    STAGING_HOSTNAME                     = var.staging_hostname
     BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
     CLIENT_IP_TYPE                       = "FORWARDED"
   }, var.civiform_server_environment_variables)

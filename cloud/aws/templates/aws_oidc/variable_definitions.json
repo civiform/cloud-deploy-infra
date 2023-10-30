@@ -41,12 +41,6 @@
       "cn-northwest-1"
     ]
   },
-  "STAGING_HOSTNAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "BASE_URL": {
     "required": true,
     "secret": false,

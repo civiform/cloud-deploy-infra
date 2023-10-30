@@ -298,12 +298,6 @@ variable "custom_hostname" {
   default     = "staging-aws.civiform.dev"
 }
 
-variable "staging_hostname" {
-  type        = string
-  description = "If provided will enable DEMO mode on this hostname"
-  default     = "staging-aws.civiform.dev"
-}
-
 variable "base_url" {
   type        = string
   description = "Base url for the app, only need to set if you don't have a custom hostname setup"

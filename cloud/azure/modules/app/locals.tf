@@ -30,9 +30,6 @@ locals {
     AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
     AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
 
-    STAGING_TI_LIST        = var.staging_ti_notification_mailing_list
-    STAGING_APPLICANT_LIST = var.staging_applicant_notification_mailing_list
-
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
     ADFS_SECRET                               = data.azurerm_key_vault_secret.adfs_secret.value

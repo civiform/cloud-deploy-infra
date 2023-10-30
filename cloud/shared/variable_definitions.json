@@ -38,18 +38,6 @@
     "tfvar": true,
     "type": "string"
   },
-  "STAGING_APPLICANT_NOTIFICATION_MAILING_LIST": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "STAGING_TI_NOTIFICATION_MAILING_LIST": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "TERRAFORM_TEMPLATE_DIR": {
     "required": true,
     "secret": false,
