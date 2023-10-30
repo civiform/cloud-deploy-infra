@@ -1,3 +1,9 @@
+variable "civiform_server_environment_variables" {
+  type        = map(string)
+  description = "CiviForm server environment variables set in civiform_config.sh that are passed directly to the container environment."
+  default     = {}
+}
+
 variable "application_name" {
   type        = string
   description = "Azure Web App Name"
