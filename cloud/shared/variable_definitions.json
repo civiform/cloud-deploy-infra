@@ -1,10 +1,4 @@
 {
-  "CIVIC_ENTITY_SUPPORT_EMAIL_ADDRESS": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "CIVIFORM_APPLICANT_AUTH_PROTOCOL": {
     "required": true,
     "secret": false,
@@ -40,12 +34,6 @@
   },
   "CUSTOM_HOSTNAME": {
     "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "SENDER_EMAIL_ADDRESS": {
-    "required": true,
     "secret": false,
     "tfvar": true,
     "type": "string"

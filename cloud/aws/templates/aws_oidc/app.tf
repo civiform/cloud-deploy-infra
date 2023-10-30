@@ -91,10 +91,6 @@ module "civiform_server_container_def" {
 
     CIVIFORM_VERSION                        = var.image_tag
 
-    SUPPORT_EMAIL_ADDRESS = var.civic_entity_support_email_address
-    AWS_SES_SENDER        = var.sender_email_address
-
-    STAGING_ADMIN_LIST                    = var.staging_program_admin_notification_mailing_list
     STAGING_TI_LIST                       = var.staging_ti_notification_mailing_list
     STAGING_APPLICANT_LIST                = var.staging_applicant_notification_mailing_list
 

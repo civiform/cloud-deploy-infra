@@ -9,11 +9,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "civic_entity_support_email_address" {
-  type        = string
-  description = "Email address where applicants can contact civic entity for support with Civiform."
-}
-
 variable "image_tag" {
   type        = string
   description = "Tag for container image"

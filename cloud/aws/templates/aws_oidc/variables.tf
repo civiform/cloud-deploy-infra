@@ -28,12 +28,6 @@ variable "scraper_image" {
   default     = "docker.io/civiform/aws-metrics-scraper:latest"
 }
 
-variable "civic_entity_support_email_address" {
-  type        = string
-  description = "Email address where applicants can contact civic entity for support with Civiform."
-  default     = "azizoval@google.com"
-}
-
 variable "vpc_name" {
   type        = string
   description = "Name of the VPC"
