@@ -194,10 +194,6 @@ resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
   alarm_actions       = local.civiform_alarm_actions
 }
 
-locals {
-  name_prefix = "${module.ecs_cluster.aws_ecs_cluster_cluster_name}-${module.ecs_fargate_service.aws_ecs_service_name}"
-}
-
 resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   count               = var.ecs_create_high_memory_alarm ? 1 : 0
   alarm_name          = "${local.name_prefix}-highMemoryUtilization"
