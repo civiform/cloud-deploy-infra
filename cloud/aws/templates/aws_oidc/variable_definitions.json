@@ -41,14 +41,6 @@
       "cn-northwest-1"
     ]
   },
-  "BASE_URL": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string",
-    "value_regex": "https?://[^\\s]+",
-    "value_regex_error_message": "needs to be a url that starts with http(s)://."
-  },
   "SSL_CERTIFICATE_ARN": {
     "required": true,
     "secret": false,

@@ -83,16 +83,11 @@ module "civiform_server_container_def" {
 
   map_environment = merge({
     PORT = var.port
-
     DB_JDBC_STRING = "jdbc:postgresql://${aws_db_instance.civiform.address}:${aws_db_instance.civiform.port}/postgres?ssl=true&sslmode=require"
-
     STORAGE_SERVICE_NAME = "s3"
-    AWS_S3_BUCKET_NAME   = aws_s3_bucket.civiform_files_s3.id
-
-    CIVIFORM_VERSION                        = var.image_tag
-
-    BASE_URL                             = var.base_url != "" ? var.base_url : "https://${var.custom_hostname}"
-    CLIENT_IP_TYPE                       = "FORWARDED"
+    AWS_S3_BUCKET_NAME = aws_s3_bucket.civiform_files_s3.id
+    CIVIFORM_VERSION = var.image_tag
+    CLIENT_IP_TYPE = "FORWARDED" // must be "FORWARDED" for all AWS deployments
   }, var.civiform_server_environment_variables)
 
   port_mappings = [

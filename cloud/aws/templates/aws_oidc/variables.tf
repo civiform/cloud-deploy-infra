@@ -298,12 +298,6 @@ variable "custom_hostname" {
   default     = "staging-aws.civiform.dev"
 }
 
-variable "base_url" {
-  type        = string
-  description = "Base url for the app, only need to set if you don't have a custom hostname setup"
-  default     = ""
-}
-
 variable "port" {
   type        = string
   description = "Port the app is running on"
