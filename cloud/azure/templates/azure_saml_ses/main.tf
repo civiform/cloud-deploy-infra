@@ -37,7 +37,20 @@ module "app" {
   staging_ti_notification_mailing_list            = var.staging_ti_notification_mailing_list
   staging_applicant_notification_mailing_list     = var.staging_applicant_notification_mailing_list
 
-  saml_keystore_filename = module.saml_keystore.filename
+  civiform_time_zone_id = var.civiform_time_zone_id
+
+  civic_entity_short_name            = var.civic_entity_short_name
+  civic_entity_full_name             = var.civic_entity_full_name
+  civic_entity_support_email_address = var.civic_entity_support_email_address
+  civic_entity_logo_with_name_url    = var.civic_entity_logo_with_name_url
+  civic_entity_small_logo_url        = var.civic_entity_small_logo_url
+
+  adfs_admin_group = var.adfs_admin_group
+
+  login_radius_api_key       = var.login_radius_api_key
+  login_radius_metadata_uri  = var.login_radius_metadata_uri
+  login_radius_saml_app_name = var.login_radius_saml_app_name
+  saml_keystore_filename     = module.saml_keystore.filename
 
   # These two values need to match for PKCS12 keys
   saml_keystore_password    = module.saml_keystore.keystore_password
@@ -46,6 +59,12 @@ module "app" {
   saml_keystore_storage_access_key     = module.saml_keystore.storage_access_key
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
+
+  feature_flag_reporting_enabled       = var.feature_flag_reporting_enabled
+  feature_flag_status_tracking_enabled = var.feature_flag_status_tracking_enabled
+  civiform_api_keys_ban_global_subnet  = var.civiform_api_keys_ban_global_subnet
+  civiform_server_metrics_enabled      = var.civiform_server_metrics_enabled
+  feature_flag_overrides_enabled       = var.feature_flag_overrides_enabled
 }
 
 module "custom_hostname" {
