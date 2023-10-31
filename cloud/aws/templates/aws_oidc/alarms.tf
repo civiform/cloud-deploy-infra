@@ -208,6 +208,6 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
 
   dimensions = {
     ClusterName = module.ecs_cluster.aws_ecs_cluster_cluster_name
-    ServiceName = "${module.ecs_cluster.aws_ecs_cluster_cluster_name}-service"
+    ServiceName = aws_ecs_service.service.name
   }
 }
