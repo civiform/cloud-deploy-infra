@@ -37,7 +37,7 @@ module "app" {
   staging_ti_notification_mailing_list            = var.staging_ti_notification_mailing_list
   staging_applicant_notification_mailing_list     = var.staging_applicant_notification_mailing_list
 
-  saml_keystore_filename     = module.saml_keystore.filename
+  saml_keystore_filename = module.saml_keystore.filename
 
   # These two values need to match for PKCS12 keys
   saml_keystore_password    = module.saml_keystore.keystore_password

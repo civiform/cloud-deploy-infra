@@ -62,7 +62,6 @@ export CIVIC_ENTITY_SHORT_NAME="E2E"
 # The full name for the civic entity. Ex. "City of Rochester"
 export CIVIC_ENTITY_FULL_NAME="E2E Test City"
 
-
 # REQUIRED
 # A link to an image of the civic entity logo that includes the entity name, to be used in the header for the "Get Benefits" page
 export CIVIC_ENTITY_LOGO_WITH_NAME_URL="https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/logos/civiform-staging-long.png"

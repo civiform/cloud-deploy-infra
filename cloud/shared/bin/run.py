@@ -121,5 +121,6 @@ def normalize_tag(tag):
         return f'v{tag}'
     return tag
 
+
 if __name__ == "__main__":
     main()
