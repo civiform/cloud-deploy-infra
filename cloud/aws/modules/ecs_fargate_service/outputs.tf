@@ -11,3 +11,8 @@ output "aws_security_group_lb_access_sg_id" {
   description = "The ID of the security group"
   value       = aws_security_group.lb_access_sg.id
 }
+
+output "aws_ecs_service_name" {
+  description = "The service name of the aws ecs service."
+  value       = aws_ecs_service.service.name
+}

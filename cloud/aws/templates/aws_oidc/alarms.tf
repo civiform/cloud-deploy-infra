@@ -13,6 +13,7 @@ resource "aws_sns_topic_subscription" "civiform_alert_subscription" {
 
 locals {
   civiform_alarm_actions = var.civiform_alarm_email != "" ? [aws_sns_topic.civiform_alert_topic[0].arn] : []
+
 }
 
 // CPU Utilization
@@ -193,9 +194,13 @@ resource "aws_cloudwatch_metric_alarm" "maximum_used_transaction_ids_too_high" {
   alarm_actions       = local.civiform_alarm_actions
 }
 
+locals {
+  name_prefix = "${module.ecs_cluster.aws_ecs_cluster_cluster_name}-${module.ecs_fargate_service.aws_ecs_service_name}"
+}
+
 resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
   count               = var.ecs_create_high_memory_alarm ? 1 : 0
-  alarm_name          = "ecs-${module.ecs_cluster.aws_ecs_cluster_cluster_name}-highMemoryUtilization"
+  alarm_name          = "${local.name_prefix}-highMemoryUtilization"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = var.ecs_alarm_evaluation_period
   metric_name         = "MemoryUtilization"
@@ -208,6 +213,6 @@ resource "aws_cloudwatch_metric_alarm" "memory_utilization_too_high" {
 
   dimensions = {
     ClusterName = module.ecs_cluster.aws_ecs_cluster_cluster_name
-    ServiceName = aws_ecs_service.service.name
+    ServiceName = module.ecs_fargate_service.aws_ecs_service_name
   }
 }
