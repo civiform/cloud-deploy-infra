@@ -63,6 +63,10 @@ export CIVIC_ENTITY_SHORT_NAME="E2E"
 export CIVIC_ENTITY_FULL_NAME="E2E Test City"
 
 # REQUIRED
+# The email address to contact for support with using Civiform. Ex. "Civiform@CityOfRochester.gov
+export CIVIC_ENTITY_SUPPORT_EMAIL_ADDRESS="civiform-deploy-e2e-tests@exygy.com"
+
+# REQUIRED
 # A link to an image of the civic entity logo that includes the entity name, to be used in the header for the "Get Benefits" page
 export CIVIC_ENTITY_LOGO_WITH_NAME_URL="https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/logos/civiform-staging-long.png"
 
