@@ -374,6 +374,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "ECS_TASK_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "ECS_MAX_CPU_THRESHOLD": {
     "required": false,
     "secret": false,
@@ -409,12 +415,6 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
-  },
-  "ECS_TASK_MEMORY": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "integer"
   },
   "ECS_CREATE_HIGH_MEMORY_ALARM": {
     "required": false,

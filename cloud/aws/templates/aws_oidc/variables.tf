@@ -505,6 +505,12 @@ variable "ecs_task_cpu" {
   default     = 1024
 }
 
+variable "ecs_task_memory" {
+  type        = number
+  description = "Memory of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_cpu` as well."
+  default     = 6144
+}
+
 variable "ecs_max_cpu_threshold" {
   type        = string
   description = "The threshold for max CPU usage in an ECS task. If the CPU increases above this threshold, there will be a cloudwatch alarm and another ECS task will be added."
@@ -539,12 +545,6 @@ variable "ecs_min_cpu_period" {
   type        = string
   description = "The period in seconds over which the specified statistic is applied for min cpu metric alarm."
   default     = "60"
-}
-
-variable "ecs_task_memory" {
-  type        = number
-  description = "Memory of each ECS task. See [these docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-tasks-size) for potential values. If you change this variable, you may need to change the `ecs_task_cpu` as well."
-  default     = 6144
 }
 
 variable "ecs_create_high_memory_alarm" {
