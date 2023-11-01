@@ -154,9 +154,9 @@ variable "rds_enhanced_monitoring_interval" {
   default     = 60
 }
 
-variable "rds_alarm_email" {
+variable "civiform_alarm_email" {
   type        = string
-  description = "The address to notify when any enabled RDS alarm alerts. If unset, no emails will be sent."
+  description = "The address to notify when any enabled civiform alarm alerts. If unset, no emails will be sent."
   default     = ""
 }
 
@@ -544,6 +544,30 @@ variable "ecs_max_cpu_period" {
 variable "ecs_min_cpu_period" {
   type        = string
   description = "The period in seconds over which the specified statistic is applied for min cpu metric alarm."
+  default     = "60"
+}
+
+variable "ecs_create_high_memory_alarm" {
+  type        = bool
+  description = "Whether or not to create a high memory alarm for ECS."
+  default     = true
+}
+
+variable "ecs_max_memory_utilization_threshold" {
+  type        = string
+  description = "The threshold for max memory utilization for ECS before the alarm gets triggered (if enabled)."
+  default     = "80"
+}
+
+variable "ecs_alarm_evaluation_period" {
+  type        = string
+  description = "The number of the most recent statistic periods, or data points, to evaluate when determining RDS alarm state."
+  default     = "5"
+}
+
+variable "ecs_alarm_statistic_period" {
+  type        = string
+  description = "The length of time to use to evaluate the metric or expression to create each individual data point for an RDS alarm. It is expressed in seconds."
   default     = "60"
 }
 
