@@ -221,8 +221,9 @@ class ConfigLoader:
         """Get the commit SHA for the release specified in the tag.
         
           The tag can be a release version number such as "v1.24.0", a specific docker snapshot 
-          tag such as "SNAPSHOT-920bc49-1685642238" (where the middle secion is the shortened 
-          sha for the commit the docker image was built from), or the string "latest".
+          tag such as "SNAPSHOT-920bc49-1685642238" or "DEV-920bc49-some-branch-name "(where
+          the middle secion is the shortened sha for the commit the docker image was built
+          from), or the string "latest".
 
           We are calling the GitHub API with unauthenticated requests, which are rate-limited.
           The rate limit allows for up to 60 requests per hour associated with the originating 
@@ -232,7 +233,7 @@ class ConfigLoader:
         print(f"Resolving commit sha for tag {tag}.")
 
         try:
-            if "SNAPSHOT" in tag:
+            if "SNAPSHOT" in tag or "DEV" in tag:
                 short_sha = tag.split("-")[1]
                 return self._fetch_json_val(
                     f"https://api.github.com/repos/civiform/civiform/commits/{short_sha}",
