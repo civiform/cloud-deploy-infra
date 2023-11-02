@@ -1,3 +1,9 @@
+variable "civiform_server_environment_variables" {
+  type        = map(string)
+  description = "CiviForm server environment variables set in civiform_config.sh that are passed directly to the container environment."
+  default     = {}
+}
+
 variable "application_name" {
   type        = string
   description = "Azure Web App Name"
@@ -9,41 +15,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "civiform_time_zone_id" {
-  type        = string
-  description = "Time zone for Civiform server to use when displaying dates."
-}
-
-variable "civic_entity_short_name" {
-  type        = string
-  description = "Short name for civic entity (example: Rochester, Seattle)."
-}
-
-variable "civic_entity_full_name" {
-  type        = string
-  description = "Full name for civic entity (example: City of Rochester, City of Seattle)."
-}
-
-variable "civic_entity_support_email_address" {
-  type        = string
-  description = "Email address where applicants can contact civic entity for support with Civiform."
-}
-
-variable "civic_entity_logo_with_name_url" {
-  type        = string
-  description = "Logo with name used on the applicant-facing program index page"
-}
-
-variable "civic_entity_small_logo_url" {
-  type        = string
-  description = "Logo with name used on the applicant-facing program index page"
-}
-
-variable "favicon_url" {
-  type        = string
-  description = "Browser Favicon (16x16 or 32x32 pixels, .ico, .png, or .gif) used on all pages"
-  default     = "https://civiform.us/favicon.png"
-}
 variable "image_tag" {
   type        = string
   description = "Tag for container image"
@@ -155,69 +126,9 @@ variable "key_vault_name" {
   description = "Name of key vault where secrets are stored."
 }
 
-variable "adfs_admin_group" {
-  type        = string
-  description = "Active Directory Federation Service group name"
-}
-
-variable "ad_groups_attribute_name" {
-  type        = string
-  description = "Name of the Active Directory claim that returns groups a user is in"
-  default     = "groups"
-}
-
-variable "civiform_applicant_idp" {
-  type        = string
-  description = "identity provider to use for applicant auth. supported values are idcs and login-radius"
-  default     = "login-radius"
-}
-
-
-variable "applicant_oidc_provider_logout" {
-  type        = bool
-  description = "If the applicant OIDC logout should also perform a central logout from the auth provider"
-  default     = true
-}
-
-variable "applicant_oidc_override_logout_url" {
-  type        = string
-  description = "The URL to use for the OIDC logout endpoint (when applicant_oidc_provider_logout is true)"
-  default     = ""
-}
-
-variable "applicant_oidc_post_logout_redirect_param" {
-  type        = string
-  description = "What query parameter to use for sending the redirect uri to the central OIDC provider for logout (when applicant_oidc_provider_logout is true). Defaults to post_logout_redirect_uri"
-  default     = "post_logout_redirect_uri"
-}
-
-variable "applicant_oidc_logout_client_param" {
-  type        = string
-  description = "What query parameter to use for sending the client id to the central OIDC provider for logout (when applicant_oidc_provider_logout is true).  If left blank, doesn't send the client id."
-  default     = ""
-}
-
 variable "civiform_applicant_auth_protocol" {
   type        = string
   description = "auth protocol to use for applicant auth. supported values are oidc and saml"
-}
-
-variable "login_radius_api_key" {
-  type        = string
-  description = "Login Radius API Key"
-  default     = null
-}
-
-variable "login_radius_metadata_uri" {
-  type        = string
-  description = "LoginRadius endpoint for fetching IdP metadata"
-  default     = null
-}
-
-variable "login_radius_saml_app_name" {
-  type        = string
-  description = "The App Name for the LoginRadius SAML integration"
-  default     = null
 }
 
 variable "saml_keystore_filename" {
@@ -268,32 +179,4 @@ variable "staging_applicant_notification_mailing_list" {
   default     = ""
 }
 
-variable "feature_flag_reporting_enabled" {
-  type        = bool
-  description = "Whether or not to enable the reporting feature"
-  default     = false
-}
 
-variable "feature_flag_status_tracking_enabled" {
-  type        = bool
-  description = "When set to true enable Status Tracking."
-  default     = false
-}
-
-variable "civiform_api_keys_ban_global_subnet" {
-  type        = bool
-  description = "Whether to allow 0.0.0.0/0 subnet for API key access."
-  default     = true
-}
-
-variable "civiform_server_metrics_enabled" {
-  type        = bool
-  description = "Whether to enable exporting server metrics on the /metrics route."
-  default     = false
-}
-
-variable "feature_flag_overrides_enabled" {
-  type        = bool
-  description = "Whether feature flags can be override using /dev/feature/.../enable url."
-  default     = false
-}

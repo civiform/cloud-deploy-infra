@@ -24,33 +24,16 @@ locals {
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
-    WHITELABEL_CIVIC_ENTITY_SHORT_NAME = var.civic_entity_short_name
-    WHITELABEL_CIVIC_ENTITY_FULL_NAME  = var.civic_entity_full_name
-    WHITELABEL_SMALL_LOGO_URL          = var.civic_entity_small_logo_url
-    WHITELABEL_LOGO_WITH_NAME_URL      = var.civic_entity_logo_with_name_url
-    SUPPORT_EMAIL_ADDRESS              = var.civic_entity_support_email_address
-
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
     AZURE_STORAGE_ACCOUNT_CONTAINER = azurerm_storage_container.files_container.name
 
-    AWS_SES_SENDER        = var.sender_email_address
     AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
     AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
 
-    STAGING_ADMIN_LIST     = var.staging_program_admin_notification_mailing_list
-    STAGING_TI_LIST        = var.staging_ti_notification_mailing_list
-    STAGING_APPLICANT_LIST = var.staging_applicant_notification_mailing_list
-
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
-    AD_GROUPS_ATTRIBUTE_NAME                  = var.ad_groups_attribute_name
-    ADFS_SECRET                               = data.azurerm_key_vault_secret.adfs_secret.value
-    ADFS_CLIENT_ID                            = data.azurerm_key_vault_secret.adfs_client_id.value
-    ADFS_GLOBAL_ADMIN_GROUP                   = var.adfs_admin_group
-    APPLICANT_OIDC_PROVIDER_LOGOUT            = var.applicant_oidc_provider_logout
-    APPLICANT_OIDC_OVERRIDE_LOGOUT_URL        = var.applicant_oidc_override_logout_url
-    APPLICANT_OIDC_POST_LOGOUT_REDIRECT_PARAM = var.applicant_oidc_post_logout_redirect_param
-    APPLICANT_OIDC_LOGOUT_CLIENT_PARAM        = var.applicant_oidc_logout_client_param
+    ADFS_SECRET    = data.azurerm_key_vault_secret.adfs_secret.value
+    ADFS_CLIENT_ID = data.azurerm_key_vault_secret.adfs_client_id.value
 
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
@@ -60,25 +43,10 @@ locals {
 
     CIVIFORM_API_SECRET_SALT = data.azurerm_key_vault_secret.api_secret_salt_key.value
 
-    CIVIFORM_ADMIN_REPORTING_UI_ENABLED          = var.feature_flag_reporting_enabled
-    CIVIFORM_APPLICATION_STATUS_TRACKING_ENABLED = var.feature_flag_status_tracking_enabled
-    CIVIFORM_API_KEYS_BAN_GLOBAL_SUBNET          = var.civiform_api_keys_ban_global_subnet
-    CIVIFORM_SERVER_METRICS_ENABLED              = var.civiform_server_metrics_enabled
-    FEATURE_FLAG_OVERRIDES_ENABLED               = var.feature_flag_overrides_enabled
-
-    # Add variables that are also listed in env-var-docs.json in the civiform repository below this line.
-
-    # TODO(#4612) Remove variables below when auto generation via env-var-docs is fully enabled to avoid 
-    # duplicates in the civiform_server_environment_variables map. 
-
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
-    STAGING_HOSTNAME       = "placeholder"
-    BASE_URL               = "placeholder"
-    CIVIFORM_TIME_ZONE_ID  = var.civiform_time_zone_id
-    FAVICON_URL            = var.favicon_url
-    AWS_REGION             = var.aws_region
-    CIVIFORM_APPLICANT_IDP = var.civiform_applicant_idp
+    STAGING_HOSTNAME = "placeholder"
+    BASE_URL         = "placeholder"
 
     ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
@@ -86,14 +54,6 @@ locals {
     # This allows for the default to include atallclaims and for
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
-
-    AD_GROUPS_ATTRIBUTE_NAME = var.ad_groups_attribute_name
-
-    # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
-    # saml_keystore module
-    LOGIN_RADIUS_METADATA_URI  = var.login_radius_metadata_uri
-    LOGIN_RADIUS_API_KEY       = var.login_radius_api_key
-    LOGIN_RADIUS_SAML_APP_NAME = var.login_radius_saml_app_name
   }, var.civiform_server_environment_variables)
   adfs_client_id     = "adfs-client-id"
   adfs_discovery_uri = "adfs-discovery-uri"
