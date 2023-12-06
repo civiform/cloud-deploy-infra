@@ -28,6 +28,10 @@ processors:
           - ecs.task.network.rate.tx
           - ecs.task.storage.read_bytes
           - ecs.task.storage.write_bytes
+  resources:
+    attributes:
+      service.version: '${CIVIFORM_VERSION}'
+
 
 exporters:
   prometheusremotewrite:
