@@ -142,7 +142,6 @@ module "civiform_metrics_scraper_container_def" {
     AWS_REGION                = var.aws_region
   }, var.civiform_server_environment_variables)
 
-
   log_configuration = {
     logDriver = "awslogs"
     options = {
