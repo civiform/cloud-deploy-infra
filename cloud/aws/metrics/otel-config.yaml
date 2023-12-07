@@ -11,6 +11,8 @@ receivers:
         - job_name: 'civiform_scraper'
           static_configs:
             - targets: [0.0.0.0:9000]
+          labels:
+            civiform_version: '${CIVIFORM_VERSION}'
   awsecscontainermetrics:
     collection_interval: 10s
 
@@ -28,9 +30,6 @@ processors:
           - ecs.task.network.rate.tx
           - ecs.task.storage.read_bytes
           - ecs.task.storage.write_bytes
-  resources:
-    attributes:
-      service.version: '${CIVIFORM_VERSION}'
 
 
 exporters:
