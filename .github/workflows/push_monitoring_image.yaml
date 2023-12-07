@@ -2,8 +2,8 @@ name: build_push_metrics_scraper_image
 
 on:
   push:
-    branches: 
-    - main
+    branches:
+      - main
   # Setting this enables manually triggering workflow in the GitHub UI
   # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
   workflow_dispatch: {}
@@ -43,4 +43,4 @@ jobs:
         if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/metrics/')
         run: |
           cd $GITHUB_WORKSPACE/cloud/aws/metrics
-          | ./build-scraper
+          ./build-scraper
