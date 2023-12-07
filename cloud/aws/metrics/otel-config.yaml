@@ -11,8 +11,8 @@ receivers:
         - job_name: 'civiform_scraper'
           static_configs:
             - targets: [0.0.0.0:9000]
-          labels:
-            civiform_version: '${CIVIFORM_VERSION}'
+              labels:
+                civiform_version: '${CIVIFORM_VERSION}'
   awsecscontainermetrics:
     collection_interval: 10s
 
