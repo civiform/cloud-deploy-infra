@@ -42,5 +42,5 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/pgadmin/')
         run: |
-          cd $GITHUB_WORKSPACE/civiform-cloud-deploy-infra/cloud/aws/pgadmin
-          | ./build-pgdmin
+          cd $GITHUB_WORKSPACE/cloud/aws/pgadmin
+          ./build-pgdmin
