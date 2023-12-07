@@ -31,7 +31,6 @@ processors:
           - ecs.task.storage.read_bytes
           - ecs.task.storage.write_bytes
 
-
 exporters:
   prometheusremotewrite:
     endpoint: '${PROMETHEUS_WRITE_ENDPOINT}'
