@@ -42,4 +42,4 @@ jobs:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           cd $GITHUB_WORKSPACE/cloud/aws/metrics
-          | ./build-scraper
+          ./build-scraper
