@@ -140,7 +140,7 @@ module "civiform_metrics_scraper_container_def" {
   map_environment = merge({
     PROMETHEUS_WRITE_ENDPOINT = var.monitoring_stack_enabled ? "${aws_prometheus_workspace.metrics[0].prometheus_endpoint}api/v1/remote_write" : ""
     AWS_REGION                = var.aws_region
-}, var.civiform_server_environment_variables)
+  }, var.civiform_server_environment_variables)
 
 
   log_configuration = {
