@@ -360,14 +360,29 @@ locals {
   total_container_memory_validation = {
     condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory <= var.ecs_task_memory
     error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+    validate = regex(
+      "^${local.total_container_memory_validation.error_message}$",
+      (!local.total_container_memory_validation.condition
+        ? local.total_container_memory_validation.error_message
+    : ""))
   }
   server_memory_res_validation = {
     condition     = var.ecs_server_container_memory > var.ecs_server_container_memory_reservation
     error_message = "ECS_SERVER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_SERVER_CONTAINER_MEMORY"
+    validate = regex(
+      "^${local.server_memory_res_validation.error_message}$",
+      (!local.server_memory_res_validation.condition
+        ? local.server_memory_res_validation.error_message
+    : ""))
   }
   metrics_scraper_memory_res_validation = {
     condition     = var.ecs_metrics_scraper_container_memory > var.ecs_metrics_scraper_container_memory_reservation
     error_message = "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_METRICS_SCRAPER_CONTAINER_MEMORY"
+    validate = regex(
+      "^${local.metrics_scraper_memory_res_validation.error_message}$",
+      (!local.metrics_scraper_memory_res_validation.condition
+        ? local.metrics_scraper_memory_res_validation.error_message
+    : ""))
   }
 }
 
