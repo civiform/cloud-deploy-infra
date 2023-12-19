@@ -331,6 +331,46 @@ variable "ecs_task_memory" {
   default     = 6144
 }
 
+variable "ecs_server_container_memory" {
+  type        = number
+  description = "The amount (in MiB) of memory to present to the server container."
+  default     = 4096
+  validation {
+    condition = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory <= var.ecs_task_memory
+    error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+  }
+}
+
+variable "ecs_server_container_memory_reservation" {
+  type        = number
+  description = "The soft limit (in MiB) of memory to reserve for the server container."
+  default     = 2048
+  validation {
+    condition = var.ecs_server_container_memory > var.ecs_server_container_memory_reservation
+    error_message = "ECS_SERVER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_SERVER_CONTAINER_MEMORY"
+  }
+}
+
+variable "ecs_metrics_scraper_container_memory" {
+  type        = number
+  description = "The amount (in MiB) of memory to present to the metrics scraper container."
+  default     = 2048
+  validation {
+    condition = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory <= var.ecs_task_memory
+    error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+  }
+}
+
+variable "ecs_metrics_scraper_container_memory_reservation" {
+  type        = number
+  description = "The soft limit (in MiB) of memory to reserve for the metrics scraper container."
+  default     = 1024
+  validation {
+    condition = var.ecs_metrics_scraper_container_memory > var.ecs_metrics_scraper_container_memory_reservation
+    error_message = "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_METRICS_SCRAPER_CONTAINER_MEMORY"
+  }
+}
+
 variable "ecs_max_cpu_threshold" {
   type        = string
   description = "The threshold for max CPU usage in an ECS task. If the CPU increases above this threshold, there will be a cloudwatch alarm and another ECS task will be added."

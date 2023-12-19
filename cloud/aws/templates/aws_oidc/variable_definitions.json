@@ -285,6 +285,30 @@
     "tfvar": true,
     "type": "integer"
   },
+  "ECS_SERVER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_SERVER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "ECS_MAX_CPU_THRESHOLD": {
     "required": false,
     "secret": false,
