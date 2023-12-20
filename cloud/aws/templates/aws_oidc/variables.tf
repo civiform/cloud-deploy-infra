@@ -358,7 +358,7 @@ output "validate_container_memory" {
   value = null
 
   precondition {
-    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
+    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory <= var.ecs_task_memory
     error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
   }
 }
