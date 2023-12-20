@@ -358,7 +358,7 @@ variable "ecs_metrics_scraper_container_memory_reservation" {
 # This is a workaround for validation until terraform supports conditions referring to other variables (https://github.com/hashicorp/terraform/issues/25609)
 locals {
   total_container_memory_validation = {
-    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory <= var.ecs_task_memory
+    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
     error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
   }
   total_container_memory_validation_check = regex(
@@ -367,7 +367,7 @@ locals {
       ? local.total_container_memory_validation.error_message
   : ""))
   server_memory_res_validation = {
-    condition     = var.ecs_server_container_memory > var.ecs_server_container_memory_reservation
+    condition     = var.ecs_server_container_memory < var.ecs_server_container_memory_reservation
     error_message = "ECS_SERVER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_SERVER_CONTAINER_MEMORY"
   }
   server_memory_res_validation_check = regex(
@@ -376,7 +376,7 @@ locals {
       ? local.server_memory_res_validation.error_message
   : ""))
   metrics_scraper_memory_res_validation = {
-    condition     = var.ecs_metrics_scraper_container_memory > var.ecs_metrics_scraper_container_memory_reservation
+    condition     = var.ecs_metrics_scraper_container_memory < var.ecs_metrics_scraper_container_memory_reservation
     error_message = "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_METRICS_SCRAPER_CONTAINER_MEMORY"
   }
   metrics_scraper_memory_res_validation_check = regex(
