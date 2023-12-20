@@ -357,8 +357,10 @@ variable "ecs_metrics_scraper_container_memory_reservation" {
 output "validate_container_memory" {
   value = null
 
-  condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
-  error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+  precondition {
+    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
+    error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+  }
 }
 
 # This is a workaround for validation until terraform supports conditions referring to other variables (https://github.com/hashicorp/terraform/issues/25609)
