@@ -354,37 +354,39 @@ variable "ecs_metrics_scraper_container_memory_reservation" {
   description = "The soft limit (in MiB) of memory to reserve for the metrics scraper container."
   default     = 1024
 }
+output "validate_container_memory" {
+  value = null
+
+  condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
+  error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+}
 
 # This is a workaround for validation until terraform supports conditions referring to other variables (https://github.com/hashicorp/terraform/issues/25609)
-locals {
-  total_container_memory_validation = {
-    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
-    error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
-  }
-  total_container_memory_validation_check = regex(
-    "^${local.total_container_memory_validation.error_message}$",
-    (!local.total_container_memory_validation.condition
-      ? local.total_container_memory_validation.error_message
-  : ""))
-  server_memory_res_validation = {
-    condition     = var.ecs_server_container_memory < var.ecs_server_container_memory_reservation
-    error_message = "ECS_SERVER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_SERVER_CONTAINER_MEMORY"
-  }
-  server_memory_res_validation_check = regex(
-    "^${local.server_memory_res_validation.error_message}$",
-    (!local.server_memory_res_validation.condition
-      ? local.server_memory_res_validation.error_message
-  : ""))
-  metrics_scraper_memory_res_validation = {
-    condition     = var.ecs_metrics_scraper_container_memory < var.ecs_metrics_scraper_container_memory_reservation
-    error_message = "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_METRICS_SCRAPER_CONTAINER_MEMORY"
-  }
-  metrics_scraper_memory_res_validation_check = regex(
-    "^${local.metrics_scraper_memory_res_validation.error_message}$",
-    (!local.metrics_scraper_memory_res_validation.condition
-      ? local.metrics_scraper_memory_res_validation.error_message
-  : ""))
-}
+#locals {
+#  total_container_memory_validation = {
+#    condition     = var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory
+#    error_message = "The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY"
+#  }
+#  total_container_memory_validation_check = (var.ecs_server_container_memory + var.ecs_metrics_scraper_container_memory >= var.ecs_task_memory) ? tobool("The ECS_SERVER_CONTAINER_MEMORY + ECS_METRICS_SCRAPER_CONTAINER_MEMORY must be less than or equal to the ECS_TASK_MEMORY") : true
+#  server_memory_res_validation = {
+#    condition     = var.ecs_server_container_memory < var.ecs_server_container_memory_reservation
+#    error_message = "ECS_SERVER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_SERVER_CONTAINER_MEMORY"
+#  }
+#  server_memory_res_validation_check = regex(
+#    "^${local.server_memory_res_validation.error_message}$",
+#    (!local.server_memory_res_validation.condition
+#      ? local.server_memory_res_validation.error_message
+#  : ""))
+#  metrics_scraper_memory_res_validation = {
+#    condition     = var.ecs_metrics_scraper_container_memory < var.ecs_metrics_scraper_container_memory_reservation
+#    error_message = "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION must be less than the ECS_METRICS_SCRAPER_CONTAINER_MEMORY"
+#  }
+#  metrics_scraper_memory_res_validation_check = regex(
+#    "^${local.metrics_scraper_memory_res_validation.error_message}$",
+#    (!local.metrics_scraper_memory_res_validation.condition
+#      ? local.metrics_scraper_memory_res_validation.error_message
+#  : ""))
+#}
 
 variable "ecs_max_cpu_threshold" {
   type        = string
