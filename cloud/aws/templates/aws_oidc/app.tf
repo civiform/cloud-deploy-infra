@@ -35,8 +35,8 @@ module "civiform_server_container_def" {
 
   container_name               = "${var.app_prefix}-civiform"
   container_image              = "${var.civiform_image_repo}:${var.image_tag}"
-  container_memory             = 4096
-  container_memory_reservation = 2048
+  container_memory             = var.ecs_server_container_memory
+  container_memory_reservation = var.ecs_server_container_memory_reservation
 
   secrets = [
     {
@@ -134,8 +134,8 @@ module "civiform_metrics_scraper_container_def" {
 
   container_name               = "${var.app_prefix}-metrics-scraper"
   container_image              = var.scraper_image
-  container_memory             = 2048
-  container_memory_reservation = 1024
+  container_memory             = var.ecs_metrics_scraper_container_memory
+  container_memory_reservation = var.ecs_metrics_scraper_container_memory_reservation
 
   map_environment = merge({
     PROMETHEUS_WRITE_ENDPOINT = var.monitoring_stack_enabled ? "${aws_prometheus_workspace.metrics[0].prometheus_endpoint}api/v1/remote_write" : ""
