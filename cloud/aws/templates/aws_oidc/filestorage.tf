@@ -94,6 +94,48 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
   force_destroy = local.force_destroy_s3
 }
 
+# TODO: No idea if this is correct
+resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
+  bucket = aws_s3_bucket.civiform_public_files_s3.id
+  policy = data.aws_iam_policy_document.civiform_public_files_policy.json
+}
+
+data "aws_iam_policy_document" "civiform_public_files_policy" {
+  statement {
+    actions = ["s3:*"]
+    effect  = "Deny"
+    resources = [
+    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "ArnNotEquals"
+      variable = "aws:PrincipalArn"
+      values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+    }
+  }
+  statement {
+    actions = ["s3:*"]
+    effect  = "Allow"
+    resources = [aws_s3_bucket.civiform_public_files_s3.arn,
+    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
+  bucket = aws_s3_bucket.civiform_public_files_s3.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
 ##### Log bucket #####
 resource "aws_s3_bucket" "log_bucket" {
   tags = {
