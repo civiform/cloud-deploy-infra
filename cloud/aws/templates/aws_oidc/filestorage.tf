@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "civiform_files_s3" {
 }
 
 # TODO: Do we need other vars?
-resource "aws_s3_public_bucket" "civiform_public_files_s3" {
+resource "aws_s3_bucket" "civiform_public_files_s3" {
   tags = {
     Name = "${var.app_prefix} Civiform Public Files"
     Type = "Civiform Public Files"
