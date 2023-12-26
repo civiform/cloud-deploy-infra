@@ -1,3 +1,4 @@
+##### Applicant-uploaded files bucket #####
 resource "aws_s3_bucket" "civiform_files_s3" {
   tags = {
     Name = "${var.app_prefix} Civiform Files"
@@ -5,17 +6,6 @@ resource "aws_s3_bucket" "civiform_files_s3" {
   }
 
   bucket        = "${var.app_prefix}-civiform-files-s3"
-  force_destroy = local.force_destroy_s3
-}
-
-# TODO: Do we need other vars?
-resource "aws_s3_bucket" "civiform_public_files_s3" {
-  tags = {
-    Name = "${var.app_prefix} Civiform Public Files"
-    Type = "Civiform Public Files"
-  }
-
-  bucket        = "${var.app_prefix}-civiform-public-files-s3"
   force_destroy = local.force_destroy_s3
 }
 
@@ -92,6 +82,19 @@ resource "aws_s3_bucket_logging" "civiform_files_logging" {
   target_prefix = "file-access-log/"
 }
 
+##### Public files bucket (for program images etc.) #####
+# TODO: Do we need other vars?
+resource "aws_s3_bucket" "civiform_public_files_s3" {
+  tags = {
+    Name = "${var.app_prefix} Civiform Public Files"
+    Type = "Civiform Public Files"
+  }
+
+  bucket        = "${var.app_prefix}-civiform-public-files-s3"
+  force_destroy = local.force_destroy_s3
+}
+
+##### Log bucket #####
 resource "aws_s3_bucket" "log_bucket" {
   tags = {
     Name = "${var.app_prefix} Civiform Logs"
