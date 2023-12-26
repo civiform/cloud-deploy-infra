@@ -116,6 +116,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
     }
   }
+  # Allows admins to upload files I think?
   statement {
     actions = ["s3:*"]
     effect  = "Allow"
@@ -126,6 +127,18 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
     }
   }
+  # Allows public to view files I think?
+    statement {
+      actions = ["s3:GetObject"]
+      effect  = "Allow"
+      principals {
+            type        = "*"
+            identifiers = ["*"]
+      }
+      # TODO here and in filekey generator about changing prefox
+      resources = [
+      "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    }
 }
 
 resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
