@@ -83,7 +83,6 @@ resource "aws_s3_bucket_logging" "civiform_files_logging" {
 }
 
 ##### Public files bucket (for program images etc.) #####
-# TODO: Do we need other vars?
 resource "aws_s3_bucket" "civiform_public_files_s3" {
   tags = {
     Name = "${var.app_prefix} Civiform Public Files"
@@ -106,31 +105,43 @@ resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
   policy = data.aws_iam_policy_document.civiform_public_files_policy.json
-  #  depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ] # TODO: Maybe unnecessary, forgot to push the branch
-
 }
 
 # TODO: No idea if this is correct
 data "aws_iam_policy_document" "civiform_public_files_policy" {
-/*
-  statement {
-    actions = ["s3:*"]
-    effect  = "Deny"
-    resources = [
-    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
-    principals {
-      type        = "*"
-      identifiers = ["*"]
+    # This statement prevents the public from performing any action except the "s3:GetObject" action
+    statement {
+      not_actions = ["s3:GetObject"]
+      effect  = "Deny"
+      resources = [
+      "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+      principals {
+        type        = "*"
+        identifiers = ["*"]
+      }
+      condition {
+        test     = "ArnNotEquals"
+        variable = "aws:PrincipalArn"
+        values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+      }
     }
-    condition {
-      test     = "ArnNotEquals"
-      variable = "aws:PrincipalArn"
-      values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+    # This statement explicitly allows the public to perform the "s3:GetObject" action
+    # only for files in /program-summary-image/program-* directories.
+    # (Note that the "Deny" statement above doesn't *grant* the s3:GetObject action, it just doesn't deny it.
+    # See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html.)
+    statement {
+      actions = ["s3:GetObject"]
+      effect    = "Allow"
+      # TODO: Add info here and in FileNameFormatter about changing the prefix
+      resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+      actions   = ["s3:GetObject"]
+      principals {
+        type        = "*"
+        identifiers = ["*"]
+      }
     }
-  }
-  */
 
-  # Allows admins to upload files I think?
+  # TODO: Not sure what this statement does
   statement {
     actions = ["s3:*"]
     effect  = "Allow"
@@ -141,32 +152,6 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
     }
   }
-  # Allows public to view files I think?
-  statement {
-  # sid       = "AddPerm"
-    effect    = "Allow"
-    resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-    actions   = ["s3:GetObject"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-  }
-
-  /*
-    statement {
-      actions = ["s3:GetObject"]
-      effect  = "Allow"
-      principals {
-            type        = "*"
-            identifiers = ["*"]
-      }
-      # TODO here and in filekey generator about changing prefox
-      resources = [
-      "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-    }
-    */
 }
 
 resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
