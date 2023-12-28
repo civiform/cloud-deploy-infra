@@ -94,13 +94,14 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
   force_destroy = local.force_destroy_s3
 }
 
-# TODO: No idea if this is correct
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
   policy = data.aws_iam_policy_document.civiform_public_files_policy.json
 }
 
+# TODO: No idea if this is correct
 data "aws_iam_policy_document" "civiform_public_files_policy" {
+/*
   statement {
     actions = ["s3:*"]
     effect  = "Deny"
@@ -116,6 +117,8 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
     }
   }
+  */
+
   # Allows admins to upload files I think?
   statement {
     actions = ["s3:*"]
