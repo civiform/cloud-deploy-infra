@@ -94,9 +94,20 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
   force_destroy = local.force_destroy_s3
 }
 
+resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
+# TODO: Which should actually be false?
+  bucket                  = aws_s3_bucket.civiform_public_files_s3.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
   policy = data.aws_iam_policy_document.civiform_public_files_policy.json
+    depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ] # TODO: Maybe unnecessary, forgot to push the branch
+
 }
 
 # TODO: No idea if this is correct
@@ -131,6 +142,19 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     }
   }
   # Allows public to view files I think?
+  statement {
+    sid       = "AddPerm"
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    actions   = ["s3:GetObject"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+
+  /*
     statement {
       actions = ["s3:GetObject"]
       effect  = "Allow"
@@ -142,6 +166,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       resources = [
       "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
     }
+    */
 }
 
 resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
