@@ -106,7 +106,7 @@ resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
   policy = data.aws_iam_policy_document.civiform_public_files_policy.json
-    depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ] # TODO: Maybe unnecessary, forgot to push the branch
+  #  depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ] # TODO: Maybe unnecessary, forgot to push the branch
 
 }
 
@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
   }
   # Allows public to view files I think?
   statement {
-    sid       = "AddPerm"
+  # sid       = "AddPerm"
     effect    = "Allow"
     resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
     actions   = ["s3:GetObject"]
