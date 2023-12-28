@@ -111,8 +111,8 @@ resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
 data "aws_iam_policy_document" "civiform_public_files_policy" {
     # This statement prevents the public from performing any action except the "s3:GetObject" action
     statement {
-      not_actions = ["s3:GetObject"]
       effect  = "Deny"
+      not_actions = ["s3:GetObject"]
       resources = [
       "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
       principals {
@@ -130,11 +130,10 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     # (Note that the "Deny" statement above doesn't *grant* the s3:GetObject action, it just doesn't deny it.
     # See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html.)
     statement {
-      actions = ["s3:GetObject"]
       effect    = "Allow"
+      actions = ["s3:GetObject"]
       # TODO: Add info here and in FileNameFormatter about changing the prefix
       resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-      actions   = ["s3:GetObject"]
       principals {
         type        = "*"
         identifiers = ["*"]
