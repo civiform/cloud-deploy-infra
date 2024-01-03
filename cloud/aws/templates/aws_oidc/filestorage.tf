@@ -94,18 +94,20 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
 }
 
 resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
-# TODO: Which should actually be false?
-  bucket                  = aws_s3_bucket.civiform_public_files_s3.id
-  block_public_acls       = false
+  bucket = aws_s3_bucket.civiform_public_files_s3.id
+  # We specifically want files in this bucket to be publicly accessible via the below policy
+  # (Because this bucket is BucketOwnerEnforced, we use policies instead of ACLs to control
+  # access, which is why the public_acls values can still be blocked.)
   block_public_policy     = false
-  ignore_public_acls      = false
   restrict_public_buckets = false
+  block_public_acls       = true
+  ignore_public_acls      = true
 }
 
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
-  bucket = aws_s3_bucket.civiform_public_files_s3.id
-  policy = data.aws_iam_policy_document.civiform_public_files_policy.json
-  depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ]
+  bucket     = aws_s3_bucket.civiform_public_files_s3.id
+  policy     = data.aws_iam_policy_document.civiform_public_files_policy.json
+  depends_on = [aws_s3_bucket_public_access_block.civiform_public_files_access]
 }
 
 data "aws_iam_policy_document" "civiform_public_files_policy" {
@@ -119,87 +121,19 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
       identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
     }
   }
-  # Allows public to view files I think?
+  # Allows anyone to view program images.
   statement {
-    sid       = "AddPerm"
-    effect    = "Allow"
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    # The location of program images is controlled in the civiform repo in
+    # server/app/services/cloud/PublicFileNameFormatter.java. Be sure to keep these files in sync.
     resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-    actions   = ["s3:GetObject"]
-
     principals {
       type        = "*"
       identifiers = ["*"]
     }
   }
-
-  /*
-    statement {
-      actions = ["s3:GetObject"]
-      effect  = "Allow"
-	@@ -142,6 +166,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
-      resources = [
-      "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-    }
-    */
 }
-
-/*
-# TODO: No idea if this is correct
-data "aws_iam_policy_document" "civiform_public_files_policy" {
-  statement {
-    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
-    effect    = "Allow"
-    resources = [aws_s3_bucket.civiform_public_files_s3.arn, "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
-    principals {
-      type        = "AWS"
-      identifiers = [data.aws_caller_identity.current.arn]
-    }
-  }
-    # This statement prevents the public from performing any action except the "s3:GetObject" action
-    # This deny statement is what locks me out (and also prevents admins from uploading)
-    statement {
-      effect  = "Deny"
-      not_actions = ["s3:GetObject"]
-      resources = [
-      "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
-      principals {
-        type        = "*"
-        identifiers = ["*"]
-      }
-      condition {
-        test     = "ArnNotEquals"
-        variable = "aws:PrincipalArn"
-        values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
-      }
-    }
-    # This statement explicitly allows the public to perform the "s3:GetObject" action
-    # only for files in /program-summary-image/program-* directories.
-    # (Note that the "Deny" statement above doesn't *grant* the s3:GetObject action, it just doesn't deny it.
-    # See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_notaction.html.)
-    statement {
-      effect    = "Allow"
-      actions = ["s3:GetObject"]
-      # TODO: Add info here and in FileNameFormatter about changing the prefix
-      resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
-      principals {
-        type        = "*"
-        identifiers = ["*"]
-      }
-    }
-
-  # TODO: Not sure what this statement does
-  statement {
-    actions = ["s3:*"]
-    effect  = "Allow"
-    resources = [aws_s3_bucket.civiform_public_files_s3.arn,
-    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
-    principals {
-      type        = "AWS"
-      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
-    }
-  }
-}
-*/
 
 resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
