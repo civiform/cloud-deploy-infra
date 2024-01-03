@@ -89,7 +89,7 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
     Type = "Civiform Public Files"
   }
 
-  bucket        = "${var.app_prefix}-civiform-public-files-s3-3"
+  bucket        = "${var.app_prefix}-civiform-public-files-s3"
   force_destroy = local.force_destroy_s3
 }
 
@@ -101,8 +101,8 @@ resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
   restrict_public_buckets = false
   # Because this bucket is BucketOwnerEnforced, we use policies instead of ACLs
   # to control access, which is why the public_acls values can still be blocked.
-  block_public_acls       = true
-  ignore_public_acls      = true
+  block_public_acls  = true
+  ignore_public_acls = true
 }
 
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
