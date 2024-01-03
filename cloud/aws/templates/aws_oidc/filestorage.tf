@@ -89,7 +89,7 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
     Type = "Civiform Public Files"
   }
 
-  bucket        = "${var.app_prefix}-civiform-public-files-s3-2"
+  bucket        = "${var.app_prefix}-civiform-public-files-s3-3"
   force_destroy = local.force_destroy_s3
 }
 
@@ -156,6 +156,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     }
   }
     # This statement prevents the public from performing any action except the "s3:GetObject" action
+    # This deny statement is what locks me out (and also prevents admins from uploading)
     statement {
       effect  = "Deny"
       not_actions = ["s3:GetObject"]
