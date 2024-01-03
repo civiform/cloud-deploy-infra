@@ -89,7 +89,7 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
     Type = "Civiform Public Files"
   }
 
-  bucket        = "${var.app_prefix}-civiform-public-files-s3"
+  bucket        = "${var.app_prefix}-civiform-public-files-s3-2"
   force_destroy = local.force_destroy_s3
 }
 
@@ -105,10 +105,56 @@ resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
 resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
   policy = data.aws_iam_policy_document.civiform_public_files_policy.json
+  depends_on = [ aws_s3_bucket_public_access_block.civiform_public_files_access ]
 }
 
+data "aws_iam_policy_document" "civiform_public_files_policy" {
+  statement {
+    actions = ["s3:*"]
+    effect  = "Allow"
+    resources = [aws_s3_bucket.civiform_public_files_s3.arn,
+    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+    }
+  }
+  # Allows public to view files I think?
+  statement {
+    sid       = "AddPerm"
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    actions   = ["s3:GetObject"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+
+  /*
+    statement {
+      actions = ["s3:GetObject"]
+      effect  = "Allow"
+	@@ -142,6 +166,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
+      resources = [
+      "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    }
+    */
+}
+
+/*
 # TODO: No idea if this is correct
 data "aws_iam_policy_document" "civiform_public_files_policy" {
+  statement {
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
+    effect    = "Allow"
+    resources = [aws_s3_bucket.civiform_public_files_s3.arn, "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_caller_identity.current.arn]
+    }
+  }
     # This statement prevents the public from performing any action except the "s3:GetObject" action
     statement {
       effect  = "Deny"
@@ -152,6 +198,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     }
   }
 }
+*/
 
 resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
