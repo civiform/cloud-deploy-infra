@@ -95,11 +95,12 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
 
 resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
   bucket = aws_s3_bucket.civiform_public_files_s3.id
-  # We specifically want files in this bucket to be publicly accessible via the below policy
-  # (Because this bucket is BucketOwnerEnforced, we use policies instead of ACLs to control
-  # access, which is why the public_acls values can still be blocked.)
+  # We specifically want files in this bucket to be publicly accessible via the
+  # policy specified in civiform_public_files_policy.
   block_public_policy     = false
   restrict_public_buckets = false
+  # Because this bucket is BucketOwnerEnforced, we use policies instead of ACLs
+  # to control access, which is why the public_acls values can still be blocked.
   block_public_acls       = true
   ignore_public_acls      = true
 }

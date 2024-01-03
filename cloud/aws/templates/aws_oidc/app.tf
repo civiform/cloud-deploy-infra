@@ -212,7 +212,6 @@ locals {
               aws_s3_bucket.civiform_files_s3.arn,
               "${aws_s3_bucket.civiform_files_s3.arn}/*",
             ]
-            # TODO: Need ARN?
           },
           {
             "Effect" : "Allow",
