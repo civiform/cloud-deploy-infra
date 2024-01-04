@@ -89,7 +89,7 @@ resource "aws_s3_bucket" "civiform_public_files_s3" {
     Type = "Civiform Public Files"
   }
 
-  bucket        = "${var.app_prefix}-civiform-public-files-s3-3"
+  bucket        = "${var.app_prefix}-civiform-public-files-s3"
   force_destroy = local.force_destroy_s3
 }
 
