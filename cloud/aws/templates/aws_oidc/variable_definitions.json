@@ -41,107 +41,6 @@
       "cn-northwest-1"
     ]
   },
-  "STAGING_HOSTNAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "BASE_URL": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string",
-    "value_regex": "https?://[^\\s]+",
-    "value_regex_error_message": "needs to be a url that starts with http(s)://."
-  },
-  "CIVIFORM_APPLICANT_IDP": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "enum",
-    "values": ["idcs", "generic-oidc", "adfs", "disabled", "login-gov", "auth0"]
-  },
-  "APPLICANT_OIDC_PROVIDER_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string",
-    "value_regex": "[^\\s]*",
-    "value_regex_error_message": "needs to be url safe. No spaces are allowed."
-  },
-  "APPLICANT_OIDC_DISCOVERY_URI": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_RESPONSE_MODE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_RESPONSE_TYPE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_ADDITIONAL_SCOPES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_LOCALE_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_EMAIL_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_LAST_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "ADFS_DISCOVERY_URI": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "ADFS_ADDITIONAL_SCOPES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "AD_GROUPS_ATTRIBUTE_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "SSL_CERTIFICATE_ARN": {
     "required": true,
     "secret": false,
@@ -236,7 +135,7 @@
     "tfvar": true,
     "type": "string"
   },
-  "RDS_ALARM_EMAIL": {
+  "CIVIFORM_ALARM_EMAIL": {
     "required": false,
     "secret": false,
     "tfvar": true,
@@ -386,6 +285,30 @@
     "tfvar": true,
     "type": "integer"
   },
+  "ECS_SERVER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_SERVER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "ECS_MAX_CPU_THRESHOLD": {
     "required": false,
     "secret": false,
@@ -417,6 +340,30 @@
     "type": "string"
   },
   "ECS_MIN_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_CREATE_HIGH_MEMORY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "ECS_MAX_MEMORY_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_STATISTIC_PERIOD": {
     "required": false,
     "secret": false,
     "tfvar": true,
