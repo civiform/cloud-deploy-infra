@@ -26,7 +26,7 @@ resource "aws_lb_listener" "pgadmin" {
 
 # Traffic from load balancer is forwarded to IPs in this target group.
 resource "aws_lb_target_group" "pgadmin" {
-  name        = substr(local.name_prefix, 0, 32)
+  name        = local.name_prefix
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -96,7 +96,7 @@ resource "aws_ecs_service" "pgadmin" {
 
 # IAM config for pgadmin tasks.
 locals {
-  name_prefix = "${var.app_prefix}-civiform-pgadmin"
+  name_prefix = substr("${var.app_prefix}-cf-pgadmin", 0, 32)
   tags = {
     Name = "${var.app_prefix} Civiform EC2 Task Definition"
     Type = "Civiform EC2 Task Definition"
