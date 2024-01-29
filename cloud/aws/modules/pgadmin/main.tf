@@ -26,7 +26,7 @@ resource "aws_lb_listener" "pgadmin" {
 
 # Traffic from load balancer is forwarded to IPs in this target group.
 resource "aws_lb_target_group" "pgadmin" {
-  name        = local.name_prefix
+  name        = substr(local.name_prefix, 0, 32)
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
