@@ -102,13 +102,13 @@ def _wait_for_pgadmin_response(url):
 
 def _print_connection_info(config, url):
     aws = AwsCli(config)
-    prefix = f"{config.app_prefix}-civiform"
+    prefix = f"{config.app_prefix}"
     print(
         f"\npgamdin connection info:\n"
         f"  URL: {url}\n"
-        f"  login email: {aws.get_secret_value(prefix + '-pgadmin-default-username')}\n"
-        f"  login password: {aws.get_secret_value(prefix + '-pgadmin-default-password')}\n"
-        f"  database password: {aws.get_secret_value(prefix + '_postgres_password')}"
+        f"  login email: {aws.get_secret_value(prefix + '-cf-pgadmin-default-username')}\n"
+        f"  login password: {aws.get_secret_value(prefix + '-cf-pgadmin-default-password')}\n"
+        f"  database password: {aws.get_secret_value(prefix + '-civiform_postgres_password')}"
     )
 
 
