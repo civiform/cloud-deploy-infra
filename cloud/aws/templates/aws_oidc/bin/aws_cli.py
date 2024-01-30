@@ -4,7 +4,7 @@ import json
 import time
 import inspect
 import re
-from typing import Dict
+from typing import Dict, List
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.shared.bin.lib.config_loader import ConfigLoader
@@ -324,6 +324,29 @@ class AwsCli:
             else:
                 print(f'Error deleting DynamoDB table: {e.stdout.decode()}')
                 return False
+
+    def list_tasks(self, cluster: str, service_name: str) -> List[str]:
+        res = self._call_cli(f"ecs list-tasks --cluster {cluster} --service-name {service_name}")
+        # TODO: make this a list of strings if it isn't
+        return res["taskArns"]
+
+    def execute_command(self, cluster: str, task: str, container: str, interactive: bool = True, command: str = '/bin/sh') -> bool:
+        if interactive:
+            interact_mode = "--interactive"
+        else:
+            interact_mode = "--non-interactive"
+
+        #TODO: try: and except some error?
+        self._call_cli(f"ecs execute-command --cluster {cluster} --task {task} --container {container} {interact_mode} --command '{command}'")
+        return True
+
+    def list_db_endpoints(self) -> List[str]:
+        res = self._call_cli("rds describe-db-instances")
+        db_endpoints = []
+        for db_instances in res:
+            db_endpoints.append(f"{db_instances['Endpoint']['Address']}:{db_instances['Endpoint']['Port']}")
+        # TODO: make this a list of strings if it isn't
+        return db_endpoints
 
     def _call_cli(self, command: str, output: bool = True) -> Dict:
         base = f"aws --region={self.config.aws_region} "

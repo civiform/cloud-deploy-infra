@@ -31,7 +31,7 @@ def run(config: ConfigLoader):
   # Create a temporary terraform node for pgadmin
   # Set up security settings
     # Create a random username and password in the CiviForm VPC
-    # Create temporary network security settings allowing the terraform node to connect to the production database
+    # Create temporary network security settings allowing the Terraform node to connect to the production database
     # Create network security settings allowing connections from an IP-allowlist from using the username and password
   _run_terraform(config)
 
@@ -42,34 +42,35 @@ def run(config: ConfigLoader):
   )
   _wait_for_pgadmin_response(url)
 
-  # Database connection details
-  _print_connection_info(config, url)
+  aws = AwsCli(config)
+  # Retrieve ssh details for the pgadmin instance
+  cluster = f"{config.app_prefix}-civiform"
+  service_name = f"{config.app_prefix}-cf-pgadmin"
+  # TODO: Remove before submit e.g. "aws ecs list-tasks --cluster elliotgreenlee-dev-civiform --service-name elliotgreenlee-dev-cf-pgadmin --region us-east-1"
+  task_arns = aws.list_tasks(cluster, service_name)
+  task = task_arns[0]  # e.g. arn:aws:ecs:us-east-1:781439480742:task/elliotgreenlee-dev-civiform/44a3e1fdf4254dfb8a82b831e5607deb
 
-  # TODO: get ssh details for pdadmin instance
-    # Get variables needed
-      # get cluster (prefix = f"{config.app_prefix}-civiform" ?) e.g. dkatz-dev2-civiform
-      # get service name (prefix + "-pgadmin" ?) e.g. dkatz-dev2-civiform-pgadmin
-      # get region (always us-east-2? defined somewhere?) e.g. us-east-2
-    # os.system('aws ecs list-tasks --cluster CLUSTER --service-name SERVICE_NAME  --region REGION')
-  # TODO: exec mode (or ssh into pgadmin instance if it doesnt work)
-    # Variables needed
-      # cluster (again)
-      # task e.g. 836155f6e55b42da8f391ba7b08f2437
-      # container e.g. dkatz-dev2-civiform-pgadmin
-      # region (again)
-    # os.system('aws ecs execute-command --cluster CLUSTER --task TASK --container CONTAINER --region REGION --interactive --command "/bin/sh"')
-  # TODO: Run pg_dump command
-    # Variables needed
-      # host e.g. "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com"
-      # port e.g "5432"
-      # username (aws.get_secret_value(prefix + '-pgadmin-default-username') ?) is this for pgadmin or database? How get db username e.g "db_admin_o0o0oo00o"
-      # password (from connection info) - can I enter this automatically?
-        # aws.get_secret_value(prefix + '-pgadmin-default-password')
-        # aws.get_secret_value(prefix + '_postgres_password')
+  # Enter AWS exec mode (or ssh into pgadmin instance if this doesn't work)
+  container = f"{config.app_prefix}-cf-pgadmin"
+  # TODO: does this need the command to be run (pgdump) with --non-interactive? or how does opening an interactive shell work in python
+  aws.execute_command(cluster, task, container)
+
+  # Run pg_dump command
+  # host to copy data from e.g. "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com" or just from url?
+  # port to copy data from e.g. "5432"
+
+
+  pgadmin_username = f"{aws.get_secret_value(config.app_prefix + '-cf-pgadmin-default-username')}"
+  pgadmin_password = f"{aws.get_secret_value(config.app_prefix + '-cf-pgadmin-default-password')}"
+
+  database_username = "db_admin_o0o0oo00o" # TODO is this needed?
+  database_password = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_password')}"
+
     # os.system('/usr/local/pgsql-12/pg_dump --host HOST --port PORT --username USERNAME --dbname "postgres" --no-privileges --no-owner -Fc -d postgres  -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data_backup.dump')
       # If ssh instead something like seattle:
       # pg_dump -w -Fc -h $DB_ADDRESS -d postgres -U civiform -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data.dump"
       # scp -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "IdentitiesOnly=yes" -i "${KEY_FILE}" "ubuntu@${INSTANCE_IPADDRESS}:/home/ubuntu/program_data.dump" .
+
   # TODO: scp onto local computer
     # Variables needed
       # cluster (again)
@@ -146,18 +147,6 @@ def _wait_for_pgadmin_response(url):
       time.sleep(10)
   except KeyboardInterrupt:
     print("Cancelled waiting for pgadmin availability. Moving on...")
-
-
-def _print_connection_info(config, url):
-  aws = AwsCli(config)
-  prefix = f"{config.app_prefix}-civiform"
-  print(
-      f"\npgamdin connection info:\n"
-      f"  URL: {url}\n"
-      f"  login email: {aws.get_secret_value(prefix + '-pgadmin-default-username')}\n"
-      f"  login password: {aws.get_secret_value(prefix + '-pgadmin-default-password')}\n"
-      f"  database password: {aws.get_secret_value(prefix + '_postgres_password')}"
-  )
 
 
 UserPrompt = str
