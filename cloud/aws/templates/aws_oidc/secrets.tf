@@ -79,7 +79,7 @@ resource "aws_secretsmanager_secret_version" "postgres_password_secret_version" 
 
 # Create a random generated password to use for app_secret_key.
 resource "random_password" "app_secret_key" {
-  length           = 16
+  length           = var.random_password_length
   special          = true
   override_special = "_%@"
 }
