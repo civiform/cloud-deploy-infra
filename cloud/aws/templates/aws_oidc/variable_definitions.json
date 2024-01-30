@@ -382,7 +382,7 @@
     "type": "integer"
   },
   "RANDOM_PASSWORD_LENGTH": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": true,
     "type": "number"
