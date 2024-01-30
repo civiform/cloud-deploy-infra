@@ -43,42 +43,36 @@ def run(config: ConfigLoader):
   _wait_for_pgadmin_response(url)
 
   aws = AwsCli(config)
-  # Retrieve ssh details for the pgadmin instance
+
+  # Retrieve pgadmin instance details
   cluster = f"{config.app_prefix}-civiform"
   service_name = f"{config.app_prefix}-cf-pgadmin"
-  # TODO: Remove before submit e.g. "aws ecs list-tasks --cluster elliotgreenlee-dev-civiform --service-name elliotgreenlee-dev-cf-pgadmin --region us-east-1"
+  # TODO: Remove this example before submitting e.g. "aws ecs list-tasks --cluster elliotgreenlee-dev-civiform --service-name elliotgreenlee-dev-cf-pgadmin --region us-east-1"
   task_arns = aws.list_tasks(cluster, service_name)
   task = task_arns[0]  # e.g. arn:aws:ecs:us-east-1:781439480742:task/elliotgreenlee-dev-civiform/44a3e1fdf4254dfb8a82b831e5607deb
 
-  # Enter AWS exec mode (or ssh into pgadmin instance if this doesn't work)
+  # Retrieve database details
+  db_endpoints = aws.list_db_endpoints()
+  db_host = db_endpoints[0].split(':')[0]  # "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com"
+  db_port = db_endpoints[0].split(':')[1]  # e.g. "5432"
+  # TODO: Tell user what I found with `aws rds describe-db-instances`
+  # TODO: Ask to accept or overwrite
+
+  # pg_dump the database
   container = f"{config.app_prefix}-cf-pgadmin"
-  # TODO: does this need the command to be run (pgdump) with --non-interactive? or how does opening an interactive shell work in python
-  aws.execute_command(cluster, task, container)
+  db_username = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_username')}"
+  db_password = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_password')}"
+  # TODO: put the db_password into the --dbname e.g. pg_dump --dbname=postgresql://username:password@127.0.0.1:5432/mydatabase
+  # TODO: Remove this example before submitting e.g. "aws ecs execute-command "
+  pg_dump_command = f"/usr/local/pgsql-12/pg_dump --host {db_host} --port {db_port} --username {db_username} --dbname 'postgres' --no-privileges --no-owner -Fc -d postgres  -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data_backup.dump"
+  aws.execute_command(cluster, task, container, interactive=False, command=pg_dump_command)
 
-  # Run pg_dump command
-  # host to copy data from e.g. "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com" or just from url?
-  # port to copy data from e.g. "5432"
-
-
-  pgadmin_username = f"{aws.get_secret_value(config.app_prefix + '-cf-pgadmin-default-username')}"
-  pgadmin_password = f"{aws.get_secret_value(config.app_prefix + '-cf-pgadmin-default-password')}"
-
-  database_username = "db_admin_o0o0oo00o" # TODO is this needed?
-  database_password = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_password')}"
-
-    # os.system('/usr/local/pgsql-12/pg_dump --host HOST --port PORT --username USERNAME --dbname "postgres" --no-privileges --no-owner -Fc -d postgres  -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data_backup.dump')
-      # If ssh instead something like seattle:
-      # pg_dump -w -Fc -h $DB_ADDRESS -d postgres -U civiform -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data.dump"
-      # scp -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -o "IdentitiesOnly=yes" -i "${KEY_FILE}" "ubuntu@${INSTANCE_IPADDRESS}:/home/ubuntu/program_data.dump" .
-
-  # TODO: scp onto local computer
-    # Variables needed
-      # cluster (again)
-      # task (again)
-      # container (again)
-      # region (again)
-      # local file e.g. Users/daniellekatz/program_data_backup.dump
-    # os.system('aws ecs execute-command --cluster CLUSTER --task TASK --container CONTAINER --region REGION --interactive --command "cp /program_data_backup.dump LOCAL_FILE"')
+  # Copy the backup to a local file
+  # TODO: get local file location from user
+  local_file = "hi"  # Users/daniellekatz/program_data_backup.dump
+  cp_command = f"cp /program_data_backup.dump {local_file}"
+  # TODO: Remove this example before submitting e.g. "aws ecs execute-command "
+  aws.execute_command(cluster, task, container, interactive=False, command=cp_command)
 
   # Terminate and Clean up instance and security
   input(
@@ -89,7 +83,6 @@ def run(config: ConfigLoader):
   os.unsetenv("TF_VAR_pgadmin_cidr_allowlist")
   os.unsetenv("TF_VAR_pgadmin")
   _run_terraform(config)
-
 
 def _get_cidr_list() -> str:
   """Runs the CIDRInputStateMachine until the end state is reached."""
