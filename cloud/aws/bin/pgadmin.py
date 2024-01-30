@@ -102,7 +102,7 @@ def _wait_for_pgadmin_response(url):
 
 def _print_connection_info(config, url):
     aws = AwsCli(config)
-    prefix = f"{config.app_prefix}-civiform"
+    prefix = f"{config.app_prefix}-cf"
     print(
         f"\npgamdin connection info:\n"
         f"  URL: {url}\n"
