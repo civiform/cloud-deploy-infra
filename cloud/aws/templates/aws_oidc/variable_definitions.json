@@ -380,5 +380,11 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "RANDOM_PASSWORD_LENGTH": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   }
 }

@@ -472,3 +472,9 @@ variable "monitoring_stack_enabled" {
   description = "If true, Prometheus and Grafana instances are created."
   default     = true
 }
+
+variable "random_password_length" {
+  type        = number
+  description = "Length of the random generated password to use for app_secret_key"
+  default     = 16
+}
