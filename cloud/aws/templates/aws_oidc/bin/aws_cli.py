@@ -342,7 +342,6 @@ class AwsCli:
             print(f'Error executing "{command}": {e.stdout.decode()}')
             return False
 
-
     def list_db_endpoints(self) -> List[str]:
         res = self._call_cli("rds describe-db-instances")["DBInstances"]
         db_endpoints = []

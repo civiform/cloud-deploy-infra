@@ -3,7 +3,7 @@
 # AWS Instructions https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html#USER_ConnectToPostgreSQLInstance.psql
 
 
-"""Implements the pgadmin command for aws.
+"""Implements the pg_dump command through pgadmin.
 
 This module is dynamically loaded from cloud/shared/bin/run.py.
 """
@@ -24,56 +24,57 @@ from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
 
-# Config comes from the civiform config details for the terraform setup
 def run(config: ConfigLoader):
   os.environ["TF_VAR_pgadmin_cidr_allowlist"] = _get_cidr_list()
   os.environ["TF_VAR_pgadmin"] = "true"
-  # Create a temporary terraform node for pgadmin
-  # Set up security settings
-    # Create a random username and password in the CiviForm VPC
-    # Create temporary network security settings allowing the Terraform node to connect to the production database
-    # Create network security settings allowing connections from an IP-allowlist from using the username and password
-  _run_terraform(config)
 
-  # Wait for pgadmin instance to be ready
+  # Initialize pgadmin instance
+  _run_terraform(config)
   url = f"{config.get_base_url()}:4433"
   print(
-      "\npgadmin terraform deployment finished. Waiting for pgadmin to be available (some request failures are expected). Press ctlr-c to shortcut this wait and print connection information."
+      "\npgadmin terraform deployment finished. Waiting for pgadmin to be available (some request failures are expected). Press ctlr-c to end this wait, which might cause failures."
   )
   _wait_for_pgadmin_response(url)
 
   aws = AwsCli(config)
 
-  # Retrieve pgadmin instance details
+  # Retrieve pgadmin instance task details
   cluster = f"{config.app_prefix}-civiform"
   service_name = f"{config.app_prefix}-cf-pgadmin"
-  # TODO: Remove this example before submitting e.g. "aws ecs list-tasks --cluster elliotgreenlee-dev-civiform --service-name elliotgreenlee-dev-cf-pgadmin --region us-east-1"
   task_arns = aws.list_tasks(cluster, service_name)
-  # TODO: check if task_arns has stuff
-  task = task_arns[0]  # e.g. arn:aws:ecs:us-east-1:781439480742:task/elliotgreenlee-dev-civiform/44a3e1fdf4254dfb8a82b831e5607deb
+  if task_arns:
+    task = task_arns[0]  # e.g. arn:aws:ecs:us-east-1:781439480742:task/elliotgreenlee-dev-civiform/44a3e1fdf4254dfb8a82b831e5607deb
+  else:
+    sys.stderr.write("No pgadmin tasks found.")
+    raise ValueError("No pgadmin tasks found.")
 
   # Retrieve database details
   db_endpoints = aws.list_db_endpoints()
-  # TODO: check if db_endpoints has stuff
-  db_host = db_endpoints[0].split(':')[0]  # "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com"
-  db_port = db_endpoints[0].split(':')[1]  # e.g. "5432"
-  # TODO: Tell user what I found with `aws rds describe-db-instances`
-  # TODO: Ask to accept or overwrite
+  if db_endpoints:
+    db_host = db_endpoints[0].split(':')[0]  # "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com"
+    db_port = db_endpoints[0].split(':')[1]  # e.g. "5432"
+  else:
+    db_host = ""
+    db_port = ""
+    "No database found"
+
+    # TODO: Tell user what I found with `aws rds describe-db-instances`
+    # TODO: Accept with y (raise ValueError("No database found") if no database
+    # TODO: ask for input if they put something else
+    # TODO: overwrite with input
 
   # pg_dump the database
   container = f"{config.app_prefix}-cf-pgadmin"
   db_username = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_username')}"
   db_password = f"{aws.get_secret_value(config.app_prefix + '-civiform_postgres_password')}"
-  # TODO: put the db_password into the --dbname e.g. pg_dump --dbname=postgresql://username:password@127.0.0.1:5432/mydatabase
-  # TODO: Remove this example before submitting e.g. "aws ecs execute-command "
-  pg_dump_command = f"/usr/local/pgsql-12/pg_dump --host {db_host} --port {db_port} --username {db_username} --dbname 'postgres' --no-privileges --no-owner -Fc -d postgres  -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data_backup.dump"
+  db_name = "1"  # TODO: Is db_name “postgres” or “elliotgreenlee-dev-civiform-db” or the resource ID e.g. “db-HBZ4NQRTXSZL7YPJSPXWTA33M4”?
+  pg_dump_command = f"/usr/local/pgsql-12/pg_dump --dbname=postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name} --no-privileges --no-owner -Fc  -t programs -t questions -t versions -t versions_programs -t versions_questions > program_data_backup.dump"
   aws.execute_command(cluster, task, container, interactive=False, command=pg_dump_command)
 
   # Copy the backup to a local file
   # TODO: get local file location from user
   local_file = "hi"  # Users/daniellekatz/program_data_backup.dump
   cp_command = f"cp /program_data_backup.dump {local_file}"
-  # TODO: Remove this example before submitting e.g. "aws ecs execute-command "
   aws.execute_command(cluster, task, container, interactive=False, command=cp_command)
 
   # Terminate and Clean up instance and security
