@@ -327,7 +327,6 @@ class AwsCli:
 
     def list_tasks(self, cluster: str, service_name: str) -> List[str]:
         res = self._call_cli(f"ecs list-tasks --cluster {cluster} --service-name {service_name}")
-        # TODO: make this a list of strings if it isn't
         return res["taskArns"]
 
     def execute_command(self, cluster: str, task: str, container: str, interactive: bool = True, command: str = '/bin/sh') -> bool:
@@ -336,16 +335,19 @@ class AwsCli:
         else:
             interact_mode = "--non-interactive"
 
-        #TODO: try: and except some error?
-        self._call_cli(f"ecs execute-command --cluster {cluster} --task {task} --container {container} {interact_mode} --command '{command}'")
-        return True
+        try:
+            self._call_cli(f"ecs execute-command --cluster {cluster} --task {task} --container {container} {interact_mode} --command '{command}'")
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f'Error executing "{command}": {e.stdout.decode()}')
+            return False
+
 
     def list_db_endpoints(self) -> List[str]:
-        res = self._call_cli("rds describe-db-instances")
+        res = self._call_cli("rds describe-db-instances")["DBInstances"]
         db_endpoints = []
-        for db_instances in res:
-            db_endpoints.append(f"{db_instances['Endpoint']['Address']}:{db_instances['Endpoint']['Port']}")
-        # TODO: make this a list of strings if it isn't
+        for db_instance in res:
+            db_endpoints.append(f"{db_instance['Endpoint']['Address']}:{db_instance['Endpoint']['Port']}")
         return db_endpoints
 
     def _call_cli(self, command: str, output: bool = True) -> Dict:

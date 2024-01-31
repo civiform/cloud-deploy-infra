@@ -49,10 +49,12 @@ def run(config: ConfigLoader):
   service_name = f"{config.app_prefix}-cf-pgadmin"
   # TODO: Remove this example before submitting e.g. "aws ecs list-tasks --cluster elliotgreenlee-dev-civiform --service-name elliotgreenlee-dev-cf-pgadmin --region us-east-1"
   task_arns = aws.list_tasks(cluster, service_name)
+  # TODO: check if task_arns has stuff
   task = task_arns[0]  # e.g. arn:aws:ecs:us-east-1:781439480742:task/elliotgreenlee-dev-civiform/44a3e1fdf4254dfb8a82b831e5607deb
 
   # Retrieve database details
   db_endpoints = aws.list_db_endpoints()
+  # TODO: check if db_endpoints has stuff
   db_host = db_endpoints[0].split(':')[0]  # "dkatz-dev2-civiform-db.cfi9ipzsvec3.us-east-2.rds.amazonaws.com"
   db_port = db_endpoints[0].split(':')[1]  # e.g. "5432"
   # TODO: Tell user what I found with `aws rds describe-db-instances`
