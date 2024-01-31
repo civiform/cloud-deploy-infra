@@ -47,10 +47,6 @@ class ConfigLoader:
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/shared/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/azure/templates/azure_saml_ses/variable_definitions.json
-
-        TODO(https://github.com/civiform/civiform/issues/4293): Currently this also includes
-        the env variables that are defined in env-var-docs and passed to the server. 
-        Remove them when other required changes are completed.
         """
 
     class VersionNotFoundError(Exception):
@@ -97,13 +93,6 @@ class ConfigLoader:
     def _load_civiform_server_env_vars(self) -> dict:
         """Returns environment variables in
         https://github.com/civiform/civiform/tree/main/server/conf/env-var-docs.json.
-
-        TODO(#4612) Enable the reading of server variables. This function is currently 
-        disabled because it relies on the env_var_docs module
-        (https://github.com/civiform/civiform/tree/main/env-var-docs/parser-package)
-        being installed. If the module is not available for import, this function 
-        does nothing and returns an empty map.
-
         _load_config_fields() MUST be called before calling this function.
         """
 
@@ -282,10 +271,6 @@ class ConfigLoader:
 
         for name, variable in env_var_docs.items():
             config_value = config_fields.get(name)
-
-            # TODO(#4612) Extend env-var-docs to include the required field, use the
-            # variable_definitions.json files as the source for the values. env_var_docs does
-            # not currently include required field. Therefore this code will never run.
             if config_value is None:
                 # Vars that are admin writeable are set via the admin settings panel
                 # and are not required in the config
@@ -339,9 +324,6 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
 
-        # TODO(#4612) When server variables are not duplicated in the infra
-        # variables anymore: support the tfvars field in env-var-docs.json
-        # instead or make all server variables "tfvar"s by default.
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue

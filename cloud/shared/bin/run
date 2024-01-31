@@ -1,8 +1,6 @@
 #! /usr/bin/env bash
 # Script for running the commands supported by the deploy system by calling run.py.
 # See comments below for why we need this script rather than running run.py directly.
-# TODO(#4612) Enable the env-var-docs variable generation feature by using this script
-# instead of run.py across the civiform-deploy repository
 
 # In the server code repository in git(civiform), we define a python package
 # called env-var-docs: https://github.com/civiform/civiform/tree/main/env-var-docs
