@@ -47,6 +47,10 @@ class ConfigLoader:
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/shared/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/aws/templates/aws_oidc/variable_definitions.json
         - https://github.com/civiform/cloud-deploy-infra/blob/main/cloud/azure/templates/azure_saml_ses/variable_definitions.json
+        
+        TODO(https://github.com/civiform/civiform/issues/4293): Currently this also includes
+        the env variables that are defined in env-var-docs and passed to the server.
+        Remove them when other required changes are completed.
         """
 
     class VersionNotFoundError(Exception):
@@ -343,9 +347,6 @@ class ConfigLoader:
                     else:
                         env_vars[name] = config_fields[name]
 
-            # Infra and server variables are merged before being passed through
-            # terraform, which means that, if a variable is in both, values in the server variables
-            # take precedence over infra variables. Once #4612 is completed, this should never happen.
             out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
 
         return out
