@@ -8,10 +8,6 @@ from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
 
-# TODO(#3116): move these to variable_definitions.json and read docs from there.
-# Map of secrets that need to be set by the user and can't be empty values.
-# Key is the name of the secret without app prefix, value is doc shown to user
-# if the secret is unset.
 SECRETS: Dict[str, str] = {
     resources.ADFS_CLIENT_ID:
         'Client id for the ADFS configuration. Enter any value if you do not use ADFS.',
