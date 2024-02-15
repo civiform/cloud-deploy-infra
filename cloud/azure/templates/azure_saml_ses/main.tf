@@ -39,10 +39,6 @@ module "app" {
 
   civiform_time_zone_id = var.civiform_time_zone_id
 
-  civic_entity_short_name            = var.civic_entity_short_name
-  civic_entity_full_name             = var.civic_entity_full_name
-  civic_entity_support_email_address = var.civic_entity_support_email_address
-  civic_entity_logo_with_name_url    = var.civic_entity_logo_with_name_url
   civic_entity_small_logo_url        = var.civic_entity_small_logo_url
 
   adfs_admin_group = var.adfs_admin_group
