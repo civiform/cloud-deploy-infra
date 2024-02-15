@@ -39,7 +39,7 @@ module "app" {
 
   civiform_time_zone_id = var.civiform_time_zone_id
 
-  civic_entity_small_logo_url        = var.civic_entity_small_logo_url
+  civic_entity_small_logo_url = var.civic_entity_small_logo_url
 
   adfs_admin_group = var.adfs_admin_group
 
