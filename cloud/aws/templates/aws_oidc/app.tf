@@ -34,7 +34,7 @@ module "civiform_server_container_def" {
   version = "0.60.0"
 
   container_name               = "${var.app_prefix}-civiform"
-  container_image              = "${var.civiform_image_repo}:${var.image_tag}"
+  container_image              = "${var.civiform_image_repo}:DEV-f258ac8-caitlinshk-program-card-images-default-true"
   container_memory             = var.ecs_server_container_memory
   container_memory_reservation = var.ecs_server_container_memory_reservation
 
