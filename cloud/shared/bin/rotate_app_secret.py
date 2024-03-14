@@ -14,4 +14,6 @@ def run(config: ConfigLoader, _params: List[str]):
             f'cloud.{config.get_cloud_provider()}.bin.rotate_app_secret')
         rotate_module.run(config)
     else:
-        exit(f'Could not find rotate_app_secret.py for {config.get_cloud_provider()}')
+        exit(
+            f'Could not find rotate_app_secret.py for {config.get_cloud_provider()}'
+        )
