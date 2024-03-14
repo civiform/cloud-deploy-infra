@@ -26,7 +26,7 @@ def main():
         '--tag', help='Civiform image tag. Required for Setup and Deploy.')
     parser.add_argument(
         '--command',
-        help='Command to run. If ommited will validate config and exit.')
+        help='Command to run. If omitted, will validate config and exit.')
     parser.add_argument(
         '--config',
         default='civiform_config.sh',
