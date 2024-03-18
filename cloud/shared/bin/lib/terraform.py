@@ -106,6 +106,7 @@ def perform_apply(
         config_loader: ConfigLoader,
         is_destroy=False,
         terraform_template_dir: Optional[str] = None,
+        replace_resource: Optional[str] = None,
         initialize=True):
     '''Generates terraform variable files and runs terraform init and apply.'''
     if not terraform_template_dir:
@@ -131,6 +132,8 @@ def perform_apply(
     # "value of undeclared variables" warnings as some variables used in one
     # deployment (e.g. aws) but not the other.
     terraform_apply_cmd = f'terraform -chdir={terraform_template_dir} apply -input=false -var-file={tf_vars_filename} -compact-warnings'
+    if replace_resource:
+        terraform_apply_cmd += f' -replace={replace_resource}'
     if config_loader.skip_confirmations:
         terraform_apply_cmd += ' -auto-approve'
     if is_destroy:
