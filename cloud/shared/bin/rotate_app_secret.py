@@ -15,9 +15,9 @@ def run(config: ConfigLoader, _params: List[str]):
             f'cloud.{config.get_cloud_provider()}.bin.rotate_app_secret')
         if sys.stdin.isatty():
             answer = input(
-                "WARNING: Rotating the app secret will invalidate all existing sessions. Any guest users with an unsubmitted application in progress will lose their application, and logged in users and admins will need to log in again. Are you sure you want to continue? [Y/n]: "
+                "WARNING: Rotating the app secret will invalidate all existing sessions. Any guest users with an unsubmitted application in progress will lose their application, and logged in users and admins will need to log in again. Are you sure you want to continue? [y/N]: "
             )
-            if answer.lower() in ['y', 'yes', '']:
+            if answer.lower() in ['y', 'yes']:
                 rotate_module.run(config)
             else:
                 exit('Aborting app secret rotation.')
