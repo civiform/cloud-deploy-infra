@@ -39,6 +39,12 @@ def main():
         help=
         'Digest value for the Terraform lock table to set in DynamoDB. If multiple processes are doing a deploy, or an error occurred in a previous deploy that prevented Terraform from cleaning up after itself, this value may need updating. Only works on AWS deployments.'
     )
+    parser.add_argument(
+        '--allow-postgresql-upgrade',
+        action='store_true',
+        help=
+        'If set to true, will allow the PostgreSQL upgrade to proceed, if one is needed for this deployment.'
+    )
 
     args = parser.parse_args()
     if args.tag:
@@ -73,6 +79,9 @@ def main():
         )
         aws = AwsCli(config)
         aws.set_lock_table_digest_value(args.lock_table_digest_value)
+
+    if args.allow_postgresql_upgrade:
+        config.add_config_value('ALLOW_POSTGRESQL_UPGRADE', 'true')
 
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")

@@ -72,6 +72,10 @@ class ConfigLoader:
         self._export_env_variables(config_fields)
         return config_fields
 
+    def add_config_value(self, key: str, value: str):
+        self._config_fields[key] = value
+        os.environ[key] = value
+
     # TODO(https://github.com/civiform/civiform/issues/4293): remove this when
     # the local deploy system does not read values from env variables anymore.
     # Currently some env variables are read from local deploy code (legacy

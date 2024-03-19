@@ -123,4 +123,8 @@ if [[ -n "${LOCK_TABLE_DIGEST_VALUE}" ]]; then
   args=("${args[@]}" "--lock-table-digest-value" "${LOCK_TABLE_DIGEST_VALUE}")
 fi
 
+if [[ -n "${ALLOW_POSTGRESQL_UPGRADE}" ]]; then
+  args=("${args[@]}" "--allow-postgresql-upgrade")
+fi
+
 cloud/shared/bin/run.py "${args[@]}"

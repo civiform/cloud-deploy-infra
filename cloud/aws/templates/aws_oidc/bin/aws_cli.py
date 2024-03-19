@@ -325,6 +325,20 @@ class AwsCli:
                 print(f'Error deleting DynamoDB table: {e.stdout.decode()}')
                 return False
 
+    def get_postgresql_version(self, db_name: str) -> str:
+        try:
+            res = self._call_cli(
+                f"rds describe-db-instances --db-instance-identifier={db_name} --query 'DBInstances[0].{{EngineVersion:EngineVersion}}'"
+            )
+            ver_str = res["EngineVersion"]
+            maj, min = re.match(r'^(\d+)\.?(\d+)?', ver_str).groups()
+            maj = int(maj)
+            min = int(min) if min else 0
+            return (maj, min)
+        except subprocess.CalledProcessError as e:
+            print(f'Error getting Postgres version: {e.stdout.decode()}')
+            return -1
+
     def get_dbaccess_ec2_host_ip(self) -> str:
         return self._call_cli(
             "ec2 describe-instances --filters 'Name=tag:Module,Values=dbaccess' 'Name=instance-state-name,Values=running' --query 'Reservations[0].Instances[0].PublicIpAddress'"
