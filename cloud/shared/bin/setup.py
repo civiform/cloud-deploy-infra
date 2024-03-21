@@ -43,7 +43,7 @@ def run(config: ConfigLoader, params: List[str]):
         """)
     answer = input(msg)
     if answer not in ['y', 'Y', 'yes']:
-        exit(1)        
+        exit(1)
 
     template_setup = get_config_specific_setup(config)
 
