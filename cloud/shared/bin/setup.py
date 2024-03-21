@@ -8,6 +8,7 @@ from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_setup
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin import destroy
 """
 Setup.py sets up and runs the initial terraform deployment. It's broken into
 2 parts:
@@ -23,6 +24,27 @@ def run(config: ConfigLoader, params: List[str]):
     # Load Setup Class for the specific template directory
     ###############################################################################
 
+    msg = inspect.cleandoc(
+        """
+        ###########################################################################
+                                        WARNING                                                       
+        ###########################################################################
+        You are getting ready to run the setup script which will create the necessary 
+        infrastructure for CiviForm. Interrupting the script in the middle may leave 
+        your infrastructure in an inconsistent state and require you to manually 
+        clean up resources in your cloud provider's console.
+        
+        Before continuing, be sure you have at least 20 minutes free to allow the 
+        script to complete. If your initial setup failed and you are re-running 
+        this script, leave at least 30 minutes to allow time for resources to be 
+        destroyed and recreated.
+
+        Would you like to continue with the setup? [y/N] > 
+        """)
+    answer = input(msg)
+    if answer not in ['y', 'Y', 'yes']:
+        exit(1)        
+
     template_setup = get_config_specific_setup(config)
 
     template_setup.setup_log_file()
@@ -36,18 +58,20 @@ def run(config: ConfigLoader, params: List[str]):
         if resources['bucket'] or resources['table']:
             msg = inspect.cleandoc(
                 """
-                ERROR: Terraform backend state resources already exist. You may destroy these resources
-                and recreate them, but you must ensure there are no other deployed resources present.
-                Verify this by checking the AWS console for the presence of any civiform resources.
-                If additional resources are present, Terraform will lose track of them when the backend state
-                files are recreated, and subsequent deploys will fail due to the resources already existing.
-                Running 'bin/run' with the 'destroy' command may clean up these resources for you, but may
-                fail if a previous deployment failed.
+                ###########################################################################
+                                                WARNING                                                       
+                ###########################################################################
+                Backend resources already exist. This may be due to a previous deployment.
+                Proceeding with the setup will destroy these resources and recreate them. 
+                THIS IS A DESTRUCTIVE CHANGE and may cause a loss of data if the resources 
+                are in use by another deployment. You should verify that no other deployments 
+                are using these resources before proceeding.
 
-                Would you like to destroy the backend state resources and recreate them? [y/N] >
+                Would you like to destroy the backend resources and recreate them? [y/N] >
                 """)
             answer = input(msg)
             if answer in ['y', 'Y', 'yes']:
+                destroy.run(config, [])
                 if not template_setup.destroy_backend_resources(resources):
                     answer = input(
                         'One or more errors occurred when attempting to delete Terraform backend state resources. You may need to delete S3 bucket and/or the DynamoDB table yourself. Continue anyway? [y/N] >'
