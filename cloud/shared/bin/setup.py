@@ -24,26 +24,31 @@ def run(config: ConfigLoader, params: List[str]):
     # Load Setup Class for the specific template directory
     ###############################################################################
 
-    msg = inspect.cleandoc(
-        """
-        ###########################################################################
-                                        WARNING                                                       
-        ###########################################################################
-        You are getting ready to run the setup script which will create the necessary 
-        infrastructure for CiviForm. Interrupting the script in the middle may leave 
-        your infrastructure in an inconsistent state and require you to manually 
-        clean up resources in your cloud provider's console.
-        
-        Before continuing, be sure you have at least 20 minutes free to allow the 
-        script to complete. If your initial setup failed and you are re-running 
-        this script, leave at least 30 minutes to allow time for resources to be 
-        destroyed and recreated.
+    if os.getenv('SKIP_TAG_CHECK'):
+        print(
+            'Proceeding automatically since the "SKIP_TAG_CHECK" environment variable was set.'
+        )
+    else:
+        msg = inspect.cleandoc(
+            """
+            ###########################################################################
+                                            WARNING                                                       
+            ###########################################################################
+            You are getting ready to run the setup script which will create the necessary 
+            infrastructure for CiviForm. Interrupting the script in the middle may leave 
+            your infrastructure in an inconsistent state and require you to manually 
+            clean up resources in your cloud provider's console.
+            
+            Before continuing, be sure you have at least 20 minutes free to allow the 
+            script to complete. If your initial setup failed and you are re-running 
+            this script, leave at least 30 minutes to allow time for resources to be 
+            destroyed and recreated.
 
-        Would you like to continue with the setup? [y/N] > 
-        """)
-    answer = input(msg)
-    if answer not in ['y', 'Y', 'yes']:
-        exit(1)
+            Would you like to continue with the setup? [y/N] > 
+            """)
+        answer = input(msg)
+        if answer not in ['y', 'Y', 'yes']:
+            exit(1)
 
     template_setup = get_config_specific_setup(config)
 
