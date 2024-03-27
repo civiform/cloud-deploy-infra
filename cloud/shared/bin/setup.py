@@ -80,13 +80,13 @@ def run(config: ConfigLoader, params: List[str]):
                 if not template_setup.destroy_backend_resources(resources):
                     msg = inspect.cleandoc(
                         """
-                    One or more errors occurred when attempting to delete Terraform backend state resources.
-                    You can try destroying the backend state resources again by exiting this script
-                    and running `bin/run destroy_backend_state_resources`. If resources are corrupted,
-                    you may need to manually delete them in your cloud provider's console.
-                    
-                    Would you like to continue anyway? [y/N] >
-                    """)
+                        One or more errors occurred when attempting to delete Terraform backend state resources.
+                        You can try destroying the backend state resources again by exiting this script
+                        and running `bin/run destroy_backend_state_resources`. If the script continues to fail,
+                        you may need to manually delete the resources in your cloud provider's console.
+                        
+                        Would you like to continue anyway? [y/N] >
+                        """)
                     answer = input(msg)
                     if answer in ['n', 'N', 'no']:
                         exit(1)
