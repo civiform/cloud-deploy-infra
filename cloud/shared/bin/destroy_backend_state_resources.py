@@ -5,7 +5,6 @@ if they get corrupted.
 """
 from typing import List
 
-from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_setup
 
