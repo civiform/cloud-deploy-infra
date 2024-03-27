@@ -88,7 +88,7 @@ def run(config: ConfigLoader, params: List[str]):
                         Would you like to continue anyway? [y/N] >
                         """)
                     answer = input(msg)
-                    if answer in ['n', 'N', 'no']:
+                    if answer not in ['y', 'Y', 'yes']:
                         exit(1)
             else:
                 exit(1)
