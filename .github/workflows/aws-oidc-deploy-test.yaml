@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SKIP_TAG_CHECK: true
+      SKIP_USER_INPUT: true
     steps:
       - name: Check out branch
         uses: actions/checkout@v4
