@@ -78,9 +78,16 @@ def run(config: ConfigLoader, params: List[str]):
             if answer in ['y', 'Y', 'yes']:
                 destroy.run(config, [])
                 if not template_setup.destroy_backend_resources(resources):
-                    answer = input(
-                        'One or more errors occurred when attempting to delete Terraform backend state resources. You may need to delete S3 bucket and/or the DynamoDB table yourself. Continue anyway? [y/N] >'
-                    )
+                    msg = inspect.cleandoc(
+                        """
+                    One or more errors occurred when attempting to delete Terraform backend state resources.
+                    You can try destroying the backend state resources again by exiting this script
+                    and running `bin/run destroy_backend_state_resources`. If resources are corrupted,
+                    you may need to manually delete them in your cloud provider's console.
+                    
+                    Would you like to continue anyway? [y/N] >
+                    """)
+                    answer = input(msg)
                     if answer in ['n', 'N', 'no']:
                         exit(1)
             else:
