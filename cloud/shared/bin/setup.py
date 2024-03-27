@@ -24,9 +24,9 @@ def run(config: ConfigLoader, params: List[str]):
     # Load Setup Class for the specific template directory
     ###############################################################################
 
-    if os.getenv('SKIP_TAG_CHECK'):
+    if os.getenv('SKIP_USER_INPUT'):
         print(
-            'Proceeding automatically since the "SKIP_TAG_CHECK" environment variable was set.'
+            'Proceeding automatically since the "SKIP_USER_INPUT" environment variable was set.'
         )
     else:
         msg = inspect.cleandoc(

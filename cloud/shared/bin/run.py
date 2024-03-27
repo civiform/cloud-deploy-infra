@@ -101,9 +101,9 @@ def validate_tag(tag):
         The provided tag "{tag}" does not reference a release tag and may not
         be stable.
         ''')
-    if os.getenv('SKIP_TAG_CHECK'):
+    if os.getenv('SKIP_USER_INPUT'):
         print(
-            'Proceeding automatically since the "SKIP_TAG_CHECK" environment variable was set.'
+            'Proceeding automatically since the "SKIP_USER_INPUT" environment variable was set.'
         )
         return True
     print(
