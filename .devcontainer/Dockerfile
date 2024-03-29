@@ -5,16 +5,13 @@ RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] http
 
 # Install Terraform
 RUN apt-get update && apt-get install -y \
-    wget \
-    unzip \
     terraform \
-    direnv \
-    && rm -rf /var/lib/apt/lists/*
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists.d/* \
+    && apt-get autoremove \
+    && apt-get clean \
+    && apt-get autoclean
 
-# Set up direnv hook
-RUN echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
-RUN echo 'eval "$(direnv hook bash)"' >> ~/.bash_profile
-
-# Install pip and yapf
-RUN apt-get update && apt-get install -y python3-pip
+# Install yapf
 RUN pip install yapf
