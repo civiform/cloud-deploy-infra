@@ -9,7 +9,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     terraform \
     direnv \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists.d/* \
+    && apt-get autoremove \
+    && apt-get clean \
+    && apt-get autoclean
 
 # Set up direnv hook
 RUN echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
