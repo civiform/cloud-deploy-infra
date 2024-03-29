@@ -2,7 +2,7 @@
 
 # DOC: Format terraform, python, and shell script files.
 
-if which -s terraform; then
+if which terraform; then
   echo "Formatting Terraform files"
   terraform fmt -recursive -write
 else
@@ -10,7 +10,7 @@ else
   exit 1
 fi
 
-if which -s shfmt; then
+if which shfmt; then
   echo "Formatting shell scripts"
   shfmt -bn -ci -i 2 -w -l $(shfmt -f .)
 else
@@ -18,7 +18,7 @@ else
   exit 1
 fi
 
-if which -s yapf; then
+if which yapf; then
   echo "Formatting python files"
   yapf \
     --verbose \
