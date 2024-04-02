@@ -1,0 +1,27 @@
+name: Tag Repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Commit SHA'
+        required: true
+        default: 'HEAD'
+
+      version:
+        description: 'The version for this release, matching the CiviForm release version, e.g. v1.2.3'
+        required: true
+
+jobs:
+  tag:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: Tag the repo
+          run: |
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name "github-actions[bot]"
+            git tag ${{ github.event.inputs.version }} --message "${{ github.event.inputs.version }}"
+            git push origin ${{ github.event.inputs.version }}
