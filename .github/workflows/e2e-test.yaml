@@ -40,9 +40,9 @@ jobs:
       - id: get-nuke
         name: Get aws-nuke
         run: |
-          wget https://github.com/rebuy-de/aws-nuke/releases/download/v2.21.2/aws-nuke-v2.21.2-linux-amd64.tar.gz -O aws-nuke-v2.21.2-linux-amd64.tar.gz
-          tar -xzf aws-nuke-v2.21.2-linux-amd64.tar.gz
-          sudo mv aws-nuke-v2.21.2-linux-amd64 /aws-nuke
+          wget https://github.com/rebuy-de/aws-nuke/releases/download/v2.25.0/aws-nuke-v2.25.0-linux-amd64.tar.gz -O aws-nuke-v2.21.2-linux-amd64.tar.gz
+          tar -xzf aws-nuke-v2.25.0-linux-amd64.tar.gz
+          sudo mv aws-nuke-v2.25.0-linux-amd64 /aws-nuke
           sudo chmod u+x /aws-nuke
 
       - id: get-aws-creds
