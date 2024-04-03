@@ -22,12 +22,10 @@ accounts:
       IAMRole:
         - "OrganizationAccountAccessRole"
         - "e2e-test-runner"
-        - property: "Path"
-          value: "/aws-reserved/sso.amazonaws.com/"
+        - property: "Name"
+          regex: "^AWSReservedSSO_.+$"
       IAMRolePolicyAttachment:
         - "OrganizationAccountAccessRole -> AdministratorAccess"
         - "e2e-test-runner -> AdministratorAccess"
-        - "AWSReservedSSO_AdministratorAccess_b9fdec4c8250f86c -> AdministratorAccess"
-        - "AWSReservedSSO_AdministratorAccess_b9fdec4c8250f86c -> AWSAccountManagementFullAccess"
-        - property: "Path"
-          value: "/aws-reserved/sso.amazonaws.com/"
+        - property: "RoleName"
+          regex: "^AWSReservedSSO_.+$"
