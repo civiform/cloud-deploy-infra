@@ -29,3 +29,10 @@ accounts:
         - "e2e-test-runner -> AdministratorAccess"
         - property: "RoleName"
           regex: "^AWSReservedSSO_.+$"
+      OpsWorksUserProfile:
+        - type: contains
+          value: "arn:aws:sts::296877675213:assumed-role"
+      OSPackage:
+        - property: "PackageName"
+          type: regex
+          value: "^(analysis-\\w+|amazon-personalized-ranking)*"
