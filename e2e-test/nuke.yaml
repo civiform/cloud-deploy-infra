@@ -24,6 +24,9 @@ accounts:
         - "e2e-test-runner"
         - property: "Name"
           regex: "^AWSReservedSSO_.+$"
+      IAMRolePolicy:
+        - property: "Name"
+          regex: "^AWSReservedSSO_.+$"
       IAMRolePolicyAttachment:
         - "OrganizationAccountAccessRole -> AdministratorAccess"
         - "e2e-test-runner -> AdministratorAccess"
