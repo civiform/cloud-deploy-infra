@@ -102,6 +102,38 @@ module "email_service" {
   sender_email_address = each.key
 }
 
+# Security group for managing access to the database
+resource "aws_security_group" "rds" {
+  tags = {
+    Name = "${var.app_prefix} Civiform DB Security Group"
+    Type = "Civiform DB Security Group"
+  }
+  name   = "${var.app_prefix}-civiform_rds"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port = 5432
+    to_port   = 5432
+    protocol  = "tcp"
+    # Only apps within VPCs can access the database.
+    cidr_blocks = var.private_subnets
+  }
+
+  dynamic "ingress" {
+    for_each = var.dbaccess ? [module.dbaccess[0].host_private_ip] : []
+    # Rather than specifying source_security_group_id, we use the private IP of the dbaccess instance.
+    # Otherwise, we create a dependency between the dbaccess module and this resource and 
+    # Terraform doesn't necessarily remove this rule before removing the dbaccess security group,
+    # which causes a failure when attempting to remove the dbaccess security group.
+    content {
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      cidr_blocks = ["${ingress.value}/32"]
+    }
+  }
+}
+
 module "pgadmin" {
   source = "../../modules/pgadmin"
   count  = var.pgadmin ? 1 : 0
@@ -125,4 +157,18 @@ module "pgadmin" {
 
   secrets_kms_key_arn             = aws_kms_key.civiform_kms_key.arn
   secrets_recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+module "dbaccess" {
+  source = "../../modules/dbaccess"
+  count  = var.dbaccess ? 1 : 0
+
+  app_prefix = var.app_prefix
+  aws_region = var.aws_region
+
+  vpc_id         = module.vpc.vpc_id
+  cidr_allowlist = var.dbaccess_cidr_allowlist
+  db_sg_id       = aws_security_group.rds.id
+  public_key     = var.dbaccess_public_key
+  public_subnet  = module.vpc.public_subnets[0]
 }

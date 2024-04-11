@@ -467,6 +467,15 @@ variable "pgadmin_cidr_allowlist" {
   description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
   default     = []
 }
+variable "dbaccess_cidr_allowlist" {
+  type        = list(string)
+  description = "List of IPv4 cidr blocks that are allowed access to pgadmin"
+  default     = []
+}
+variable "dbaccess_public_key" {
+  type        = string
+  description = "Path to the public key to use for SSH access"
+}
 variable "monitoring_stack_enabled" {
   type        = bool
   description = "If true, Prometheus and Grafana instances are created."
@@ -477,4 +486,10 @@ variable "random_password_length" {
   type        = number
   description = "Length of the random generated password to use for app_secret_key"
   default     = 16
+}
+
+variable "dbaccess" {
+  type        = bool
+  description = "Whether to set up resources to allow access to the database from an EC2 host"
+  default     = false
 }
