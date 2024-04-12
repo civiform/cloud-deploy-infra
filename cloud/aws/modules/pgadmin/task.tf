@@ -18,7 +18,7 @@ resource "aws_ecs_task_definition" "pgadmin" {
 
 module "pgadmin_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.60.0"
+  version = "0.61.1"
 
   container_name  = local.name_prefix
   container_image = var.pgadmin_image
