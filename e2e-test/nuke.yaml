@@ -14,16 +14,20 @@ accounts:
   "296877675213": # civiform-deploy-e2e-tests AWS account.
     filters:
       ACMCertificate:
-        - property: "DomainName"
-          value: "civiform-deploy-e2e-tests.civiform.dev"
+        - type: glob
+          property: "DomainName"
+          value: "*.civiform.dev"
       IAMOpenIDConnectProvider:
-        - type: contains
-          value: "oidc-provider/token.actions.githubusercontent.com"
+        - type: glob
+          value: "arn:aws:iam::*:oidc-provider/token.actions.githubusercontent.com"
       IAMRole:
         - "OrganizationAccountAccessRole"
         - "e2e-test-runner"
         - property: "Name"
           regex: "^AWSReservedSSO_.+$"
+        - property: "Name"
+          type: glob
+          value: "*-deploy-action"
       IAMRolePolicy:
         - property: "Name"
           regex: "^AWSReservedSSO_.+$"
@@ -32,9 +36,15 @@ accounts:
         - "e2e-test-runner -> AdministratorAccess"
         - property: "RoleName"
           regex: "^AWSReservedSSO_.+$"
+        - property: "RoleName"
+          type: glob
+          value: "*-deploy-action"
+      IAMSAMLProvider:
+        - type: glob
+          value: "arn:aws:iam::*:saml-provider/AWSSSO_*"
       OpsWorksUserProfile:
-        - type: contains
-          value: "arn:aws:sts::296877675213:assumed-role"
+        - type: glob
+          value: "arn:aws:sts::*:assumed-role/OrganizationAccountAccessRole/*"
       OSPackage:
         - property: "PackageName"
           type: regex
