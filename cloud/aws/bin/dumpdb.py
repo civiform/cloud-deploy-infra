@@ -4,13 +4,13 @@ import tempfile
 import shlex
 import subprocess
 from time import sleep
+import urllib.request
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-from cloud.shared.cidr_state_machine import CIDRInputStateMachine
 
 
 def run(config: ConfigLoader):
@@ -44,7 +44,7 @@ def run(config: ConfigLoader):
 
         print('Deploying dbaccess instance')
         os.environ[
-            'TF_VAR_dbaccess_cidr_allowlist'] = f'["{CIDRInputStateMachine().detect_public_ip()}/32"]'
+            'TF_VAR_dbaccess_cidr_allowlist'] = f'["{_detect_public_ip()}/32"]'
         os.environ['TF_VAR_dbaccess'] = "true"
         os.environ['TF_VAR_dbaccess_public_key'] = f'{tmpdir}/dbaccess.pub'
 
@@ -109,6 +109,16 @@ def run(config: ConfigLoader):
             os.unsetenv("TF_VAR_dbaccess_cidr_allowlist")
             os.unsetenv("TF_VAR_dbaccess")
             _run_terraform(config)
+
+
+def _detect_public_ip() -> str:
+    try:
+        with urllib.request.urlopen("https://checkip.amazonaws.com",
+                                    timeout=3) as response:
+            # response contains a newline
+            return response.read().decode("ascii").strip()
+    except:
+        return ""
 
 
 def _run_cmd(cmd, quiet=False):
