@@ -1,9 +1,11 @@
 import os
+import ipaddress
 import sys
 import tempfile
 import shlex
 import subprocess
 from time import sleep
+from datetime import datetime
 import urllib.request
 
 from cloud.aws.templates.aws_oidc.bin import resources
@@ -17,15 +19,24 @@ def run(config: ConfigLoader):
     aws = AwsCli(config)
     print(
         "\n"
-        "!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.\n"
+        "\033[31m!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.\033[0m\n"
         "\n"
         'This process will set up a temporary EC2 host with access to the database, use SSH to run the pg_dump command on that host, then SCP the file to this machine. '
         'You will need to confirm the application of the Terraform manifest that creates these temporary resources, and then confirm the teardown of these resources. '
         'If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.'
-        "\n")
+        "\n\n"
+        'The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.'
+        "\n\n")
+    answer = input('Do you understand the risks and wish to proceed? (y/N): ')
+    if answer.lower() != 'y':
+        print('Exiting.')
+        return
+    
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+
     # Current working dir should be the 'checkout' folder, so go one level above.
     default_file = os.path.join(
-        os.path.dirname(os.getcwd()), 'civiform_database.dump')
+        os.path.dirname(os.getcwd()), f'{config.app_prefix}_civiform_database_{timestamp}.dump')
     dumpfile = input(
         f"Enter the location to save the dump file (default: {default_file}): "
     ) or default_file
@@ -38,9 +49,10 @@ def run(config: ConfigLoader):
     # Generate a new key pair for the dbaccess instance. We'll
     # save this to a temp directory and run all the critical pieces
     # inside this block so we ensure the key is cleaned up.
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(dir=dumpdir) as tmpdir:
         print(f'Generating key pair in {tmpdir}')
         _run_cmd(f'ssh-keygen -t rsa -b 4096 -f {tmpdir}/dbaccess -N ""')
+        _run_cmd(f'chmod 600 {tmpdir}/dbaccess')
 
         print('Deploying dbaccess instance')
         os.environ[
@@ -84,7 +96,7 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             print('Generating dump file')
-            cmd = ssh + f"PGPASSWORD='{db_pwd}' pg_dump -w -Fc -h '{db_hostname}' -U '{db_user}' -d postgres > civiform_database.dump"
+            cmd = ssh + f"PGPASSWORD='{db_pwd}' pg_dump --no-password --format=custom --host='{db_hostname}' --username='{db_user}' --dbname=postgres > civiform_database.dump"
             _run_cmd(cmd)
 
             print('Downloading dump file to local machine')
@@ -116,13 +128,24 @@ def _detect_public_ip() -> str:
         with urllib.request.urlopen("https://checkip.amazonaws.com",
                                     timeout=3) as response:
             # response contains a newline
-            return response.read().decode("ascii").strip()
+            ip = response.read().decode("ascii").strip()
+            ipaddress.IPv4Address(ip)
+            return ip
     except:
-        return ""
+        print('Unable to find the public IP of this machine using checkip.amazonaws.com.')
+        return _ask_for_ip()
+
+def _ask_for_ip() -> str:
+    while True:
+        answer = input('Please enter the public IP of this machine: ').strip()
+        try:
+            ipaddress.IPv4Address(answer)
+            return answer
+        except ValueError:
+            print('Invalid IP address. Please try again.')
 
 
 def _run_cmd(cmd, quiet=False):
-    attempts = 0
     while True:
         try:
             subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
