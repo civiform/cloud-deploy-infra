@@ -31,12 +31,13 @@ def run(config: ConfigLoader):
     if answer.lower() != 'y':
         print('Exiting.')
         return
-    
+
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     # Current working dir should be the 'checkout' folder, so go one level above.
     default_file = os.path.join(
-        os.path.dirname(os.getcwd()), f'{config.app_prefix}_civiform_database_{timestamp}.dump')
+        os.path.dirname(os.getcwd()),
+        f'{config.app_prefix}_civiform_database_{timestamp}.dump')
     dumpfile = input(
         f"Enter the location to save the dump file (default: {default_file}): "
     ) or default_file
@@ -132,8 +133,11 @@ def _detect_public_ip() -> str:
             ipaddress.IPv4Address(ip)
             return ip
     except:
-        print('Unable to find the public IP of this machine using checkip.amazonaws.com.')
+        print(
+            'Unable to find the public IP of this machine using checkip.amazonaws.com.'
+        )
         return _ask_for_ip()
+
 
 def _ask_for_ip() -> str:
     while True:
