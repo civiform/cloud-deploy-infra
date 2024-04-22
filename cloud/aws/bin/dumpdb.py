@@ -4,9 +4,11 @@ import sys
 import tempfile
 import shlex
 import subprocess
+import textwrap
+import urllib.request
+from pathlib import Path
 from time import sleep
 from datetime import datetime
-import urllib.request
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
@@ -15,18 +17,26 @@ from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
 
 
+class Color:
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    END = '\033[0m'
+
+
 def run(config: ConfigLoader):
     aws = AwsCli(config)
     print(
-        "\n"
-        "\033[31m!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.\033[0m\n"
-        "\n"
-        'This process will set up a temporary EC2 host with access to the database, use SSH to run the pg_dump command on that host, then SCP the file to this machine. '
-        'You will need to confirm the application of the Terraform manifest that creates these temporary resources, and then confirm the teardown of these resources. '
-        'If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.'
-        "\n\n"
-        'The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.'
-        "\n\n")
+        textwrap.dedent(
+            f"""
+        {Color.RED}!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.{Color.END}
+
+        This process will set up a temporary EC2 host with access to the database, use SSH to run the pg_dump command on that host, then SCP the file to this machine. You will need to confirm the application of the Terraform manifest that creates these temporary resources, and then confirm the teardown of these resources.
+        
+        If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.
+
+        The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.
+    """))
     answer = input('Do you understand the risks and wish to proceed? (y/N): ')
     if answer.lower() != 'y':
         print('Exiting.')
@@ -35,9 +45,8 @@ def run(config: ConfigLoader):
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     # Current working dir should be the 'checkout' folder, so go one level above.
-    default_file = os.path.join(
-        os.path.dirname(os.getcwd()),
-        f'{config.app_prefix}_civiform_database_{timestamp}.dump')
+    default_filename = f'{config.app_prefix}_civiform_database_{timestamp}.dump'
+    default_file = Path.cwd().parent / default_filename
     dumpfile = input(
         f"Enter the location to save the dump file (default: {default_file}): "
     ) or default_file
@@ -121,11 +130,11 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             input(
-                '\033[32mDatabase dump complete. Press Enter to tear down the temporary resources.\033[0m'
+                f'{Color.GREEN}Database dump complete. Press Enter to tear down the temporary resources.{Color.END}'
             )
         except:
             input(
-                "\n\033[31mError occurred. See details above. Press Enter to tear down the temporary resources.\033[0m"
+                f"\n{Color.RED}Error occurred. See details above. Press Enter to tear down the temporary resources.{Color.END}"
             )
             raise
         finally:
@@ -145,7 +154,7 @@ def _detect_public_ip() -> str:
             return ip
     except:
         print(
-            'Unable to find the public IP of this machine using checkip.amazonaws.com.'
+            f'{Color.YELLOW}Unable to find the public IP of this machine using checkip.amazonaws.com.{Color.END}'
         )
         return _ask_for_ip()
 
@@ -157,7 +166,9 @@ def _ask_for_ip() -> str:
             ipaddress.IPv4Address(answer)
             return answer
         except ValueError:
-            print('Invalid IP address. Please try again.')
+            print(
+                f'{Color.YELLOW}Invalid IP address. Please try again.{Color.END}'
+            )
 
 
 def _run_cmd(cmd, quiet=False):
@@ -167,10 +178,12 @@ def _run_cmd(cmd, quiet=False):
             break
         except subprocess.CalledProcessError as e:
             if not quiet:
+                print(Color.RED)
                 print('Error running command:')
                 print("Command:", e.cmd)
                 print("Return code:", e.returncode)
                 print("Output:", e.output.decode())
+                print(Color.END)
             raise e
 
 
