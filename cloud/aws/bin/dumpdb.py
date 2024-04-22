@@ -96,8 +96,17 @@ def run(config: ConfigLoader):
             cmd = ssh + '"sudo apt-get update && sudo apt-get install -y postgresql-client"'
             _run_cmd(cmd)
 
+            print('Creating .pgpass file and SCPing to EC2 host')
+            pgpass = f'{tmpdir}/.pgpass'
+            with open(pgpass, 'w') as f:
+                f.write(f"{db_hostname}:5432:*:{db_user}:{db_pwd}\n")
+            _run_cmd(f'chmod 600 {pgpass}')
+            cmd = f'scp {args} "{pgpass}" "ubuntu@{ec2_host_ip}:.pgpass"'
+            _run_cmd(cmd)
+            _run_cmd(f'rm -f {pgpass}')
+
             print('Generating dump file')
-            cmd = ssh + f"PGPASSWORD='{db_pwd}' pg_dump --no-password --format=custom --host='{db_hostname}' --username='{db_user}' --dbname=postgres > civiform_database.dump"
+            cmd = ssh + f"pg_dump --no-password --format=custom --host='{db_hostname}' --username='{db_user}' --dbname=postgres > civiform_database.dump"
             _run_cmd(cmd)
 
             print('Downloading dump file to local machine')
@@ -105,16 +114,18 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             # Not strictly necessary, but in case the host sticks around for some reason.
-            print('Delete dump file on EC2 host')
+            print('Delete dump file and pgpass file on EC2 host')
             cmd = ssh + 'rm -f civiform_database.dump'
+            _run_cmd(cmd)
+            cmd = ssh + 'rm -f .pgpass'
             _run_cmd(cmd)
 
             input(
-                'Database dump complete. Press Enter to tear down the temporary resources.'
+                '\033[32mDatabase dump complete. Press Enter to tear down the temporary resources.\033[0m'
             )
         except:
             input(
-                "\nError occurred. See details above. Press Enter to tear down the temporary resources."
+                "\n\033[31mError occurred. See details above. Press Enter to tear down the temporary resources.\033[0m"
             )
             raise
         finally:
