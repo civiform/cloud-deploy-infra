@@ -325,6 +325,16 @@ class AwsCli:
                 print(f'Error deleting DynamoDB table: {e.stdout.decode()}')
                 return False
 
+    def get_dbaccess_ec2_host_ip(self) -> str:
+        return self._call_cli(
+            "ec2 describe-instances --filters 'Name=tag:Module,Values=dbaccess' 'Name=instance-state-name,Values=running' --query 'Reservations[0].Instances[0].PublicIpAddress'"
+        )
+
+    def get_database_hostname(self) -> str:
+        return self._call_cli(
+            f"rds describe-db-instances --db-instance-identifier={self.config.app_prefix}-civiform-db --query 'DBInstances[0].Endpoint.Address'"
+        )
+
     def _call_cli(self, command: str, output: bool = True) -> Dict:
         base = f"aws --region={self.config.aws_region} "
         if output:
