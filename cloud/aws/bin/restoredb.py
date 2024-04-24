@@ -117,8 +117,10 @@ def run(config: ConfigLoader):
             cmd = f'scp {args} "{dumpfile}" "ubuntu@{ec2_host_ip}:civiform_database.dump"'
             _run_cmd(cmd)
 
-            # Do the restore
-            cmd = ssh + f"pg_restore --no-password --host='{db_hostname}' --username='{db_user}' --dbname=postgres --clean --exit-on-error civiform_database.dump"
+            # --no-privileges and --no-owner because our single DB user/role has access
+            # to everything, but if we're restoring to a different database instance,
+            # the user name may not match up to what's in the dump.
+            cmd = ssh + f"pg_restore --no-password --no-privileges --no-owner --host='{db_hostname}' --username='{db_user}' --dbname=postgres --clean --exit-on-error civiform_database.dump"
             _run_cmd(cmd)
 
             # Not strictly necessary, but in case the host sticks around for some reason.
