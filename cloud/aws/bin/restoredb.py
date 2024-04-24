@@ -8,20 +8,12 @@ import textwrap
 import urllib.request
 from pathlib import Path
 from time import sleep
-from datetime import datetime
 
-from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-
-
-class Color:
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    END = '\033[0m'
+from cloud.shared.bin.lib.color import Color
 
 
 def run(config: ConfigLoader):
