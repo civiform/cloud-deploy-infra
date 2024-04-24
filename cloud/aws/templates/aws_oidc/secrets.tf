@@ -208,3 +208,16 @@ resource "aws_secretsmanager_secret_version" "admin_oidc_client_id_secret_versio
   secret_id     = aws_secretsmanager_secret.admin_oidc_client_id_secret.id
   secret_string = " "
 }
+
+# Creating an AWS secret for esri_arcgis_api_token
+resource "aws_secretsmanager_secret" "esri_arcgis_api_token_secret" {
+  name                    = "${var.app_prefix}-civiform_esri_arcgis_api_token"
+  kms_key_id              = aws_kms_key.civiform_kms_key.arn
+  recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+# Creating an AWS secret versions for esri_arcgis_api_token
+resource "aws_secretsmanager_secret_version" "esri_arcgis_api_token_secret_version" {
+  secret_id     = aws_secretsmanager_secret.esri_arcgis_api_token_secret.id
+  secret_string = " "
+}

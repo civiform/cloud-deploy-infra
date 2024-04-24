@@ -78,6 +78,10 @@ module "civiform_server_container_def" {
     {
       name      = "ADMIN_OIDC_CLIENT_SECRET"
       valueFrom = aws_secretsmanager_secret_version.admin_oidc_client_secret_secret_version.arn
+    },
+    {
+      name      = "ESRI_ARCGIS_API_TOKEN"
+      valueFrom = aws_secretsmanager_secret_version.esri_arcgis_api_token_secret_version.arn
     }
   ]
 
@@ -190,6 +194,7 @@ locals {
               aws_secretsmanager_secret.applicant_oidc_client_id_secret.arn,
               aws_secretsmanager_secret.admin_oidc_client_secret_secret.arn,
               aws_secretsmanager_secret.admin_oidc_client_id_secret.arn,
+              aws_secretsmanager_secret.esri_arcgis_api_token_secret.arn,
             ]
           },
           {

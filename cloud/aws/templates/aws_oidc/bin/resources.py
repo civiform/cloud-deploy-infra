@@ -15,6 +15,7 @@ APPLICANT_OIDC_CLIENT_ID = 'civiform_applicant_oidc_client_id'
 APPLICANT_OIDC_CLIENT_SECRET = 'civiform_applicant_oidc_client_secret'
 ADMIN_OIDC_CLIENT_ID = 'civiform_admin_oidc_client_id'
 ADMIN_OIDC_CLIENT_SECRET = 'civiform_admin_oidc_client_secret'
+ESRI_ARCGIS_API_TOKEN = 'esri_arcgis_api_token'
 POSTGRES_PASSWORD = 'civiform_postgres_password'
 
 # Defined in cloud/aws/templates/aws_oidc/main.tf
