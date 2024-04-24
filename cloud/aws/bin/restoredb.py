@@ -97,8 +97,11 @@ def run(config: ConfigLoader):
                     else:
                         raise e
 
+            # https://www.postgresql.org/download/linux/ubuntu/
+            # The version included in Ubuntu repos is 14, so we need to pull in 16
+            # directly from the postgresql repo.
             print('Installing postgresql-client')
-            cmd = ssh + '"sudo apt-get update && sudo apt-get install -y postgresql-client"'
+            cmd = ssh + '"sudo apt-get update && sudo apt-get install -y postgresql-common && sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y && sudo apt-get install -y postgresql-client-16"'
             _run_cmd(cmd)
 
             print('Creating .pgpass file and SCPing to EC2 host')

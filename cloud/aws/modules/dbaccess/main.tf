@@ -1,13 +1,3 @@
-# Needed so the EC2 host can update and install packages
-# AWS only allows specifying by IP, not hostname, and Terraform
-# doesn't have a way to look up the IP of a hostname. This is
-# kind of brittle, but seems like the safest way so we don't
-# have to allow access to any IP.
-data "external" "external_ips" {
-  program = ["${path.module}/ip.sh"]
-  query   = { region = var.aws_region }
-}
-
 # Security group to allow the host's IP inbound
 resource "aws_security_group" "dbaccess_security_group" {
   name        = "${var.app_prefix}-dbaccess-sg"
@@ -27,11 +17,7 @@ resource "aws_security_group" "dbaccess_security_group" {
     to_port     = 443
     protocol    = "tcp"
     description = "Allow HTTPS access to update and install packages"
-    cidr_blocks = [
-      data.external.external_ips.result["security_ubuntu_com"],
-      data.external.external_ips.result["archive_ubuntu_com"],
-      data.external.external_ips.result["region_ec2_archive_ubuntu_com"]
-    ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -39,11 +25,7 @@ resource "aws_security_group" "dbaccess_security_group" {
     to_port     = 80
     protocol    = "tcp"
     description = "Allow HTTP access to update and install packages"
-    cidr_blocks = [
-      data.external.external_ips.result["security_ubuntu_com"],
-      data.external.external_ips.result["archive_ubuntu_com"],
-      data.external.external_ips.result["region_ec2_archive_ubuntu_com"]
-    ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
