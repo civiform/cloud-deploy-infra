@@ -8,9 +8,7 @@ import textwrap
 import urllib.request
 from pathlib import Path
 from time import sleep
-from datetime import datetime
 
-from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
@@ -23,37 +21,41 @@ def run(config: ConfigLoader):
     print(
         textwrap.dedent(
             f"""
-        {Color.RED}!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.{Color.END}
+            {Color.RED}!!! WARNING !!!: This command will overwrite the entire database with the contents of the dump file. Ensure this is really what you want to do before proceeding. 
+            
+            You should ideally only restore the database to the same version of CiviForm that the dump was taken from. Restoring an older database to a newer CiviForm version may work, but may require additional steps, such as redeploying the application. Restoring a newer database dump to an older CiviForm version is not supported.
+            
+            Additionally, any files uploaded as part of applications that were submitted after the time of the database dump will become orphaned and may need to be manually cleaned up.{Color.END}
 
-        This process will set up a temporary EC2 host with access to the database, use SSH to run the pg_dump command on that host, then SCP the file to this machine. You will need to confirm the application of the Terraform manifest that creates these temporary resources, and then confirm the teardown of these resources.
-        
-        If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.
+            The input to this command is expected to be a dump file generated via the 'dumpdb' command. This process will set up a temporary EC2 host with access to the database, use SCP to copy the dump file to that host, then SSH to run the pg_restore command.
 
-        The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.
-    """))
+            If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.
+
+            The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.
+        """))
     answer = input('Do you understand the risks and wish to proceed? (y/N): ')
     if answer.lower() != 'y':
         print('Exiting.')
         return
 
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    while True:
+        dumpfile = input('Enter the full path of the dump file to restore: ')
+        if not os.path.isfile(dumpfile):
+            print(
+                f'{Color.YELLOW}File not found. Please verify the path and try again.{Color.END}'
+            )
+            continue
+        with open(dumpfile, 'rb') as f:
+            if f.read(5) != b'PGDMP':
+                answer = input(
+                    f'{Color.YELLOW}File does not appear to be a valid PostgreSQL dump file. Are you sure you wish to use this file? (y/N): {Color.END}'
+                )
+                if answer.lower() == 'y':
+                    break
+            else:
+                break
 
-    # Current working dir should be the 'checkout' folder, so go one level above.
-    default_filename = f'{config.app_prefix}_civiform_database_{timestamp}.dump'
-    default_file = Path.cwd().parent / default_filename
-    dumpfile = input(
-        f"Enter the location to save the dump file (default: {default_file}): "
-    ) or default_file
-
-    dumpdir = os.path.dirname(dumpfile)
-    if not os.path.isdir(dumpdir):
-        os.makedirs(dumpdir)
-        print(f'Directory created: {dumpdir}')
-
-    # Generate a new key pair for the dbaccess instance. We'll
-    # save this to a temp directory and run all the critical pieces
-    # inside this block so we ensure the key is cleaned up.
-    with tempfile.TemporaryDirectory(dir=dumpdir) as tmpdir:
+    with tempfile.TemporaryDirectory(dir=Path.cwd()) as tmpdir:
         print(f'Generating key pair in {tmpdir}')
         _run_cmd(f'ssh-keygen -t rsa -b 4096 -f {tmpdir}/dbaccess -N ""')
         _run_cmd(f'chmod 600 {tmpdir}/dbaccess')
@@ -111,12 +113,14 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
             _run_cmd(f'rm -f {pgpass}')
 
-            print('Generating dump file')
-            cmd = ssh + f"pg_dump --no-password --format=custom --host='{db_hostname}' --username='{db_user}' --dbname=postgres > civiform_database.dump"
+            print('SCPing dump file to EC2 host')
+            cmd = f'scp {args} "{dumpfile}" "ubuntu@{ec2_host_ip}:civiform_database.dump"'
             _run_cmd(cmd)
 
-            print('Downloading dump file to local machine')
-            cmd = f'scp {args} "ubuntu@{ec2_host_ip}:/home/ubuntu/civiform_database.dump" {dumpfile}'
+            # --no-privileges and --no-owner because our single DB user/role has access
+            # to everything, but if we're restoring to a different database instance,
+            # the user name may not match up to what's in the dump.
+            cmd = ssh + f"pg_restore --no-password --no-privileges --no-owner --host='{db_hostname}' --username='{db_user}' --dbname=postgres --clean --exit-on-error civiform_database.dump"
             _run_cmd(cmd)
 
             # Not strictly necessary, but in case the host sticks around for some reason.
@@ -127,7 +131,7 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             input(
-                f'{Color.GREEN}Database dump complete. Press Enter to tear down the temporary resources.{Color.END}'
+                f'{Color.GREEN}Database restore complete. Press Enter to tear down the temporary resources.{Color.END}'
             )
         except:
             input(

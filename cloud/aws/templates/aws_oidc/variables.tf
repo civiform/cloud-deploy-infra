@@ -475,6 +475,7 @@ variable "dbaccess_cidr_allowlist" {
 variable "dbaccess_public_key" {
   type        = string
   description = "Path to the public key to use for SSH access"
+  default     = ""
 }
 variable "monitoring_stack_enabled" {
   type        = bool
