@@ -38,6 +38,7 @@ module "civiform_server_container_def" {
   container_memory             = var.ecs_server_container_memory
   container_memory_reservation = var.ecs_server_container_memory_reservation
 
+  # The "name" key should match the environment variable used within the Civiform application
   secrets = [
     {
       name      = "DB_USERNAME"
