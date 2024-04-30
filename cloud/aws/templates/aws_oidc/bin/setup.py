@@ -21,6 +21,8 @@ SECRETS: Dict[str, str] = {
         'Client ID for your OIDC provider for admins. Enter any value if not applicable.',
     resources.ADMIN_OIDC_CLIENT_SECRET:
         'Client secret for your OIDC provider for admins. Enter any value if not applicable.',
+    resources.ESRI_ARCGIS_API_TOKEN_SECRET:
+        'Client secret for your Esri ArcGis Online api token. Enter any value if not applicable.',
 }
 
 
