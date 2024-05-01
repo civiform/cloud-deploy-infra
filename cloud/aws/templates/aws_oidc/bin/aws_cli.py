@@ -335,6 +335,11 @@ class AwsCli:
             f"rds describe-db-instances --db-instance-identifier={self.config.app_prefix}-civiform-db --query 'DBInstances[0].Endpoint.Address'"
         )
 
+    def get_application_secret_length(self) -> int:
+        secret = self.get_secret_value(
+            f"{self.config.app_prefix}-civiform_app_secret_key")
+        return len(secret)
+
     def _call_cli(self, command: str, output: bool = True) -> Dict:
         base = f"aws --region={self.config.aws_region} "
         if output:
