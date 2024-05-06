@@ -1,15 +1,39 @@
 import textwrap
+import os
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.color import Color
+from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 
-def run(config):
+def run(config: ConfigLoader):
     aws = AwsCli(config)
 
+    if not config.is_test():
+        _check_application_secret_length(config, aws)
+        _check_for_postgres_upgrade(config, aws)
+
+    if not terraform.perform_apply(config):
+        print('Terraform deployment failed.')
+        # TODO(#2606): write and upload logs.
+        raise ValueError('Terraform deployment failed.')
+
+    if config.is_test():
+        print('Test completed')
+        return
+
+    aws.wait_for_ecs_service_healthy()
+    lb_dns = aws.get_load_balancer_dns(f'{config.app_prefix}-civiform-lb')
+    base_url = config.get_base_url()
+    print(
+        f'Server is available at {lb_dns}. Check your domain registrar to ensure your CNAME record for {base_url} points to this address.'
+    )
+
+
+def _check_application_secret_length(config: ConfigLoader, aws: AwsCli):
     if not config.is_test():
         secret_length = aws.get_application_secret_length()
         if secret_length < 32:
@@ -17,6 +41,9 @@ def run(config):
                 f'{Color.RED}The application secret must be at least 32 characters in length, and ideally 64 characters. The current secret has a length of {secret_length}. See https://docs.civiform.us/it-manual/sre-playbook/initial-deployment/terraform-deploy-system#rotating-the-application-secret for details on how to regenerate the secret with a longer length.{Color.END}'
             )
             exit(1)
+
+
+def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
     # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html
     # For each major PG version, the oldest allowed PG minor you must be on in order to upgrade to that major version.
     # We don't really care which minor version of the upgraded version you get upgraded to, as AWS will take care of upgrading
@@ -27,7 +54,6 @@ def run(config):
     #
     # major_version_to_upgrade_to: {current_major_version: oldest_allowable_minor_version}
     pg_upgrade_table = {16: {12: 17}}
-
     postgresql_major_to_apply = config.get_config_var(
         "POSTGRESQL_MAJOR_VERSION") or terraform.find_variable_default(
             config, 'postgresql_major_version')
@@ -41,8 +67,9 @@ def run(config):
                     f'''
                 {Color.CYAN}This version of CiviForm contains an upgrade to PostgreSQL {to_apply}. Your install is currently using PostgreSQL version {current_major}.{current_minor}.
                 
-                The upgrade may take an extra 10-20 minutes to complete. Before upgrading, ensure you have a backup of your database. You can do this by running bin/run and choosing the dumpdb command.
-                Additionally, a snapshot will be performed just prior to the upgrade. The snapshot will have a name that starts with "preupgrade". You may also have a snapshot called "{config.app_prefix}-civiform-db-finalsnapshot".{Color.END}
+                The upgrade may take an extra 10-20 minutes to complete, during which time the CiviForm application will be unavailable. Before upgrading, ensure you have a backup of your database. You can do this by running bin/run and choosing the dumpdb command.
+                Additionally, a snapshot will be performed just prior to the upgrade. The snapshot will have a name that starts with "preupgrade". You may also have a snapshot called "{config.app_prefix}-civiform-db-finalsnapshot".
+                {Color.END}
                 '''))
             if to_apply < current_major:
                 raise ValueError(
@@ -63,24 +90,14 @@ def run(config):
                     f'{Color.RED}In order to upgrade to version {to_apply}, you must first upgrade to at least PostgreSQL {current_major}.{pg_upgrade_table[to_apply][current_major]}. You will need to perform this upgrade in the AWS RDS console before proceeding.{Color.END}'
                 )
                 exit(1)
+            # If a user sets ALLOW_POSTGRESQL_UPGRADE in their config file, config.get_config_var will pick it up.
+            # If they've set it as an environment variable, we need to detect that and then add it to the config
+            # object ourselves so that it is picked up with the manifest is compiled.
             if config.get_config_var("ALLOW_POSTGRESQL_UPGRADE") != "true":
-                print(
-                    f'{Color.YELLOW}To perform the upgrade, run "ALLOW_POSTGRESQL_UPGRADE=true bin/deploy"{Color.END}.'
-                )
-                exit(2)
-
-    if not terraform.perform_apply(config):
-        print('Terraform deployment failed.')
-        # TODO(#2606): write and upload logs.
-        raise ValueError('Terraform deployment failed.')
-
-    if config.is_test():
-        print('Test completed')
-        return
-
-    aws.wait_for_ecs_service_healthy()
-    lb_dns = aws.get_load_balancer_dns(f'{config.app_prefix}-civiform-lb')
-    base_url = config.get_base_url()
-    print(
-        f'Server is available at {lb_dns}. Check your domain registrar to ensure your CNAME record for {base_url} points to this address.'
-    )
+                if os.environ.get("ALLOW_POSTGRESQL_UPGRADE") == "true":
+                    config.add_config_value("ALLOW_POSTGRESQL_UPGRADE", "true")
+                else:
+                    print(
+                        f'{Color.YELLOW}To perform the upgrade, run "ALLOW_POSTGRESQL_UPGRADE=true bin/deploy"{Color.END}.'
+                    )
+                    exit(2)

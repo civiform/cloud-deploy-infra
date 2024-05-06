@@ -12,6 +12,7 @@ from typing import Optional
 
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
+from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib.variable_definition_loader import \
     load_variables_definitions
 
@@ -75,6 +76,7 @@ class ConfigLoader:
     def add_config_value(self, key: str, value: str):
         self._config_fields[key] = value
         os.environ[key] = value
+        self.write_tfvars_file()
 
     # TODO(https://github.com/civiform/civiform/issues/4293): remove this when
     # the local deploy system does not read values from env variables anymore.
@@ -400,3 +402,9 @@ class ConfigLoader:
         if template_dir is None or not os.path.exists(template_dir):
             exit(f"Could not find template directory {template_dir}")
         return template_dir
+
+    def write_tfvars_file(self):
+        terraform_tfvars_path = os.path.join(
+            self.get_template_dir(), self.tfvars_filename)
+        tf_var_writer = TfVarWriter(terraform_tfvars_path)
+        tf_var_writer.write_variables(self.get_terraform_variables())

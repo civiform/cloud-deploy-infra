@@ -12,7 +12,6 @@ sys.path.append(os.getcwd())
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
 from cloud.shared.bin.lib import terraform
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
@@ -38,12 +37,6 @@ def main():
         '--lock-table-digest-value',
         help=
         'Digest value for the Terraform lock table to set in DynamoDB. If multiple processes are doing a deploy, or an error occurred in a previous deploy that prevented Terraform from cleaning up after itself, this value may need updating. Only works on AWS deployments.'
-    )
-    parser.add_argument(
-        '--allow-postgresql-upgrade',
-        action='store_true',
-        help=
-        'If set to true, will allow the PostgreSQL upgrade to proceed, if one is needed for this deployment.'
     )
 
     args = parser.parse_args()
@@ -80,15 +73,9 @@ def main():
         aws = AwsCli(config)
         aws.set_lock_table_digest_value(args.lock_table_digest_value)
 
-    if args.allow_postgresql_upgrade:
-        config.add_config_value('ALLOW_POSTGRESQL_UPGRADE', 'true')
-
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")
-    terraform_tfvars_path = os.path.join(
-        config.get_template_dir(), config.tfvars_filename)
-    tf_var_writter = TfVarWriter(terraform_tfvars_path)
-    tf_var_writter.write_variables(config.get_terraform_variables())
+    config.write_tfvars_file()
 
     if args.command:
         cmd = shlex.split(args.command)[0]

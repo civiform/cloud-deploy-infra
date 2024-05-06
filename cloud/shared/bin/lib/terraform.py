@@ -14,6 +14,7 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 def find_variable_default(config: ConfigLoader,
                           variable_name: str) -> Optional[str]:
+    '''Finds the default value of a variable in the terraform template.'''
     with open(os.path.join(config.get_template_dir(), 'variables.tf'),
               'r') as file:
         content = file.read()
