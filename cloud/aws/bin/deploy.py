@@ -94,10 +94,9 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
             # If they've set it as an environment variable, we need to detect that and then add it to the config
             # object ourselves so that it is picked up with the manifest is compiled.
             if config.get_config_var("ALLOW_POSTGRESQL_UPGRADE") != "true":
-                if os.environ.get("ALLOW_POSTGRESQL_UPGRADE") == "true":
-                    config.add_config_value("ALLOW_POSTGRESQL_UPGRADE", "true")
-                else:
-                    print(
-                        f'{Color.YELLOW}To perform the upgrade, run "ALLOW_POSTGRESQL_UPGRADE=true bin/deploy"{Color.END}.'
-                    )
+                answer = input(
+                    f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
+                )
+                if answer.lower() not in ['y', 'yes']:
                     exit(2)
+                config.add_config_value("ALLOW_POSTGRESQL_UPGRADE", "true")
