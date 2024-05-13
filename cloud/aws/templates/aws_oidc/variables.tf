@@ -494,3 +494,16 @@ variable "dbaccess" {
   description = "Whether to set up resources to allow access to the database from an EC2 host"
   default     = false
 }
+
+
+variable "allow_postgresql_upgrade" {
+  type        = bool
+  description = "Allow major version upgrade for PostgreSQL"
+  default     = false
+}
+
+variable "postgresql_major_version" {
+  type        = number
+  description = "Major version of PostgreSQL to use"
+  default     = 16
+}

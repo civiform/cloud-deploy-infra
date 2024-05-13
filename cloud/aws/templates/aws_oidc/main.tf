@@ -9,17 +9,21 @@ locals {
 # List of params that we could configure:
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.Parameters.html#Appendix.PostgreSQL.CommonDBATasks.Parameters.parameters-list
 resource "aws_db_parameter_group" "civiform" {
-  name = "${var.app_prefix}-civiform-db-params"
+  name_prefix = "${var.app_prefix}-civiform-db-params"
   tags = {
     Name = "${var.app_prefix} Civiform DB Parameters"
     Type = "Civiform DB Parameters"
   }
 
-  family = "postgres12"
+  family = "postgres${var.postgresql_major_version}"
 
   parameter {
     name  = "log_connections"
     value = "1"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -29,6 +33,8 @@ resource "aws_db_instance" "civiform" {
     Name = "${var.app_prefix} Civiform Database"
     Type = "Civiform Database"
   }
+
+  apply_immediately = true
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
   snapshot_identifier             = var.postgres_restore_snapshot_identifier
@@ -40,7 +46,8 @@ resource "aws_db_instance" "civiform" {
   storage_throughput              = var.aws_db_storage_throughput
   iops                            = var.aws_db_iops
   engine                          = "postgres"
-  engine_version                  = "12"
+  engine_version                  = var.postgresql_major_version
+  allow_major_version_upgrade     = var.allow_postgresql_upgrade
   username                        = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
   password                        = aws_secretsmanager_secret_version.postgres_password_secret_version.secret_string
   vpc_security_group_ids          = [aws_security_group.rds.id]

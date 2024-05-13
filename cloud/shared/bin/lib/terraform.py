@@ -12,6 +12,19 @@ from cloud.shared.bin.lib.print import print
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 
 
+def find_variable_default(config: ConfigLoader,
+                          variable_name: str) -> Optional[str]:
+    '''Finds the default value of a variable in the Terraform template. Does not read settings from the config file, only the Terraform template default.'''
+    with open(os.path.join(config.get_template_dir(), 'variables.tf'),
+              'r') as file:
+        content = file.read()
+    pattern = rf'variable "{variable_name}"\s*{{[^}}]*default\s*=\s*(?P<default_value>[^\n]+)'  # Barf
+    match = re.search(pattern, content, re.MULTILINE)
+    if match:
+        return match.group('default_value').strip().strip('"').strip("'")
+    return None
+
+
 def force_unlock(
         config_loader: ConfigLoader,
         lock_id: str,

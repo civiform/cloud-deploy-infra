@@ -386,5 +386,17 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "ALLOW_POSTGRESQL_UPGRADE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "POSTGRESQL_MAJOR_VERSION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   }
 }

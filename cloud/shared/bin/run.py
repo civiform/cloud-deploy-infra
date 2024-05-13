@@ -12,7 +12,6 @@ sys.path.append(os.getcwd())
 
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib import backend_setup
 from cloud.shared.bin.lib import terraform
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
@@ -76,10 +75,7 @@ def main():
 
     # Write the passthrough vars to a temporary file
     print("Writing TF Vars file")
-    terraform_tfvars_path = os.path.join(
-        config.get_template_dir(), config.tfvars_filename)
-    tf_var_writter = TfVarWriter(terraform_tfvars_path)
-    tf_var_writter.write_variables(config.get_terraform_variables())
+    config.write_tfvars_file()
 
     if args.command:
         cmd = shlex.split(args.command)[0]
