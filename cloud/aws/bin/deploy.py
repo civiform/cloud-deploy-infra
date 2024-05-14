@@ -80,11 +80,17 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                     f'{Color.RED}Unsupported upgrade to PostgreSQL version {to_apply} specified for POSTGRESQL_MAJOR_VERSION. If this seems incorrect, contact a CiviForm maintainer.{Color.END}'
                 )
             if current_major not in pg_upgrade_table[to_apply]:
-                answer = input(
-                    f'{Color.YELLOW}This version of the deployment tool does not have information about if {current_major}.{current_minor} is sufficiently new enough to upgrade to version {to_apply}. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html and verify this is a valid upgrade path. Would you like to proceed with the upgrade? (y/N): {Color.END}'
+                print(
+                    f'{Color.YELLOW}This version of the deployment tool does not have information about if {current_major}.{current_minor} is sufficiently new enough to upgrade to version {to_apply}. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html and verify this is a valid upgrade path.{Color.END}'
                 )
-                if answer.lower() != 'y':
-                    exit(1)
+                if os.getenv('SKIP_USER_INPUT'):
+                    print('Proceeding since SKIP_USER_INPUT is set.')
+                else:
+                    answer = input(
+                        f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
+                    )
+                    if answer.lower() not in ['y', 'yes']:
+                        exit(1)
             elif current_minor < pg_upgrade_table[to_apply][current_major]:
                 print(
                     f'{Color.RED}In order to upgrade to version {to_apply}, you must first upgrade to at least PostgreSQL {current_major}.{pg_upgrade_table[to_apply][current_major]}. You will need to perform this upgrade in the AWS RDS console before proceeding.{Color.END}'
@@ -94,9 +100,12 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
             # If they've set it as an environment variable, we need to detect that and then add it to the config
             # object ourselves so that it is picked up with the manifest is compiled.
             if config.get_config_var("ALLOW_POSTGRESQL_UPGRADE") != "true":
-                answer = input(
-                    f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
-                )
-                if answer.lower() not in ['y', 'yes']:
-                    exit(2)
+                if os.getenv('SKIP_USER_INPUT'):
+                    print('Proceeding since SKIP_USER_INPUT is set.')
+                else:
+                    answer = input(
+                        f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
+                    )
+                    if answer.lower() not in ['y', 'yes']:
+                        exit(2)
                 config.add_config_value("ALLOW_POSTGRESQL_UPGRADE", "true")
