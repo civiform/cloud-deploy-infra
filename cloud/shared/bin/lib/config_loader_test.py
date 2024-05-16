@@ -209,7 +209,9 @@ class TestConfigLoader(unittest.TestCase):
             "FOO_1": "true",
             "FOO_2": "value1",
             "FOO_3": "grey",
-            "FOO_4": "24"
+            "FOO_4": "24",
+            "FOO_5": "writeable_var",
+            "ALLOW_ADMIN_WRITEABLE": "true"
         }
         civiform_server_env_vars = {}
         # See comments on the specifics we pass correct values for
@@ -253,6 +255,15 @@ class TestConfigLoader(unittest.TestCase):
             regex=None,
             regex_tests=None,
             mode=Mode.ADMIN_READABLE)
+        civiform_server_env_vars["FOO_5"] = env_var_docs_parser.Variable(
+            description='description',
+            type='string',
+            required=False,
+            values=None,
+            regex=None,
+            regex_tests=None,
+            mode=Mode.ADMIN_WRITEABLE
+        )  # mode is ADMIN_WRITEABLE but override is set so should be ignored
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
@@ -319,7 +330,7 @@ class TestConfigLoader(unittest.TestCase):
             description='description',
             type='string',
             required=
-            True,  # Required but mode is ADMIN_WRITEABLE so should be ignored
+            True,  # required and not set in config but mode is ADMIN_WRITEABLE so should be ignored
             values=None,
             regex=None,
             regex_tests=None,
@@ -332,7 +343,7 @@ class TestConfigLoader(unittest.TestCase):
             regex=None,
             regex_tests=None,
             mode=Mode.ADMIN_WRITEABLE
-        )  # Is admin writeable and is included in config_fields so should throw an error
+        )  # is included in config_fields and mode is ADMIN_WRITEABLE so should throw an error
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
