@@ -91,6 +91,7 @@ class ConfigLoader:
             answer = input(msg)
             if answer not in ['y', 'Y', 'yes']:
                 exit(1)
+
         self._export_env_variables(config_fields)
         return config_fields
 
