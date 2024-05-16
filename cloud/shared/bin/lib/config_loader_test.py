@@ -331,7 +331,8 @@ class TestConfigLoader(unittest.TestCase):
             values=None,
             regex=None,
             regex_tests=None,
-            mode=Mode.ADMIN_WRITEABLE) # Is admin writeable and is included in config_fields so should throw an error
+            mode=Mode.ADMIN_WRITEABLE
+        )  # Is admin writeable and is included in config_fields so should throw an error
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(

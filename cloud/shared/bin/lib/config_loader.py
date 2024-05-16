@@ -290,12 +290,14 @@ class ConfigLoader:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
-            
+
             # Throw an error if an admin writeable var is set in the deploy config
-            disallow_admin_writeable = is_admin_writeable and not config_fields.get("ALLOW_ADMIN_WRITEABLE")
+            disallow_admin_writeable = is_admin_writeable and not config_fields.get(
+                "ALLOW_ADMIN_WRITEABLE")
             if config_value is not None and disallow_admin_writeable:
                 validation_errors.append(
-                        f"'{name}' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).")
+                    f"'{name}' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution)."
+                )
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
             # Validation for 'index-list' is not implemented at this time because
