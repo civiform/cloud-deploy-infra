@@ -70,6 +70,26 @@ class ConfigLoader:
         """
         config_parser = ConfigParser()
         config_fields = config_parser.parse_config(config_file)
+
+        if config_fields.get(
+                "ALLOW_ADMIN_WRITEABLE") and not os.getenv('SKIP_USER_INPUT'):
+            msg = inspect.cleandoc(
+                """
+                ###########################################################################
+                                                WARNING                                                       
+                ###########################################################################
+                ALLOW_ADMIN_WRITEABLE is set to true in your deploy config. This should only 
+                be set to true if this is the first time you are deploying and you want the custom
+                values for ADMIN_WRITEABLE to be applied. If this is not the case, 
+                please remove ALLOW_ADMIN_WRITEABLE and any ADMIN_WRITEABLE variables from 
+                your deploy config and update ADMIN_WRITEABLE variables via the admin settings
+                panel.
+
+                Would you like to continue with the deploy? [y/N] > 
+                """)
+        answer = input(msg)
+        if answer not in ['y', 'Y', 'yes']:
+            exit(1)
         self._export_env_variables(config_fields)
         return config_fields
 
