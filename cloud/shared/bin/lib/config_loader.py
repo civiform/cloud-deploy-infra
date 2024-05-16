@@ -279,15 +279,28 @@ class ConfigLoader:
         """
         validation_errors = []
 
+        # loop through all the env_var_docs items
+        # get the name from the config field
+        # if the variable.mode.name is ADMIN_WRITEABLE and we find it in the config
+        # append an error
         for name, variable in env_var_docs.items():
+            is_admin_writeable = variable.mode.name == "ADMIN_WRITEABLE"
+
             config_value = config_fields.get(name)
             if config_value is None:
                 # Vars that are admin writeable are set via the admin settings panel
                 # and are not required in the config
-                if variable.required and not variable.mode.name == "ADMIN_WRITEABLE":
+                if variable.required and not is_admin_writeable:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
+            
+            # this should work
+            # just need a config override field
+            disallow_admin_writeable = is_admin_writeable and not config_fields.get("ALLOW_ADMIN_WRITEABLE")
+            if config_value is not None and disallow_admin_writeable:
+                validation_errors.append(
+                        f"'{name}' is editable via the admin settings panel and should not be set in the config")
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
             # Validation for 'index-list' is not implemented at this time because
