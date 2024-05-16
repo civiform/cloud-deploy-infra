@@ -269,7 +269,8 @@ class TestConfigLoader(unittest.TestCase):
             "FOO_1": "none_boolean_string",
             "FOO_2": "value3",
             "FOO_3": "gry",
-            "FOO_4": "none_int_string"
+            "FOO_4": "none_int_string",
+            "FOO_6": "writeable_var"
         }
         civiform_server_env_vars = {}
 
@@ -323,6 +324,14 @@ class TestConfigLoader(unittest.TestCase):
             regex=None,
             regex_tests=None,
             mode=Mode.ADMIN_WRITEABLE)
+        civiform_server_env_vars["FOO_6"] = env_var_docs_parser.Variable(
+            description='description',
+            type='string',
+            required=False,
+            values=None,
+            regex=None,
+            regex_tests=None,
+            mode=Mode.ADMIN_WRITEABLE) # Is admin writeable and is included in config_fields so should throw an error
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
@@ -333,7 +342,8 @@ class TestConfigLoader(unittest.TestCase):
                 "'FOO_1' is required to be either 'true' or 'false', got none_boolean_string",
                 "'FOO_2': 'value3' is not a valid value. Valid values are value1, value2",
                 "'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'",
-                "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'"
+                "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'",
+                "'FOO_6' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution)."
             ], validation_errors)
 
     @patch('importlib.import_module')
