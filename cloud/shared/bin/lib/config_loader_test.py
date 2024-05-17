@@ -27,6 +27,8 @@ To run the tests: PYTHONPATH="${PYTHONPATH}:${pwd}" python3 cloud/shared/bin/lib
 
 class TestConfigLoader(unittest.TestCase):
 
+    maxDiff = None
+
     def test_validate_config_for_not_including_variable_required__in_infra_variable_definition(
             self):
         defs = {
@@ -350,12 +352,12 @@ class TestConfigLoader(unittest.TestCase):
             civiform_server_env_vars, config_fields)
         self.assertEqual(
             [
-                '\x1b[31mFOO_0 is required but not set\x1b[0m',
-                '\x1b[31mFOO_1 is required to be either true or false, got none_boolean_string\x1b[0m',
-                '\x1b[31mFOO_2: value3 is not a valid value. Valid values are value1, value2\x1b[0m',
-                '\x1b[31mFOO_3: gry does not match validation regular expression gr(a|e)y\x1b[0m',
-                '\x1b[31mFOO_4 is required to be an integer: invalid literal for int() with base 10: none_int_string\x1b[0m',
-                '\x1b[31mFOO_6 is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).\x1b[0m'
+                "\x1b[31m'FOO_0' is required but not set\x1b[0m",
+                "\x1b[31m'FOO_1' is required to be either 'true' or 'false', got 'none_boolean_string'\x1b[0m",
+                "\x1b[31m'FOO_2': 'value3' is not a valid value. Valid values are value1, value2\x1b[0m",
+                "\x1b[31m'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'\x1b[0m",
+                "\x1b[31m'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'\x1b[0m",
+                "\x1b[31m'FOO_6' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).\x1b[0m"
             ], validation_errors)
 
     @patch('importlib.import_module')

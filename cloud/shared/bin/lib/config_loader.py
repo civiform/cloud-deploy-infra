@@ -313,7 +313,8 @@ class ConfigLoader:
                 # and are not required in the config
                 if variable.required and not is_admin_writeable:
                     validation_errors.append(
-                        f'{Color.RED}{name} is required but not set{Color.END}')
+                        f"{Color.RED}'{name}' is required but not set{Color.END}"
+                    )
                 continue
 
             # Throw an error if an admin writeable var is set in the deploy config
@@ -321,7 +322,7 @@ class ConfigLoader:
                 "ALLOW_ADMIN_WRITEABLE")
             if config_value is not None and disallow_admin_writeable:
                 validation_errors.append(
-                    f'{Color.RED}{name} is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).{Color.END}'
+                    f"{Color.RED}'{name}' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).{Color.END}"
                 )
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
@@ -331,14 +332,14 @@ class ConfigLoader:
                 if variable.values is not None:
                     if config_value not in variable.values:
                         validation_errors.append(
-                            f'{Color.RED}{name}: {config_value} is not a valid value. Valid values are {variable.values}{Color.END}'
+                            f"{Color.RED}'{name}': '{config_value}' is not a valid value. Valid values are {variable.values}{Color.END}"
                         )
                         continue
 
                 if variable.regex is not None:
                     if re.match(variable.regex, config_value) == None:
                         validation_errors.append(
-                            f'{Color.RED}{name}: {config_value} does not match validation regular expression {variable.regex}{Color.END}'
+                            f"{Color.RED}'{name}': '{config_value}' does not match validation regular expression '{variable.regex}'{Color.END}"
                         )
                         continue
 
@@ -347,14 +348,14 @@ class ConfigLoader:
                     int(config_value)
                 except ValueError as e:
                     validation_errors.append(
-                        f'{Color.RED}{name} is required to be an integer: {e}{Color.END}'
+                        f"{Color.RED}'{name}' is required to be an integer: {e}{Color.END}"
                     )
                     continue
 
             if variable.type == "bool":
                 if config_value not in ["true", "false"]:
                     validation_errors.append(
-                        f'{Color.RED}{name} is required to be either true or false, got {config_value}{Color.END}'
+                        f"{Color.RED}'{name}' is required to be either 'true' or 'false', got '{config_value}'{Color.END}"
                     )
                     continue
 
