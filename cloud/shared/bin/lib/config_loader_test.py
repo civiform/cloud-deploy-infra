@@ -350,12 +350,12 @@ class TestConfigLoader(unittest.TestCase):
             civiform_server_env_vars, config_fields)
         self.assertEqual(
             [
-                "'FOO_0' is required but not set",
-                "'FOO_1' is required to be either 'true' or 'false', got none_boolean_string",
-                "'FOO_2': 'value3' is not a valid value. Valid values are value1, value2",
-                "'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'",
-                "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'",
-                "'FOO_6' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution)."
+                '\x1b[31mFOO_0 is required but not set\x1b[0m',
+                '\x1b[31mFOO_1 is required to be either true or false, got none_boolean_string\x1b[0m',
+                '\x1b[31mFOO_2: value3 is not a valid value. Valid values are value1, value2\x1b[0m',
+                '\x1b[31mFOO_3: gry does not match validation regular expression gr(a|e)y\x1b[0m',
+                '\x1b[31mFOO_4 is required to be an integer: invalid literal for int() with base 10: none_int_string\x1b[0m',
+                '\x1b[31mFOO_6 is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).\x1b[0m'
             ], validation_errors)
 
     @patch('importlib.import_module')
