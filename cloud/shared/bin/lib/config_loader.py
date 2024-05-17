@@ -347,7 +347,8 @@ class ConfigLoader:
                     int(config_value)
                 except ValueError as e:
                     validation_errors.append(
-                        f'{Color.RED}{name} is required to be an integer: {e}{Color.END}')
+                        f'{Color.RED}{name} is required to be an integer: {e}{Color.END}'
+                    )
                     continue
 
             if variable.type == "bool":
