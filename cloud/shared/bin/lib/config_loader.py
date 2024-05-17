@@ -76,6 +76,7 @@ class ConfigLoader:
                 "ALLOW_ADMIN_WRITEABLE") and not os.getenv('SKIP_USER_INPUT'):
             msg = inspect.cleandoc(
                 """
+                {Color.YELLOW}
                 ###########################################################################
                                                 WARNING                                                       
                 ###########################################################################
@@ -87,9 +88,10 @@ class ConfigLoader:
                 panel.
 
                 Would you like to continue with the deploy? [y/N] > 
+                {Color.END}
                 """)
             answer = input(msg)
-            if answer not in ['y', 'Y', 'yes']:
+            if answer.lower() not in ['y', 'yes']:
                 exit(1)
 
         self._export_env_variables(config_fields)
