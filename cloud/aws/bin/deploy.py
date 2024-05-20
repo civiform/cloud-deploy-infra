@@ -97,7 +97,7 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                 exit(1)
             if current_version not in upgrade_path.keys():
                 print(
-                    f'{Color.YELLOW}This version of the deployment tool does not have information about if {current_version} is sufficiently new enough to upgrade to the latest minor version of version PostgreSQL {major_to_apply}. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html and verify this is a valid upgrade path.{Color.END}'
+                    f'{Color.YELLOW}This version of the CiviForm deployment tool has no information about your current PostgreSQL version of {current_version} and thus cannot choose the correct version to upgrade to. If you proceed, we will attempt to upgrade to the latest {major_to_apply}.x version, but this may not succeed. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html to verify that this is a valid upgrade path.{Color.END}'
                 )
                 if os.getenv('SKIP_USER_INPUT'):
                     print('Proceeding since SKIP_USER_INPUT is set.')
@@ -118,8 +118,7 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
             if config.get_config_var('ALLOW_POSTGRESQL_UPGRADE') != 'true':
                 if os.getenv('SKIP_USER_INPUT'):
                     print(
-                        'Proceeding with upgrade to since SKIP_USER_INPUT is set.'
-                    )
+                        'Proceeding with upgrade since SKIP_USER_INPUT is set.')
                 else:
                     answer = input(
                         f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
