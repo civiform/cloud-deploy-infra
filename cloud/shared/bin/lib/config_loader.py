@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import io
 import os
 import requests
@@ -10,6 +11,7 @@ import urllib.request
 from typing import List
 from typing import Optional
 
+from cloud.shared.bin.lib.color import Color
 from cloud.shared.bin.lib.config_parser import ConfigParser
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
@@ -70,6 +72,29 @@ class ConfigLoader:
         """
         config_parser = ConfigParser()
         config_fields = config_parser.parse_config(config_file)
+
+        if config_fields.get(
+                "ALLOW_ADMIN_WRITEABLE") and not os.getenv('SKIP_USER_INPUT'):
+            msg = inspect.cleandoc(
+                f'''
+                {Color.YELLOW}
+                ###########################################################################
+                                                WARNING                                                       
+                ###########################################################################
+                ALLOW_ADMIN_WRITEABLE is set to true in your deploy config. This should only 
+                be set to true if this is the first time you are deploying and you want the custom
+                values for ADMIN_WRITEABLE to be applied. If this is not the case, 
+                please remove ALLOW_ADMIN_WRITEABLE and any ADMIN_WRITEABLE variables from 
+                your deploy config and update ADMIN_WRITEABLE variables via the admin settings
+                panel.
+
+                Would you like to continue with the deploy? [y/N] > 
+                {Color.END}
+                ''')
+            answer = input(msg)
+            if answer.lower() not in ['y', 'yes']:
+                exit(1)
+
         self._export_env_variables(config_fields)
         return config_fields
 
@@ -280,14 +305,25 @@ class ConfigLoader:
         validation_errors = []
 
         for name, variable in env_var_docs.items():
+            is_admin_writeable = variable.mode.name == "ADMIN_WRITEABLE"
+
             config_value = config_fields.get(name)
             if config_value is None:
                 # Vars that are admin writeable are set via the admin settings panel
                 # and are not required in the config
-                if variable.required and not variable.mode.name == "ADMIN_WRITEABLE":
+                if variable.required and not is_admin_writeable:
                     validation_errors.append(
-                        f"'{name}' is required but not set")
+                        f"{Color.RED}'{name}' is required but not set{Color.END}"
+                    )
                 continue
+
+            # Throw an error if an admin writeable var is set in the deploy config
+            disallow_admin_writeable = is_admin_writeable and not config_fields.get(
+                "ALLOW_ADMIN_WRITEABLE")
+            if config_value is not None and disallow_admin_writeable:
+                validation_errors.append(
+                    f"{Color.RED}'{name}' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).{Color.END}"
+                )
 
             # Variable types are 'string', 'int', 'bool', or 'index-list'.
             # Validation for 'index-list' is not implemented at this time because
@@ -296,14 +332,14 @@ class ConfigLoader:
                 if variable.values is not None:
                     if config_value not in variable.values:
                         validation_errors.append(
-                            f"'{name}': '{config_value}' is not a valid value. Valid values are {variable.values}"
+                            f"{Color.RED}'{name}': '{config_value}' is not a valid value. Valid values are {variable.values}{Color.END}"
                         )
                         continue
 
                 if variable.regex is not None:
                     if re.match(variable.regex, config_value) == None:
                         validation_errors.append(
-                            f"'{name}': '{config_value}' does not match validation regular expression '{variable.regex}'"
+                            f"{Color.RED}'{name}': '{config_value}' does not match validation regular expression '{variable.regex}'{Color.END}"
                         )
                         continue
 
@@ -312,13 +348,14 @@ class ConfigLoader:
                     int(config_value)
                 except ValueError as e:
                     validation_errors.append(
-                        f"'{name}' is required to be an integer: {e}")
+                        f"{Color.RED}'{name}' is required to be an integer: {e}{Color.END}"
+                    )
                     continue
 
             if variable.type == "bool":
                 if config_value not in ["true", "false"]:
                     validation_errors.append(
-                        f"'{name}' is required to be either 'true' or 'false', got {config_value}"
+                        f"{Color.RED}'{name}' is required to be either 'true' or 'false', got '{config_value}'{Color.END}"
                     )
                     continue
 
