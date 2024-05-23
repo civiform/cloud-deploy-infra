@@ -1,4 +1,7 @@
-// File containing the necessary data sources if enable_managed_vpc=false
+// File containing the necessary data sources if local.enable_managed_vpc=false.
+//
+// The "local.enable_managed_vpc" variable will be set to false if all of
+// "var.external_vpc" fields are set.
 
 data "aws_vpc" "external" {
   count = local.enable_managed_vpc ? 0 : 1

@@ -510,7 +510,7 @@ variable "postgresql_major_version" {
 
 variable "external_vpc" {
   type        = map(string)
-  description = "A map with external VPC settings"
+  description = "A map with external VPC settings. All values need to set to use an external VPC (VPC resources not managed by this Terraform config)"
   default = {
     database_subnet_group_name = ""
     id                         = ""
