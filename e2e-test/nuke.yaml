@@ -49,3 +49,10 @@ accounts:
         - property: "PackageName"
           type: regex
           value: "^(analysis-\\w+|amazon-personalized-ranking)*"
+      IAMUser:
+        - 'e2e-test-runner'
+      IAMUserAccessKey:
+        - property: "UserName"
+          value: "e2e-test-runner"
+      IAMUserPolicyAttachment:
+        - "e2e-test-runner -> AdministratorAccess"
