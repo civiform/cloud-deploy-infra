@@ -59,6 +59,7 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
     upgrade_path = {
         '12.17': '16.1',
         '12.18': '16.2',
+        '12.19': '16.3',
     }
 
     specified_version = config.get_config_var('POSTGRESQL_VERSION') or \
