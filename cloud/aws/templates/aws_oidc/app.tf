@@ -317,13 +317,13 @@ module "ecs_fargate_service" {
   desired_count             = var.fargate_desired_task_count
   default_certificate_arn   = var.ssl_certificate_arn
   ssl_policy                = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
-  vpc_id                    = module.vpc.vpc_id
+  vpc_id                    = local.vpc_id
   task_definition_arn       = var.monitoring_stack_enabled ? aws_ecs_task_definition.civiform_with_monitoring.arn : aws_ecs_task_definition.civiform_only.arn
   container_name            = "${var.app_prefix}-civiform"
   ecs_cluster_name          = module.ecs_cluster.aws_ecs_cluster_cluster_name
   ecs_cluster_arn           = module.ecs_cluster.aws_ecs_cluster_cluster_arn
-  private_subnets           = module.vpc.private_subnets
-  public_subnets            = module.vpc.public_subnets
+  private_subnets           = local.vpc_private_subnets
+  public_subnets            = local.vpc_public_subnets
   max_cpu_threshold         = var.ecs_max_cpu_threshold
   min_cpu_threshold         = var.ecs_min_cpu_threshold
   max_cpu_evaluation_period = var.ecs_max_cpu_evaluation_period

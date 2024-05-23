@@ -507,3 +507,14 @@ variable "postgresql_major_version" {
   description = "Major version of PostgreSQL to use"
   default     = 16
 }
+
+variable "external_vpc" {
+  type        = map(string)
+  description = "A map with external VPC settings"
+  default = {
+    database_subnet_group_name = ""
+    id                         = ""
+    private_subnet_id          = ""
+    public_subnet_id           = ""
+  }
+}
