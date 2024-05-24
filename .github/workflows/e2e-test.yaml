@@ -47,7 +47,7 @@ jobs:
 
       - id: get-aws-creds
         name: Authenticate to AWS
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           # Role in civiform-deploy-e2e-tests account.
           role-to-assume: arn:aws:iam::296877675213:role/e2e-test-runner
