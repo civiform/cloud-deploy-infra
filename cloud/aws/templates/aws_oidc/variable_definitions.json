@@ -393,10 +393,10 @@
     "tfvar": true,
     "type": "bool"
   },
-  "POSTGRESQL_MAJOR_VERSION": {
+  "POSTGRESQL_VERSION": {
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "integer"
+    "type": "string"
   }
 }

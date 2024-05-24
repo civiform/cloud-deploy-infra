@@ -15,7 +15,7 @@ resource "aws_db_parameter_group" "civiform" {
     Type = "Civiform DB Parameters"
   }
 
-  family = "postgres${var.postgresql_major_version}"
+  family = "postgres${split(".", var.postgresql_version)[0]}"
 
   parameter {
     name  = "log_connections"
@@ -46,7 +46,7 @@ resource "aws_db_instance" "civiform" {
   storage_throughput              = var.aws_db_storage_throughput
   iops                            = var.aws_db_iops
   engine                          = "postgres"
-  engine_version                  = var.postgresql_major_version
+  engine_version                  = var.postgresql_version
   allow_major_version_upgrade     = var.allow_postgresql_upgrade
   username                        = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
   password                        = aws_secretsmanager_secret_version.postgres_password_secret_version.secret_string

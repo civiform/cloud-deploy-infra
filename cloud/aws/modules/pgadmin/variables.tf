@@ -9,7 +9,7 @@ variable "aws_region" {
 
 variable "vpc_id" {
   type        = string
-  description = "ID of the VPC to depoy pgadmin in"
+  description = "ID of the VPC to deploy pgadmin in"
 }
 variable "lb_arn" {
   type        = string

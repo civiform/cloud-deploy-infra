@@ -213,6 +213,10 @@ export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:296877675213:certificate/28384
 # to shutdown servers while figuring out the error.
 export FARGATE_DESIRED_TASK_COUNT=1
 
+# Length of the random generated password to use for app_secret_key.
+# Some legacy deployments may be using a shorter length, but going forward 64 will be the default.
+export RANDOM_PASSWORD_LENGTH=64
+
 # generic-oidc Auth configuration
 #################################################
 

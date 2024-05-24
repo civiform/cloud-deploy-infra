@@ -502,10 +502,10 @@ variable "allow_postgresql_upgrade" {
   default     = false
 }
 
-variable "postgresql_major_version" {
-  type        = number
-  description = "Major version of PostgreSQL to use"
-  default     = 16
+variable "postgresql_version" {
+  type        = string
+  description = "Version of PostgreSQL to use. When set to only the major version, picks the latest minor version. Otherwise, deploys exactly the version specified."
+  default     = "16"
 }
 
 variable "external_vpc" {

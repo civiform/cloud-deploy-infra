@@ -27,6 +27,8 @@ To run the tests: PYTHONPATH="${PYTHONPATH}:${pwd}" python3 cloud/shared/bin/lib
 
 class TestConfigLoader(unittest.TestCase):
 
+    maxDiff = None
+
     def test_validate_config_for_not_including_variable_required__in_infra_variable_definition(
             self):
         defs = {
@@ -209,7 +211,9 @@ class TestConfigLoader(unittest.TestCase):
             "FOO_1": "true",
             "FOO_2": "value1",
             "FOO_3": "grey",
-            "FOO_4": "24"
+            "FOO_4": "24",
+            "FOO_5": "writeable_var",
+            "ALLOW_ADMIN_WRITEABLE": "true"
         }
         civiform_server_env_vars = {}
         # See comments on the specifics we pass correct values for
@@ -253,6 +257,15 @@ class TestConfigLoader(unittest.TestCase):
             regex=None,
             regex_tests=None,
             mode=Mode.ADMIN_READABLE)
+        civiform_server_env_vars["FOO_5"] = env_var_docs_parser.Variable(
+            description='description',
+            type='string',
+            required=False,
+            values=None,
+            regex=None,
+            regex_tests=None,
+            mode=Mode.ADMIN_WRITEABLE
+        )  # mode is ADMIN_WRITEABLE but override is set so should be ignored
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
@@ -269,7 +282,8 @@ class TestConfigLoader(unittest.TestCase):
             "FOO_1": "none_boolean_string",
             "FOO_2": "value3",
             "FOO_3": "gry",
-            "FOO_4": "none_int_string"
+            "FOO_4": "none_int_string",
+            "FOO_6": "writeable_var"
         }
         civiform_server_env_vars = {}
 
@@ -318,22 +332,32 @@ class TestConfigLoader(unittest.TestCase):
             description='description',
             type='string',
             required=
-            True,  # Required but mode is ADMIN_WRITEABLE so should be ignored
+            True,  # required and not set in config but mode is ADMIN_WRITEABLE so should be ignored
             values=None,
             regex=None,
             regex_tests=None,
             mode=Mode.ADMIN_WRITEABLE)
+        civiform_server_env_vars["FOO_6"] = env_var_docs_parser.Variable(
+            description='description',
+            type='string',
+            required=False,
+            values=None,
+            regex=None,
+            regex_tests=None,
+            mode=Mode.ADMIN_WRITEABLE
+        )  # is included in config_fields and mode is ADMIN_WRITEABLE so should throw an error
 
         config_loader = ConfigLoader()
         validation_errors = config_loader._validate_civiform_server_env_vars(
             civiform_server_env_vars, config_fields)
         self.assertEqual(
             [
-                "'FOO_0' is required but not set",
-                "'FOO_1' is required to be either 'true' or 'false', got none_boolean_string",
-                "'FOO_2': 'value3' is not a valid value. Valid values are value1, value2",
-                "'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'",
-                "'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'"
+                "\x1b[31m'FOO_0' is required but not set\x1b[0m",
+                "\x1b[31m'FOO_1' is required to be either 'true' or 'false', got 'none_boolean_string'\x1b[0m",
+                "\x1b[31m'FOO_2': 'value3' is not a valid value. Valid values are value1, value2\x1b[0m",
+                "\x1b[31m'FOO_3': 'gry' does not match validation regular expression 'gr(a|e)y'\x1b[0m",
+                "\x1b[31m'FOO_4' is required to be an integer: invalid literal for int() with base 10: 'none_int_string'\x1b[0m",
+                "\x1b[31m'FOO_6' is editable via the admin settings panel and should not be set in the deploy config. Please remove it from your config file and try again. Set ALLOW_ADMIN_WRITEABLE=true in your config file to ignore this warning (use with caution).\x1b[0m"
             ], validation_errors)
 
     @patch('importlib.import_module')
