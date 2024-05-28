@@ -2,30 +2,9 @@
 
 data "aws_availability_zones" "available" {}
 
-locals {
-  // If any field of var.external_vpc is not set, we will switch to use the
-  // managed VPC (use this Terraform config to create the VPC network).
-  enable_managed_vpc = anytrue([
-    var.external_vpc.database_subnet_group_name == "",
-    var.external_vpc.id == "",
-    var.external_vpc.private_subnet_id == "",
-    var.external_vpc.public_subnet_id == "",
-  ])
-}
-
-locals {
-
-  vpc_id                         = local.enable_managed_vpc ? module.vpc[0].vpc_id : data.aws_vpc.external[0].id
-  vpc_private_subnets            = local.enable_managed_vpc ? module.vpc[0].private_subnets : data.aws_subnet.external_private[*].id
-  vpc_public_subnets             = local.enable_managed_vpc ? module.vpc[0].public_subnets : data.aws_subnet.external_public[*].id
-  vpc_database_subnet_group_name = local.enable_managed_vpc ? module.vpc[0].database_subnet_group_name : data.aws_db_subnet_group.external[0].name
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.1"
-
-  count = local.enable_managed_vpc ? 1 : 0
 
   name             = "${var.app_prefix}-${var.vpc_name}"
   cidr             = var.vpc_cidr
