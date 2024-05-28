@@ -507,14 +507,3 @@ variable "postgresql_version" {
   description = "Version of PostgreSQL to use. When set to only the major version, picks the latest minor version. Otherwise, deploys exactly the version specified."
   default     = "16"
 }
-
-variable "external_vpc" {
-  type        = map(string)
-  description = "A map with external VPC settings. All values need to set to use an external VPC (VPC resources not managed by this Terraform config)"
-  default = {
-    database_subnet_group_name = ""
-    id                         = ""
-    private_subnet_id          = ""
-    public_subnet_id           = ""
-  }
-}
