@@ -14,7 +14,6 @@ locals {
 }
 
 locals {
-
   vpc_id                         = local.enable_managed_vpc ? module.vpc[0].vpc_id : data.aws_vpc.external[0].id
   vpc_private_subnets            = local.enable_managed_vpc ? module.vpc[0].private_subnets : data.aws_subnet.external_private[*].id
   vpc_public_subnets             = local.enable_managed_vpc ? module.vpc[0].public_subnets : data.aws_subnet.external_public[*].id
