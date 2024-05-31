@@ -51,7 +51,7 @@ resource "aws_db_instance" "civiform" {
   username                        = aws_secretsmanager_secret_version.postgres_username_secret_version.secret_string
   password                        = aws_secretsmanager_secret_version.postgres_password_secret_version.secret_string
   vpc_security_group_ids          = [aws_security_group.rds.id]
-  db_subnet_group_name            = module.vpc.database_subnet_group_name
+  db_subnet_group_name            = local.vpc_database_subnet_group_name
   parameter_group_name            = aws_db_parameter_group.civiform.name
   publicly_accessible             = false
   skip_final_snapshot             = local.skip_final_snapshot
@@ -116,7 +116,7 @@ resource "aws_security_group" "rds" {
     Type = "Civiform DB Security Group"
   }
   name   = "${var.app_prefix}-civiform_rds"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = local.vpc_id
 
   ingress {
     from_port = 5432
@@ -148,14 +148,14 @@ module "pgadmin" {
   app_prefix = var.app_prefix
   aws_region = var.aws_region
 
-  vpc_id          = module.vpc.vpc_id
+  vpc_id          = local.vpc_id
   lb_arn          = module.ecs_fargate_service.aws_lb_civiform_lb_arn
   lb_ssl_cert_arn = var.ssl_certificate_arn
   lb_access_sg_id = module.ecs_fargate_service.aws_security_group_lb_access_sg_id
   cidr_allowlist  = var.pgadmin_cidr_allowlist
 
   ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
-  subnet_ids      = module.vpc.private_subnets
+  subnet_ids      = local.vpc_private_subnets
 
   db_sg_id               = aws_security_group.rds.id
   db_address             = data.aws_db_instance.civiform.address
@@ -173,9 +173,9 @@ module "dbaccess" {
   app_prefix = var.app_prefix
   aws_region = var.aws_region
 
-  vpc_id         = module.vpc.vpc_id
+  vpc_id         = local.vpc_id
   cidr_allowlist = var.dbaccess_cidr_allowlist
   db_sg_id       = aws_security_group.rds.id
   public_key     = var.dbaccess_public_key
-  public_subnet  = module.vpc.public_subnets[0]
+  public_subnet  = local.vpc_public_subnets[0]
 }
