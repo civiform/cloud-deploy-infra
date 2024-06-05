@@ -50,7 +50,6 @@ function terraform::perform_apply() {
       -input=false \
       -upgrade \
       -backend-config="${BACKEND_VARS_FILENAME}" \
-      -auto-approve
   fi
 
   if [[ -f "${TERRAFORM_TEMPLATE_DIR}/${TF_VAR_FILENAME}" ]]; then
