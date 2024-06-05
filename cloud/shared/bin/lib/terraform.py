@@ -144,6 +144,8 @@ def perform_apply(
     # Enable compact-warnings as we have a bunch of
     # "value of undeclared variables" warnings as some variables used in one
     # deployment (e.g. aws) but not the other.
+    print("HERE")
+    print(config_loader)
     terraform_apply_cmd = f'terraform -chdir={terraform_template_dir} apply -input=false -var-file={tf_vars_filename} -compact-warnings -auto-approve'
     if replace_resource:
         terraform_apply_cmd += f' -replace={replace_resource}'
