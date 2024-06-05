@@ -62,7 +62,7 @@ variable "sender_email_address" {
 variable "custom_hostname" {
   type        = string
   description = "custom hostname for the app to map the dns (used also for CORS)"
-  default     = "https://staging-azure.civiform.dev"
+  default     = "staging-witty-tiger.azurewebsites.net"
 }
 
 variable "adfs_admin_group" {
