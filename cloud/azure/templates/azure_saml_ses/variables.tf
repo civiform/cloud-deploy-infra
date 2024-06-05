@@ -3,7 +3,14 @@ variable "civiform_server_environment_variables" {
   description = "CiviForm server environment variables set in civiform_config.sh that are passed directly to the container environment."
   default     = {}
 }
-
+variable "civic_entity_small_logo_url" {
+  type        = string
+  description = "Logo with name used on the applicant-facing program index page"
+}
+variable "adfs_admin_group" {
+  type        = string
+  description = "Active Directory Federation Service group name"
+}
 variable "azure_resource_group" {
   type        = string
   description = "Name of the resource group where key vault is already created."
