@@ -40,7 +40,7 @@ function terraform::perform_destory() {
 #######################################
 function terraform::perform_apply() {
   if civiform_mode::use_local_backend; then
-    "${TERRAFORM_CMD[@]}" init -upgrade
+    "${TERRAFORM_CMD[@]}" init -upgrade -auto-approve
   else
     "cloud/${CIVIFORM_CLOUD_PROVIDER}/bin/setup_tf_shared_state" \
       "${TERRAFORM_TEMPLATE_DIR}/${BACKEND_VARS_FILENAME}"
@@ -49,7 +49,8 @@ function terraform::perform_apply() {
       init \
       -input=false \
       -upgrade \
-      -backend-config="${BACKEND_VARS_FILENAME}"
+      -backend-config="${BACKEND_VARS_FILENAME}" \
+      -auto-approve
   fi
 
   if [[ -f "${TERRAFORM_TEMPLATE_DIR}/${TF_VAR_FILENAME}" ]]; then
@@ -73,7 +74,7 @@ function terraform::perform_apply() {
   if civiform_mode::skip_confirmations; then
     "${TERRAFORM_APPLY[@]}" -auto-approve
   else
-    "${TERRAFORM_APPLY[@]}"
+    "${TERRAFORM_APPLY[@]}" -auto-approve
   fi
 }
 
