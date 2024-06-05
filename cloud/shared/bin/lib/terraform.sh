@@ -40,7 +40,7 @@ function terraform::perform_destory() {
 #######################################
 function terraform::perform_apply() {
   if civiform_mode::use_local_backend; then
-    "${TERRAFORM_CMD[@]}" init -upgrade -auto-approve
+    "${TERRAFORM_CMD[@]}" init -upgrade 
   else
     "cloud/${CIVIFORM_CLOUD_PROVIDER}/bin/setup_tf_shared_state" \
       "${TERRAFORM_TEMPLATE_DIR}/${BACKEND_VARS_FILENAME}"
