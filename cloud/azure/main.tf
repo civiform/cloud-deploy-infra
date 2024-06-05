@@ -6,6 +6,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-  backend "azurerm" {}
+  backend "aws" {}
   required_version = ">= 0.14.9"
 }
