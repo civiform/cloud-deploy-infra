@@ -11,7 +11,7 @@ azure_log::fetch_log_file
 if ! terraform::perform_apply; then
   out::error "Terraform deployment failed."
   log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
-  azure_log::upload_log_file
+  # azure_log::upload_log_file
   exit 1
 fi
 
