@@ -91,3 +91,8 @@ module "vpc" {
   }
 
 }
+
+moved {
+  from = module.vpc
+  to   = module.vpc[0]
+}
