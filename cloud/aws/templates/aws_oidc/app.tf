@@ -113,7 +113,7 @@ module "civiform_server_container_def" {
     interval    = 10
     timeout     = 30
     retries     = 5
-    startPeriod = 10
+    startPeriod = 20
   }
 
   log_configuration = {
