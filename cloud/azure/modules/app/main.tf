@@ -12,8 +12,8 @@ data "azurerm_resource_group" "civiformstaging" {
 
 resource "azurerm_virtual_network" "civiform_vnet" {
   name                = "civiform-vnet"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
   address_space       = var.vnet_address_space
 }
 
@@ -29,8 +29,8 @@ data "azurerm_key_vault_secret" "adfs_discovery_uri" {
 
 resource "azurerm_data_protection_backup_vault" "backup_vault" {
   name                = "backup-vault"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
+  location            = data.azurerm_resource_group.civiformstaging.location
   datastore_type      = "VaultStore"
   redundancy          = "LocallyRedundant"
   identity {
@@ -41,7 +41,7 @@ resource "azurerm_data_protection_backup_vault" "backup_vault" {
 
 resource "azurerm_subnet" "server_subnet" {
   name                 = "server-subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.civiformstaging.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.subnet_address_prefixes
 
@@ -57,7 +57,7 @@ resource "azurerm_subnet" "server_subnet" {
 
 resource "azurerm_subnet" "canary_subnet" {
   name                 = "canary-subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.civiformstaging.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.canary_subnet_address_prefixes
 
@@ -72,9 +72,9 @@ resource "azurerm_subnet" "canary_subnet" {
 }
 
 resource "azurerm_app_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}-plan"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  name                = "${data.azurerm_resource_group.civiformstaging.name}-plan"
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
 
   # Define Linux as Host OS
   kind     = "Linux"
@@ -90,8 +90,8 @@ resource "azurerm_app_service_plan" "plan" {
 
 resource "azurerm_app_service" "civiform_app" {
   name                = "${var.application_name}-${random_pet.server.id}"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
 
   app_settings = local.app_settings
@@ -140,8 +140,8 @@ resource "azurerm_app_service" "civiform_app" {
 
 resource "azurerm_app_service_slot" "canary" {
   name                = "canary"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
   app_service_name    = azurerm_app_service.civiform_app.name
 
@@ -201,8 +201,8 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vne
 
 resource "azurerm_postgresql_server" "civiform" {
   name                = "civiform-${random_pet.server.id}"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
 
   administrator_login          = var.postgres_admin_login
   administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
@@ -226,7 +226,7 @@ resource "azurerm_postgresql_server" "civiform" {
 
 resource "azurerm_postgresql_database" "civiform" {
   name                = "civiform"
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
   server_name         = azurerm_postgresql_server.civiform.name
   charset             = "utf8"
   collation           = "English_United States.1252"
@@ -235,7 +235,7 @@ resource "azurerm_postgresql_database" "civiform" {
 # Configure private link
 resource "azurerm_subnet" "postgres_subnet" {
   name                 = "postgres_subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.civiformstaging.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
 
@@ -244,20 +244,20 @@ resource "azurerm_subnet" "postgres_subnet" {
 
 resource "azurerm_private_dns_zone" "privatelink" {
   name                = "privatelink.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "vnet-link-private-dns"
-  resource_group_name   = data.azurerm_resource_group.rg.name
+  resource_group_name   = data.azurerm_resource_group.civiformstaging.name
   private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
 }
 
 resource "azurerm_private_endpoint" "endpoint" {
   name                = "${azurerm_postgresql_server.civiform.name}-endpoint"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.civiformstaging.location
+  resource_group_name = data.azurerm_resource_group.civiformstaging.name
   subnet_id           = azurerm_subnet.postgres_subnet.id
 
   private_dns_zone_group {
@@ -275,8 +275,8 @@ resource "azurerm_private_endpoint" "endpoint" {
 module "bastion" {
   source = "../bastion"
 
-  resource_group_name      = data.azurerm_resource_group.rg.name
-  resource_group_location  = data.azurerm_resource_group.rg.location
+  resource_group_name      = data.azurerm_resource_group.civiformstaging.name
+  resource_group_location  = data.azurerm_resource_group.civiformstaging.location
   bastion_address_prefixes = var.bastion_address_prefixes
   vnet_name                = azurerm_virtual_network.civiform_vnet.name
 }
