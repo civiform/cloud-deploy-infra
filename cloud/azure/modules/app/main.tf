@@ -6,7 +6,7 @@ resource "random_string" "resource_code" {
   upper   = false
 }
 
-data "azurerm_resource_group" "rg" {
+data "azurerm_resource_group" "civiformstaging" {
   name = var.resource_group_name
 }
 
