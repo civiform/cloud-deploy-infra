@@ -21,9 +21,9 @@ fi
 
 readonly BACKEND_VARS_FILENAME="${1}"
 
-RESOURCE_GROUP_NAME="civiformstaging"
-STORAGE_ACCOUNT_NAME="civiformstaging${RANDOM}"
-CONTAINER_NAME="civiformstaging"
+RESOURCE_GROUP_NAME="tfstate"
+STORAGE_ACCOUNT_NAME="tfstate${RANDOM}"
+CONTAINER_NAME="tfstate"
 
 echo "Check for Resource Group"
 GROUP_EXISTS=$(az group exists \
