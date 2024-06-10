@@ -11,5 +11,5 @@ output "app_service_name" {
 }
 
 output "resource_group_name" {
-  value = data.azurerm_resource_group.civiformstaging.name
+  value = data.azurerm_resource_group.rg.name
 }

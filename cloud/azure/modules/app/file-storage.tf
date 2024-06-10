@@ -1,6 +1,6 @@
 resource "azurerm_subnet" "storage_subnet" {
   name                                           = "storage-subnet"
-  resource_group_name                            = data.azurerm_resource_group.civiformstaging.name
+  resource_group_name                            = data.azurerm_resource_group.rg.name
   virtual_network_name                           = azurerm_virtual_network.civiform_vnet.name
   address_prefixes                               = ["10.0.8.0/24"]
   service_endpoints                              = ["Microsoft.Storage"]
@@ -9,8 +9,8 @@ resource "azurerm_subnet" "storage_subnet" {
 
 resource "azurerm_storage_account" "files_storage_account" {
   name                = "${var.application_name}${random_string.resource_code.result}"
-  location            = data.azurerm_resource_group.civiformstaging.location
-  resource_group_name = data.azurerm_resource_group.civiformstaging.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   account_tier = "Standard"
   # https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy
@@ -34,7 +34,7 @@ resource "azurerm_data_protection_backup_policy_blob_storage" "blob_storage_back
 resource "azurerm_data_protection_backup_instance_blob_storage" "blob_storage_backup_instance" {
   name               = "storage-backup-instance"
   vault_id           = azurerm_data_protection_backup_vault.backup_vault.id
-  location           = data.azurerm_resource_group.civiformstaging.location
+  location           = data.azurerm_resource_group.rg.location
   storage_account_id = azurerm_storage_account.files_storage_account.id
   backup_policy_id   = azurerm_data_protection_backup_policy_blob_storage.blob_storage_backup_policy.id
 
