@@ -41,7 +41,7 @@ echo "Check storage accounts"
 CURRENT_ACCOUNTS=$(az storage account list \
   -g ${RESOURCE_GROUP_NAME})
 
-STORAGE_ACCOUNT_PATTERN="\"name\"\: \"(civiformstaging[0-9]+)\""
+STORAGE_ACCOUNT_PATTERN="\"name\"\: \"(tfstate[0-9]+)\""
 if [[ $CURRENT_ACCOUNTS =~ $STORAGE_ACCOUNT_PATTERN ]]; then
   echo "You have a storage account already, using the name ${BASH_REMATCH[1]}"
   STORAGE_ACCOUNT_NAME=${BASH_REMATCH[1]}
@@ -82,4 +82,4 @@ echo "generating the ${BACKEND_VARS_FILENAME} file"
 echo "resource_group_name  = \"${RESOURCE_GROUP_NAME}\"" >"${BACKEND_VARS_FILENAME}"
 echo "storage_account_name = \"${STORAGE_ACCOUNT_NAME}\"" >>"${BACKEND_VARS_FILENAME}"
 echo "container_name       = \"${CONTAINER_NAME}\"" >>"${BACKEND_VARS_FILENAME}"
-echo "key                  = \"terraform.civiformstaging\"" >>"${BACKEND_VARS_FILENAME}"
+echo "key                  = \"terraform.tfstate\"" >>"${BACKEND_VARS_FILENAME}"
