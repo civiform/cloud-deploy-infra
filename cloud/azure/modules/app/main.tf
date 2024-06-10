@@ -1,4 +1,6 @@
-resource "random_pet" "server" {}
+resource "random_pet" "server" {
+  prefix = "civiform"
+}
 
 resource "random_string" "resource_code" {
   length  = 5
