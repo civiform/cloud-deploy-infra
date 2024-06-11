@@ -159,4 +159,4 @@ class Setup(SetupTemplate):
                 "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
                 "-u", aws_username
             ],
-            check=True)
+            check=False)
