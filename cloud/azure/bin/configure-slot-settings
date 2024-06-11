@@ -18,8 +18,8 @@ else
   readonly STAGING_HOSTNAME="${PRIMARY_URL}"
 fi
 
-# azure::slot_setting "canary" "${APP_NAME}" "BASE_URL" "${BASE_URL}" "${AZURE_RESOURCE_GROUP}"
+azure::slot_setting "canary" "${APP_NAME}" "BASE_URL" "${BASE_URL}" "${AZURE_RESOURCE_GROUP}"
 azure::slot_setting "primary" "${APP_NAME}" "BASE_URL" "${BASE_URL}" "${AZURE_RESOURCE_GROUP}"
 
-# azure::slot_setting "canary" "${APP_NAME}" "STAGING_HOSTNAME" "${STAGING_HOSTNAME}" "${AZURE_RESOURCE_GROUP}"
+azure::slot_setting "canary" "${APP_NAME}" "STAGING_HOSTNAME" "${STAGING_HOSTNAME}" "${AZURE_RESOURCE_GROUP}"
 azure::slot_setting "primary" "${APP_NAME}" "STAGING_HOSTNAME" "${STAGING_HOSTNAME}" "${AZURE_RESOURCE_GROUP}"
