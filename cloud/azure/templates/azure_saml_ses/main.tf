@@ -68,7 +68,7 @@ module "custom_hostname" {
   custom_hostname     = var.custom_hostname
   app_service_name    = module.app.app_service_name
   resource_group_name = module.app.resource_group_name
-  app_service = module.app.custom_domain_verification_id
+  custom_domain_verification_id = module.app.custom_domain_verification_id
 }
 
 module "saml_keystore" {
