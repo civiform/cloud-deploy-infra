@@ -8,7 +8,7 @@ resource "azurerm_dns_cname_record" "cname" {
   zone_name           = data.azurerm_dns_zone.dns.name
   resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
   ttl                 = 300
-  record              = azurerm_app_service.civiform_app.name
+  record              = var.app_service_name
 }
 
 resource "azurerm_dns_txt_record" "txt" {
@@ -17,7 +17,7 @@ resource "azurerm_dns_txt_record" "txt" {
   resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
   ttl                 = 300
   record {
-    value = azurerm_app_service.civiform_app.custom_domain_verification_id
+    value = var.custom_domain_verification_id
   }
 }
 

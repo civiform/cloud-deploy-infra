@@ -55,7 +55,6 @@ module "app" {
   saml_keystore_storage_access_key     = module.saml_keystore.storage_access_key
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
-
   #feature_flag_reporting_enabled       = var.feature_flag_reporting_enabled
   #feature_flag_status_tracking_enabled = var.feature_flag_status_tracking_enabled
   #civiform_api_keys_ban_global_subnet  = var.civiform_api_keys_ban_global_subnet
@@ -69,6 +68,7 @@ module "custom_hostname" {
   custom_hostname     = var.custom_hostname
   app_service_name    = module.app.app_service_name
   resource_group_name = module.app.resource_group_name
+  app_service = module.app.custom_domain_verification_id
 }
 
 module "saml_keystore" {
