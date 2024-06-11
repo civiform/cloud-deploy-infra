@@ -79,7 +79,7 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type = "Linux"
   # Choose size
-  sku_name = ""
+  sku_name = "P2mv3"
 }
 
 resource "azurerm_app_service" "civiform_app" {
