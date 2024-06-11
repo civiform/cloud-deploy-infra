@@ -8,7 +8,7 @@ resource "azurerm_dns_cname_record" "cname" {
   zone_name           = data.azurerm_dns_zone.dns.name
   resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
   ttl                 = 300
-  record              = var.app_service_name
+  record              = "${var.app_service_name}.azurewebsites.net"
 }
 
 resource "azurerm_dns_txt_record" "txt" {
