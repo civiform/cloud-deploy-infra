@@ -3,16 +3,8 @@ data "azurerm_dns_zone" "dns" {
   resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_dns_cname_record" "cname" {
-  name                = "www"
-  zone_name           = data.azurerm_dns_zone.dns.name
-  resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
-  ttl                 = 300
-  record              = "${var.app_service_name}.azurewebsites.net"
-}
-
 resource "azurerm_dns_txt_record" "txt" {
-  name                = "asuid.${azurerm_dns_cname_record.cname.name}"
+  name                = "asuid.${custom_hostname}"
   zone_name           = data.azurerm_dns_zone.dns.name
   resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
   ttl                 = 300
