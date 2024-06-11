@@ -4,7 +4,7 @@ data "azurerm_dns_zone" "dns" {
 }
 
 resource "azurerm_dns_txt_record" "txt" {
-  name                = "asuid.${var.custom_hostname}"
+  name                = "asuid.${azurerm_dns_zone.dns.name}"
   zone_name           = data.azurerm_dns_zone.dns.name
   resource_group_name = data.azurerm_dns_zone.dns.resource_group_name
   ttl                 = 300
