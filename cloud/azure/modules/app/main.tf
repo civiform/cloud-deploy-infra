@@ -79,7 +79,7 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type = "Linux"
   # Choose size
-  sku_name = "${var.app_sku["tier"]}${var.app_sku["size"]}${var.app_sku["capacity"]}"
+  sku_name = ""
 }
 
 resource "azurerm_app_service" "civiform_app" {
