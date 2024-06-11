@@ -1,3 +1,11 @@
+resource "azurerm_app_service_custom_hostname_binding" "custom_domain_binding" {
+  hostname            = var.custom_hostname
+  app_service_name    = var.app_service_name
+  resource_group_name = var.resource_group_name
+  lifecycle {
+    ignore_changes = [ssl_state, thumbprint]
+  }
+}
 
 resource "azurerm_app_service_managed_certificate" "cert" {
   custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.custom_domain_binding.id
