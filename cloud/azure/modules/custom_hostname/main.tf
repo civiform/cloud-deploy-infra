@@ -1,6 +1,6 @@
 data "azurerm_dns_zone" "dns" {
   name                = var.custom_hostname
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_dns_cname_record" "cname" {
