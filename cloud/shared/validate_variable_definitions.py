@@ -74,6 +74,7 @@ class ValidateVariableDefinitions:
             "string": self.validate_string_definition_type,
             "enum": self.validate_enum_definition_type,
             "bool": self.validate_bool_definition_type,
+            "list": self.validate_list_definition_type,
         }
 
         validator = type_specific_validators.get(
@@ -97,6 +98,21 @@ class ValidateVariableDefinitions:
 
     def validate_bool_definition_type(self, variable_definition):
         return []
+        
+    def validate_list_definition_type(self, variable_definition):
+        errors = []
+
+        list_type = variable_definition.get("list_type", None)
+        supported_types = list(type_specific_validators.keys()
+        
+        if list_type is None:
+            errors.append("'list_type' field is required for list type variables.")
+        elif list_type not in supported_types):
+            errors.append(
+                f"Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}."
+            )
+    
+        return errors
 
     def validate_string_definition_type(self, variable_definition):
         maybe_value_regex = variable_definition.get("value_regex", None)
