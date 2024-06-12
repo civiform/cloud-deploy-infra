@@ -261,7 +261,7 @@ class TestValidateVariableDefinitions(unittest.TestCase):
 
         errors = ValidateVariableDefinitions(defs).get_validation_errors()
 
-        self.assertEqual(errors, {"FOO": ["Missing 'secret' field."]})
+        self.assertEqual(errors, {"FOO": ["Invalid 'list_type' value 'test'. Supported types are "]})
 
 
 if __name__ == '__main__':

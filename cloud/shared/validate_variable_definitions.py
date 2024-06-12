@@ -110,7 +110,7 @@ class ValidateVariableDefinitions:
                 "'list_type' field is required for list type variables.")
         elif list_type not in supported_types:
             errors.append(
-                "Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}."
+                f"Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}."
             )
 
         return errors
