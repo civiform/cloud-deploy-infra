@@ -17,7 +17,7 @@ data "aws_subnets" "external_private_subnets" {
   count = local.enable_managed_vpc ? 0 : 1
   filter {
     name   = "subnet-id"
-    values = external_vpc_private_subnets
+    values = var.external_vpc_private_subnet_ids
   }
 }
 
@@ -25,6 +25,6 @@ data "aws_subnets" "external_public_subnets" {
   count = local.enable_managed_vpc ? 0 : 1
   filter {
     name   = "subnet-id"
-    values = external_vpc_public_subnets
+    values = var.external_vpc_public_subnet_ids
   }
 }

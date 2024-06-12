@@ -411,16 +411,18 @@
     "tfvar": true,
     "type": "string"
   },
-  "EXTERNAL_VPC_PRIVATE_SUBNET_ID": {
+  "EXTERNAL_VPC_PRIVATE_SUBNET_IDS": {
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "string"
+    "type": "list",
+    "list_type": "string"
   },
-  "EXTERNAL_VPC_PUBLIC_SUBNET_ID": {
+  "EXTERNAL_VPC_PUBLIC_SUBNET_IDS": {
     "required": false,
     "secret": false,
     "tfvar": true,
-    "type": "string"
+    "type": "list",
+    "list_type": "string"
   }
 }
