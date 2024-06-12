@@ -508,13 +508,26 @@ variable "postgresql_version" {
   default     = "16"
 }
 
-variable "external_vpc" {
-  type        = map(string)
-  description = "A map with external VPC settings. All values need to set to use an external VPC (VPC resources not managed by this Terraform config)"
-  default = {
-    database_subnet_group_name = ""
-    id                         = ""
-    private_subnet_id          = ""
-    public_subnet_id           = ""
-  }
+variable "external_vpc_database_subnet_group_name" {
+  type        = string
+  description = "The externally managed database subnet group name."
+  default     = ""
+}
+
+variable "external_vpc_id" {
+  type        = string
+  description = "The externally managed VPC's ID."
+  default     = ""
+}
+
+variable "external_vpc_private_subnet_id" {
+  type        = string
+  description = "The externally managed VPC's private subnet ID."
+  default     = ""
+}
+
+variable "external_vpc_public_subnet_id" {
+  type        = string
+  description = "The externally managed VPC's public subnet ID."
+  default     = ""
 }

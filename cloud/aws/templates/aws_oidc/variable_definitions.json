@@ -398,5 +398,29 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "EXTERNAL_VPC_DATABASE_SUBNET_GROUP_NAME": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_ID": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_PRIVATE_SUBNET_ID": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_PUBLIC_SUBNET_ID": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   }
 }
