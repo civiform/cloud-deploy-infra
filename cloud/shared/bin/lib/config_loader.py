@@ -213,6 +213,11 @@ class ConfigLoader:
                         f"'{name}' is required but not set")
                 continue
 
+            if definition.get("type") == "list":
+                print("DEBUG THIS IS A LIST")
+                print(name)
+                print(definition)
+
             if definition.get("type") == "enum":
                 enum_values = definition.get("values")
                 if config_value not in enum_values:
@@ -371,7 +376,6 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
 
-        print(f"config fields are {config_fields}")
         print(f"infra_variable_definitions fields are {infra_variable_definitions}")
 
         for name, definition in infra_variable_definitions.items():
@@ -394,6 +398,9 @@ class ConfigLoader:
                         env_vars[name] = config_fields[name]
 
             out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
+
+        print("DEBUG THIS IS THE OUTPUT")
+        print(out)
 
         return out
 
