@@ -371,6 +371,9 @@ class ConfigLoader:
             civiform_server_env_var_definitions: dict):
         out = {}
 
+        print(f"config fields are {config_fields}")
+        print(f"infra_variable_definitions fields are {infra_variable_definitions}")
+
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
