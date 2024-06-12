@@ -20,6 +20,7 @@ from cloud.shared.bin.lib.variable_definition_loader import \
     load_variables_definitions
 
 CIVIFORM_SERVER_VARIABLES_KEY = "civiform_server_environment_variables"
+TERRAFORM_LIST_VARIABLES_KEY = "terraform_list_variables"
 
 
 class ConfigLoader:
@@ -376,6 +377,7 @@ class ConfigLoader:
             self, config_fields: dict, infra_variable_definitions: dict,
             civiform_server_env_var_definitions: dict):
         out = {}
+        terraform_list_variables = {}
 
         print(f"infra_variable_definitions fields are {infra_variable_definitions}")
 
@@ -385,12 +387,12 @@ class ConfigLoader:
 
             if name in config_fields:
                 if definition.get("type") == "list":
-                    print("DEBUG list type")
-                    print(name)
-                    print(config_fields[name])
-                    out[name] = json.loads(config_fields[name])
+                    terraform_list_variables[name] = config_fields[name]
                 else:
                     out[name] = config_fields[name]
+
+        if terraform_list_variables:
+            out[TERRAFORM_LIST_VARIABLES_KEY] = terraform_list_variables
 
         if civiform_server_env_var_definitions:
             env_vars = {}
