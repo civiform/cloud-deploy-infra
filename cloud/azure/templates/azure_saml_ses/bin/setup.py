@@ -42,7 +42,8 @@ class Setup(SetupTemplate):
         self._setup_saml_keystore()
         print(" - Setting up SES")
         self._setup_ses()
-
+        print(" - DONE")
+ 
     def get_current_user(self):
         current_user_process = subprocess.run(
             [
@@ -154,6 +155,7 @@ class Setup(SetupTemplate):
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
+        print(aws_username)
         subprocess.run(
             [
                 "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
