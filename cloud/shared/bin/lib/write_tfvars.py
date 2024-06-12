@@ -27,4 +27,5 @@ class TfVarWriter:
                     continue
 
                 if definition is not None:
+                    print(f"Name - DEFINITION IS {name} - {definition}")
                     tf_vars_file.write(f'{name.lower()}="{definition}"\n')
