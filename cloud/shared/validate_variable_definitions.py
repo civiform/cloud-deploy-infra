@@ -98,18 +98,21 @@ class ValidateVariableDefinitions:
 
     def validate_bool_definition_type(self, variable_definition):
         return []
-        
+
     def validate_list_definition_type(self, variable_definition):
         errors = []
 
         list_type = variable_definition.get("list_type", None)
         supported_types = list(self.type_specific_validators.keys())
-        
+
         if list_type is None:
-            errors.append("'list_type' field is required for list type variables.")
-        elif list_type not in supported_types):
-            errors.append("Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}." )
-        
+            errors.append(
+                "'list_type' field is required for list type variables.")
+        elif list_type not in supported_types:
+            errors.append(
+                "Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}."
+            )
+
         return errors
 
     def validate_string_definition_type(self, variable_definition):
