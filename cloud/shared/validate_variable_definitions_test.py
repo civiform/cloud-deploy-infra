@@ -247,6 +247,23 @@ class TestValidateVariableDefinitions(unittest.TestCase):
 
         self.assertEqual(errors, {})
 
+    def test_get_validation_errors_list_unset_list_type(self):
+        defs = {
+            "FOO":
+                {
+                    "required": True,
+                    "secret": False,
+                    "tfvar": False,
+                    "type": "list"
+                }
+        }
+
+        errors = ValidateVariableDefinitions(defs).get_validation_errors()
+
+        self.assertEqual(
+            errors,
+            {"FOO": ["'list_type' field is required for list type variables."]})
+
     def test_get_validation_errors_list_invalid_list_type(self):
         defs = {
             "FOO":
