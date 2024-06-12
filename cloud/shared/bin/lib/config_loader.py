@@ -383,7 +383,12 @@ class ConfigLoader:
                 continue
 
             if name in config_fields:
-                out[name] = config_fields[name]
+                if definition.get("type") == "list":
+                    print("DEBUG list type")
+                    print(name)
+                    print(config_fields[name])
+                else:
+                    out[name] = config_fields[name]
 
         if civiform_server_env_var_definitions:
             env_vars = {}
