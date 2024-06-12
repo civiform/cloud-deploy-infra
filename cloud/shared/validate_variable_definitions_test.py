@@ -265,9 +265,7 @@ class TestValidateVariableDefinitions(unittest.TestCase):
             errors, {
                 "FOO":
                     [
-                        "Invalid 'list_type' value 'test'. Supported types are "
-                        'integer', 'string', 'enum', 'bool', 'list'
-                        ""
+                        "Invalid 'list_type' value 'test'. Supported types are ['float', 'integer', 'string', 'enum', 'bool', 'list']."
                     ]
             })
 
