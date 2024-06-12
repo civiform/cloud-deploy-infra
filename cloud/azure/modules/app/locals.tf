@@ -37,7 +37,7 @@ locals {
     APPLICANT_OIDC_CLIENT_SECRET= data.azurerm_key_vault_secret.adfs_secret.value
     APPLICANT_OIDC_CLIENT_ID= data.azurerm_key_vault_secret.adfs_client_id.value
     APPLICANT_OIDC_DISCOVERY_URI="https://login.microsoftonline.com/65d2c1ac-375c-4d0e-92e5-9d1af6be8d5c/v2.0/.well-known/openid-configuration"
-
+    ADFS_DISCOVERY_URI="https://login.microsoftonline.com/65d2c1ac-375c-4d0e-92e5-9d1af6be8d5c/v2.0/.well-known/openid-configuration"
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
     LOGIN_RADIUS_KEYSTORE_NAME    = (var.saml_keystore_filename != null ? "/saml/${var.saml_keystore_filename}" : "")
@@ -51,7 +51,7 @@ locals {
     STAGING_HOSTNAME = "placeholder"
     BASE_URL         = "placeholder"
 
-    ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    # ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
     # kept as such (set to empty string, rather than undefined).
     # This allows for the default to include atallclaims and for
