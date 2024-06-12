@@ -26,6 +26,8 @@ class TfVarWriter:
                     tf_vars_file.write("}\n")
                     continue
 
-                if definition is not None:
-                    print(f"Name - DEFINITION IS {name} - {definition}")
+                if name == "terraform_list_variables":
+                    tf_vars_file.write(f'{name.lower()}={definition}\n')
+
+                elif definition is not None:
                     tf_vars_file.write(f'{name.lower()}="{definition}"\n')
