@@ -26,10 +26,5 @@ class TfVarWriter:
                     tf_vars_file.write("}\n")
                     continue
 
-                if name == "terraform_list_variables":
-                    for key, value in definition.items():
-                        if value is not None:
-                            tf_vars_file.write(f'{key.lower()}={value}\n')
-
-                elif definition is not None:
+                if definition is not None:
                     tf_vars_file.write(f'{name.lower()}="{definition}"\n')
