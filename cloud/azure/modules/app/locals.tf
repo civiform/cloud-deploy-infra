@@ -48,7 +48,7 @@ locals {
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
     STAGING_HOSTNAME = "staging-azure.civiform.dev"
-    BASE_URL         = "staging-azure.civiform.dev"
+    BASE_URL         = "https://staging-azure.civiform.dev"
 
     ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
