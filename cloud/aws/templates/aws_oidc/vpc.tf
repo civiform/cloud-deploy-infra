@@ -3,7 +3,7 @@
 data "aws_availability_zones" "available" {}
 
 locals {
-  // If any field of var.external_vpc is not set, we will switch to use the
+  // If any of the external_vpc variables are not set, we will switch to use the
   // managed VPC (use this Terraform config to create the VPC network).
   enable_managed_vpc = anytrue([
     var.external_vpc_database_subnet_group_name == "",
