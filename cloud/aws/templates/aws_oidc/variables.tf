@@ -520,14 +520,14 @@ variable "external_vpc_id" {
   default     = ""
 }
 
-variable "external_vpc_private_subnet_id" {
-  type        = string
+variable "external_vpc_private_subnet_ids" {
+  type        = list(string)
   description = "The externally managed VPC's private subnet ID."
-  default     = ""
+  default     = []
 }
 
-variable "external_vpc_public_subnet_id" {
-  type        = string
+variable "external_vpc_public_subnet_ids" {
+  type        = list(string)
   description = "The externally managed VPC's public subnet ID."
-  default     = ""
+  default     = []
 }
