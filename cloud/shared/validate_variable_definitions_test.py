@@ -231,6 +231,61 @@ class TestValidateVariableDefinitions(unittest.TestCase):
                     ]
             })
 
+    def test_get_validation_errors_list_no_errors(self):
+        defs = {
+            "FOO":
+                {
+                    "required": True,
+                    "secret": False,
+                    "tfvar": False,
+                    "type": "list",
+                    "list_type": "string"
+                }
+        }
+
+        errors = ValidateVariableDefinitions(defs).get_validation_errors()
+
+        self.assertEqual(errors, {})
+
+    def test_get_validation_errors_list_unset_list_type(self):
+        defs = {
+            "FOO":
+                {
+                    "required": True,
+                    "secret": False,
+                    "tfvar": False,
+                    "type": "list"
+                }
+        }
+
+        errors = ValidateVariableDefinitions(defs).get_validation_errors()
+
+        self.assertEqual(
+            errors,
+            {"FOO": ["'list_type' field is required for list type variables."]})
+
+    def test_get_validation_errors_list_invalid_list_type(self):
+        defs = {
+            "FOO":
+                {
+                    "required": True,
+                    "secret": False,
+                    "tfvar": False,
+                    "type": "list",
+                    "list_type": "test"
+                }
+        }
+
+        errors = ValidateVariableDefinitions(defs).get_validation_errors()
+
+        self.assertEqual(
+            errors, {
+                "FOO":
+                    [
+                        "Invalid 'list_type' value 'test'. Supported types are ['float', 'integer', 'string', 'enum', 'bool', 'list']."
+                    ]
+            })
+
 
 if __name__ == '__main__':
     unittest.main()
