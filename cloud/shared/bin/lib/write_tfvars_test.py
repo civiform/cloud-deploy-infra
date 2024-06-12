@@ -41,12 +41,18 @@ class TestWriteTfVars(unittest.TestCase):
                     {
                         "MY_VAR": "Is cool",
                         "FEATURE_ENABLED": "false"
+                    },
+                "terraform_list_variables":
+                    {
+                        "STRING_LIST": ["test", "test"],
+                        "INT_LIST": [1, 2]
                     }
             })
         with open(self.fake_tfvars_filename, "r") as tf_vars:
+            # print(tf_vars.read())
             self.assertEqual(
                 tf_vars.read(),
-                'test="true"\nciviform_server_environment_variables = {\n  "MY_VAR"="Is cool"\n  "FEATURE_ENABLED"="false"\n}\n'
+                'test="true"\nciviform_server_environment_variables = {\n  "MY_VAR"="Is cool"\n  "FEATURE_ENABLED"="false"\n}\nstring_list=[\'test\', \'test\']\nint_list=[1, 2]\n'
             )
 
 
