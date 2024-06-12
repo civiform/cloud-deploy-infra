@@ -387,6 +387,7 @@ class ConfigLoader:
                     print("DEBUG list type")
                     print(name)
                     print(config_fields[name])
+                    out[name] = json.loads(config_fields[name])
                 else:
                     out[name] = config_fields[name]
 
