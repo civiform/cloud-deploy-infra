@@ -261,7 +261,15 @@ class TestValidateVariableDefinitions(unittest.TestCase):
 
         errors = ValidateVariableDefinitions(defs).get_validation_errors()
 
-        self.assertEqual(errors, {"FOO": ["Invalid 'list_type' value 'test'. Supported types are "]})
+        self.assertEqual(
+            errors, {
+                "FOO":
+                    [
+                        "Invalid 'list_type' value 'test'. Supported types are "
+                        'integer', 'string', 'enum', 'bool', 'list'
+                        ""
+                    ]
+            })
 
 
 if __name__ == '__main__':
