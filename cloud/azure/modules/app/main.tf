@@ -191,7 +191,7 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vne
   slot_name      = azurerm_app_service_slot.canary.name
 }
 
-resource "azurerm_postgresql_server" "civiform" {
+resource "azurerm_postgresql_flexible_server" "civiform" {
   name                = "civiform-${random_pet.server.id}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -199,21 +199,12 @@ resource "azurerm_postgresql_server" "civiform" {
   administrator_login          = var.postgres_admin_login
   administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
 
-  // fqdn civiform-db.postgres.database.azure.com
-
   sku_name   = var.postgres_sku_name
   version    = "16"
   storage_mb = var.postgres_storage_mb
-
-  # https://docs.microsoft.com/en-us/azure/postgresql/concepts-backup?WT.mc_id=Portal-Microsoft_Azure_Support
-  backup_retention_days        = var.postgres_backup_retention_days
   geo_redundant_backup_enabled = false
-  auto_grow_enabled            = true
 
   public_network_access_enabled = false
-
-  ssl_enforcement_enabled          = true
-  ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
 resource "azurerm_postgresql_database" "civiform" {
