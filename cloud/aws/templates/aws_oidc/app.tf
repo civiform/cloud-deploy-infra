@@ -323,7 +323,7 @@ module "ecs_fargate_service" {
   ecs_cluster_name          = module.ecs_cluster.aws_ecs_cluster_cluster_name
   ecs_cluster_arn           = module.ecs_cluster.aws_ecs_cluster_cluster_arn
   private_subnets           = local.vpc_private_subnets
-  public_subnets            = local.vpc_public_subnets
+  public_subnets            = local.vpc_public_subnet_ids
   max_cpu_threshold         = var.ecs_max_cpu_threshold
   min_cpu_threshold         = var.ecs_min_cpu_threshold
   max_cpu_evaluation_period = var.ecs_max_cpu_evaluation_period
