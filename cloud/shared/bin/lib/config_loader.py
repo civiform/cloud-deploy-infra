@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import io
+import json
 import os
 import requests
 import re
@@ -211,6 +212,11 @@ class ConfigLoader:
                     validation_errors.append(
                         f"'{name}' is required but not set")
                 continue
+
+            if definition.get("type") == "list":
+                print("DEBUG THIS IS A LIST")
+                print(name)
+                print(definition)
 
             if definition.get("type") == "enum":
                 enum_values = definition.get("values")
