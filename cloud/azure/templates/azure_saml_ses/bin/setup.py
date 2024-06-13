@@ -7,7 +7,7 @@ from typing import Dict
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
-
+from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 class Setup(SetupTemplate):
     """
@@ -69,13 +69,13 @@ class Setup(SetupTemplate):
         print("in post terrform setup")
         # Run terraform again as get_adfs_user_inputs updated secret variables.
         print(self)
-        terraform.perform_apply(self.config_loader)
+        terraform.perform_apply(self.config)
 
     def cleanup(self):
         self._upload_log_file()
         subprocess.run(
-            ["/bin/bash", "-c", "rm -f $HOME/.ssh/bastion*"], check=True)
-
+            ["/bin/bash", "-c", "rm -f $HOME/.ssh/bastion*"], check=True)        
+    
     def _configure_slot_settings(self):
         subprocess.run(["cloud/azure/bin/configure-slot-settings"], check=True)
 
