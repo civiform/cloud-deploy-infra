@@ -204,7 +204,7 @@ resource "azurerm_postgresql_server" "civiform" {
   // fqdn civiform-db.postgres.database.azure.com
 
   sku_name   = var.postgres_sku_name
-  version    = "11"
+  version    = "16"
   storage_mb = var.postgres_storage_mb
 
   # https://docs.microsoft.com/en-us/azure/postgresql/concepts-backup?WT.mc_id=Portal-Microsoft_Azure_Support
