@@ -44,6 +44,7 @@ locals {
     LOGIN_RADIUS_PRIVATE_KEY_PASS = var.saml_private_key_password
 
     CIVIFORM_API_SECRET_SALT = data.azurerm_key_vault_secret.api_secret_salt_key.value
+    DATABASE_APPLY_DESTRUCTIVE_CHANGES=true
 
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
