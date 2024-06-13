@@ -8,8 +8,8 @@ locals {
   enable_managed_vpc = anytrue([
     var.external_vpc_database_subnet_group_name == "",
     var.external_vpc_id == "",
-    length(var.external_vpc_private_subnet_ids) > 0,
-    length(var.external_vpc_public_subnet_ids) > 0,
+    length(var.external_vpc_private_subnet_ids) == 0,
+    length(var.external_vpc_public_subnet_ids) == 0,
   ])
 }
 
