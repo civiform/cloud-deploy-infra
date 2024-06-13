@@ -195,7 +195,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   name                = "civiform-${random_pet.server.id}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  public_network_access_enabled = false
+  # public_network_access_enabled = false
   administrator_login          = var.postgres_admin_login
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
 
@@ -203,7 +203,6 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   version    = "16"
   storage_mb = var.postgres_storage_mb
   # geo_redundant_backup_enabled = false
-
 }
 
 resource "azurerm_postgresql_database" "civiform" {
