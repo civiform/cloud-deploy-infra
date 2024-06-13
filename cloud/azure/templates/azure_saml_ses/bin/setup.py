@@ -43,6 +43,7 @@ class Setup(SetupTemplate):
         print(" - Setting up SES")
         self._setup_ses()
         print(" - DONE")
+        return True
  
     def get_current_user(self):
         current_user_process = subprocess.run(
