@@ -68,6 +68,7 @@ class Setup(SetupTemplate):
         self._configure_slot_settings()
         print("in post terrform setup")
         # Run terraform again as get_adfs_user_inputs updated secret variables.
+        print(self)
         terraform.perform_apply(self.config_loader)
 
     def cleanup(self):
