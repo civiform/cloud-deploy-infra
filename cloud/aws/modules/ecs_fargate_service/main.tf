@@ -29,7 +29,7 @@ resource "aws_lb" "civiform_lb" {
   internal                         = false
   load_balancer_type               = "application"
   drop_invalid_header_fields       = false
-  subnets                          = local.vpc_public_subnets
+  subnets                          = var.public_subnets
   idle_timeout                     = 60
   enable_deletion_protection       = false
   enable_cross_zone_load_balancing = false
