@@ -210,7 +210,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
 resource "azurerm_postgresql_database" "civiform" {
   name                = "civiform"
   resource_group_name = data.azurerm_resource_group.rg.name
-  server_name         = azurerm_postgresql_server.civiform.name
+  server_name         = azurerm_postgresql_flexible_server.civiform.name
   charset             = "utf8"
   collation           = "English_United States.1252"
 }
@@ -238,7 +238,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 }
 
 resource "azurerm_private_endpoint" "endpoint" {
-  name                = "${azurerm_postgresql_server.civiform.name}-endpoint"
+  name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.postgres_subnet.id
@@ -249,8 +249,8 @@ resource "azurerm_private_endpoint" "endpoint" {
   }
 
   private_service_connection {
-    name                           = "${azurerm_postgresql_server.civiform.name}-privateserviceconnection"
-    private_connection_resource_id = azurerm_postgresql_server.civiform.id
+    name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
+    private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = false
   }
