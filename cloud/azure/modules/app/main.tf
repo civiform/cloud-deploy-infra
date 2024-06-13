@@ -199,7 +199,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   administrator_login          = var.postgres_admin_login
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
 
-  sku_name   = var.postgres_sku_name
+  sku_name   = "Standard_B1ms"
   version    = "15"
   storage_mb = "32768"
   # geo_redundant_backup_enabled = false
