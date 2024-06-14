@@ -204,6 +204,9 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   sku_name   = "B_Standard_B1ms"
   version    = "15"
   storage_mb = "32768"
+  depends_on = [
+    azurerm_private_dns_zone_virtual_network_link.vnet_link
+  ]
   # geo_redundant_backup_enabled = false
 }
 
