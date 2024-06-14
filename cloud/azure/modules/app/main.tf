@@ -252,8 +252,8 @@ resource "azurerm_subnet" "postgres_subnet" {
 
 resource "azurerm_network_security_group" "main" {
   name                = "${random_pet.server.id}-nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   security_rule {
     name                       = "test123"
