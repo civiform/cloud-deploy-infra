@@ -226,9 +226,6 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
 resource "azurerm_postgresql_flexible_server_database" "civiform" {
   name                = "civiform"
   server_id = azurerm_postgresql_flexible_server.civiform.id
-  lifecycle {
-    prevent_destroy = true
-  }
   charset             = "utf8"
   collation           = "en_US.utf8"
 }
