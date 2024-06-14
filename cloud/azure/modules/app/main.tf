@@ -61,15 +61,12 @@ resource "azurerm_subnet" "canary_subnet" {
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.canary_subnet_address_prefixes
 
-  dynamic "delegation" {
-    for_each = each.value.service_delegation == true ? [1] : []
+  delegation {
+    name = "app-service-delegation"
 
-    content {
-      name = "delegation"
-      service_delegation {
-        name    = "Microsoft.DBforPostgreSQL/flexibleServers"
-        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", ]
-      }
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
 }
