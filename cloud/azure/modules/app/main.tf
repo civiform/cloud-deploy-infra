@@ -75,7 +75,7 @@ resource "azurerm_service_plan" "plan" {
   name                = "${data.azurerm_resource_group.rg.name}-plan"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  os_type = "Linux"
+  os_type             = "Linux"
   # Choose size
   sku_name = "S2"
 }
@@ -196,7 +196,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   # public_network_access_enabled = false
-  administrator_login          = var.postgres_admin_login
+  administrator_login    = var.postgres_admin_login
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
@@ -228,8 +228,15 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-
-  enforce_private_link_endpoint_network_policies = true
+  delegation {
+    name = "postgres"
+    service_delegation {
+      name = "Microsoft.DBforPostgreSQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
 }
 
 resource "azurerm_private_dns_zone" "privatelink" {
