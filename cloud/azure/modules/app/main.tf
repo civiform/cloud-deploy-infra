@@ -221,7 +221,7 @@ resource "azurerm_postgresql_flexible_server_database" "civiform" {
     prevent_destroy = true
   }
   charset             = "utf8"
-  collation           = "English_United States.1252"
+  collation           = "en_US.utf8"
 }
 
 # Configure private link
