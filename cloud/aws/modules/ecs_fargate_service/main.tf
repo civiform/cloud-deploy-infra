@@ -27,7 +27,7 @@ resource "aws_lb" "civiform_lb" {
   name = substr("${local.name_prefix}-lb", 0, 31)
 
   internal                         = true
-  load_balancer_type               = "application"
+  load_balancer_type               = "network"
   drop_invalid_header_fields       = false
   subnets                          = var.public_subnets
   idle_timeout                     = 60
