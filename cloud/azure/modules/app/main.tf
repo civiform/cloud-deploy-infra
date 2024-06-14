@@ -198,6 +198,8 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   # public_network_access_enabled = false
   administrator_login          = var.postgres_admin_login
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
+  delegated_subnet_id    = azurerm_subnet.app_postgres_subnet.id
+  private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
 
   sku_name   = "B_Standard_B1ms"
   version    = "15"
