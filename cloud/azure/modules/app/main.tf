@@ -214,10 +214,12 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
   end_ip_address   = "0.0.0.0"
 }
 
-resource "azurerm_postgresql_database" "civiform" {
+resource "azurerm_postgresql_flexible_server_database" "civiform" {
   name                = "civiform"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  server_name         = azurerm_postgresql_flexible_server.civiform.name
+  server_id = azurerm_postgresql_flexible_server.civiform.id
+  lifecycle {
+    prevent_destroy = true
+  }
   charset             = "utf8"
   collation           = "English_United States.1252"
 }
