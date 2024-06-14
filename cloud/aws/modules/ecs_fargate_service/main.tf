@@ -128,7 +128,7 @@ resource "aws_lb_target_group" "lb_https_tgs" {
   }
 
   health_check {
-    enabled             = false
+    enabled             = true
     interval            = 20
     path                = "/playIndex"
     protocol            = "HTTP"
