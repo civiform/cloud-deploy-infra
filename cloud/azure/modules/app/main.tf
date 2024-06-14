@@ -205,6 +205,11 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   # geo_redundant_backup_enabled = false
 }
 
+resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
+  start_ip_address = "0.0.0.0"
+  end_ip_address = "0.0.0.0"
+}
+
 resource "azurerm_postgresql_database" "civiform" {
   name                = "civiform"
   resource_group_name = data.azurerm_resource_group.rg.name
