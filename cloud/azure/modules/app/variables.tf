@@ -76,6 +76,7 @@ variable "resource_group_name" {
 variable "postgres_admin_login" {
   type        = string
   description = "Postgres admin login"
+  default = "psqladmin"
 }
 
 variable "postgres_sku_name" {
