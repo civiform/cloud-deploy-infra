@@ -197,10 +197,11 @@ resource "azurerm_postgresql_server" "civiform" {
   resource_group_name = data.azurerm_resource_group.rg.name
   public_network_access_enabled = false
   administrator_login    = var.postgres_admin_login
-  administrator_password = data.azurerm_key_vault_secret.postgres_password.value
+  administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
+  # administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
-
+  ssl_enforcement_enabled = true
   sku_name   = "B_Standard_B1ms"
   version    = "15"
   storage_mb = "32768"
@@ -216,11 +217,11 @@ resource "azurerm_postgresql_server_database" "civiform" {
 }
 
 # Configure private link
-resource "azurerm_subnet" "postgres_subnet" {
-  name                 = "postgres_subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  address_prefixes     = var.postgres_subnet_address_prefixes
-}
+# resource "azurerm_subnet" "postgres_subnet" {
+#   name                 = "postgres_subnet"
+#   resource_group_name  = data.azurerm_resource_group.rg.name
+#   address_prefixes     = var.postgres_subnet_address_prefixes
+# }
 
 module "bastion" {
   source = "../bastion"
