@@ -2,7 +2,7 @@ locals {
   # The hard-coded zero indexes here are necessary to access the fqdn from the record set associated with it
   # because the private_dns_zone_configs and record_sets blocks expose lists, even if we only have one dns zone
   # and record set configured.
-  postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
+  # postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
   postgres_password_keyvault_id   = "postgres-password"
@@ -20,7 +20,7 @@ locals {
 
     DB_USERNAME    = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
     DB_PASSWORD    = data.azurerm_key_vault_secret.postgres_password.value
-    DB_JDBC_STRING = "jdbc:postgresql://${local.postgres_private_link}:5432/postgres?ssl=true&sslmode=require"
+    # DB_JDBC_STRING = "jdbc:postgresql://${local.postgres_private_link}:5432/postgres?ssl=true&sslmode=require"
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
