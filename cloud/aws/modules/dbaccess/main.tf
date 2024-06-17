@@ -55,8 +55,22 @@ resource "aws_key_pair" "dbaccess_key_pair" {
   }
 }
 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical official
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
 resource "aws_instance" "dbaccess_host" {
-  ami             = var.host_ami
+  ami             = data.aws_ami.ubuntu.image_id
   instance_type   = var.host_type
   key_name        = aws_key_pair.dbaccess_key_pair.key_name
   security_groups = [aws_security_group.dbaccess_security_group.id]
