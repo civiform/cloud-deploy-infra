@@ -422,5 +422,11 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "APPLY_DATABASE_CHANGES_IMMEDIATELY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
