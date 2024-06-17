@@ -121,7 +121,6 @@ variable "sender_email_address" {
   description = "Email address of who is sending the email, passed to the app"
 }
 
-
 variable "key_vault_name" {
   type        = string
   description = "Name of key vault where secrets are stored."
