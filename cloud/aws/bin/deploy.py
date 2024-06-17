@@ -128,6 +128,12 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                         exit(2)
                 config.add_config_value('ALLOW_POSTGRESQL_UPGRADE', 'true')
 
+            # We must force APPLY_DATABASE_CHANGES_IMMEDIATELY to true, since we are changing the database parameters along
+            # with the database itself, and we need to apply both changes at the same time. We can't wait for the next
+            # maintenance window.
+            config.add_config_value(
+                'APPLY_DATABASE_CHANGES_IMMEDIATELY', 'true')
+
             print(
                 f'{Color.CYAN}Proceeding with upgrade to PostgreSQL {config.get_config_var("POSTGRESQL_VERSION")}.{Color.END}'
             )

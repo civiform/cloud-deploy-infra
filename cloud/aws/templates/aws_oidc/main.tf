@@ -34,7 +34,7 @@ resource "aws_db_instance" "civiform" {
     Type = "Civiform Database"
   }
 
-  apply_immediately = true
+  apply_immediately = var.apply_database_changes_immediately
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
   snapshot_identifier             = var.postgres_restore_snapshot_identifier
