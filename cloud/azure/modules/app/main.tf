@@ -273,7 +273,7 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 resource "azurerm_private_dns_zone" "privatelink" {
   name                = "privatelink.postgres.database.azure.com"
   resource_group_name = data.azurerm_resource_group.rg.name
-  depends_on = [azurerm_subnet_network_security_group_association.main]
+  # depends_on = [azurerm_subnet_network_security_group_association.main]
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
