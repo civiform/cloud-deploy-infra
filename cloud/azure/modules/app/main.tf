@@ -208,9 +208,9 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   storage_mb = "32768"
   # geo_redundant_backup_enabled = false
   lifecycle {
-     ignore_changes = [ 
-        zone
-      ]
+    ignore_changes = [
+      zone
+    ]
   }
 }
 
