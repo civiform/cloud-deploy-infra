@@ -202,16 +202,19 @@ resource "azurerm_postgresql_server" "civiform" {
   # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
   ssl_enforcement_enabled = true
-  sku_name   = "B_Standard_B1ms"
+  #sku_name   = "B_Standard_B1ms"
+  sku_name   = var.postgres_sku_name
   version    = "15"
   storage_mb = "32768"
   # geo_redundant_backup_enabled = false
 }
 
 
-resource "azurerm_postgresql_server_database" "civiform" {
+resource "azurerm_postgresql_database" "civiform" {
   name                = "civiform"
-  server_id = azurerm_postgresql_server.civiform.id
+  # server_id = azurerm_postgresql_server.civiform.id
+  resource_group_name = data.azurerm_resource_group.rg.name
+  server_name         = azurerm_postgresql_server.civiform.name
   charset             = "utf8"
   collation           = "en_US.utf8"
 }
