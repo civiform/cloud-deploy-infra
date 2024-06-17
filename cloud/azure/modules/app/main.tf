@@ -192,7 +192,7 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vne
 }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
-  name                = "civiform-${random_pet.server.id}"
+  name                = "${random_pet.server.id}-civiform"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   # public_network_access_enabled = false
