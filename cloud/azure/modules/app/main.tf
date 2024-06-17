@@ -205,7 +205,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   sku_name   = "B_Standard_B1ms"
   #sku_name   = var.postgres_sku_name
   version    = "15"
-  #storage_mb = "32768"
+  storage_mb = "32768"
   # geo_redundant_backup_enabled = false
 }
 
