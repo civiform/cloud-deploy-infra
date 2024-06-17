@@ -196,13 +196,13 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   # public_network_access_enabled = false
-  administrator_login    = var.postgres_admin_login
+  administrator_login = var.postgres_admin_login
   #administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
   # ssl_enforcement_enabled = true
-  sku_name   = "B_Standard_B1ms"
+  sku_name = "B_Standard_B1ms"
   #sku_name   = var.postgres_sku_name
   version    = "15"
   storage_mb = "32768"
@@ -211,52 +211,52 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
 
 
 resource "azurerm_postgresql_flexible_server_database" "civiform" {
-  name                = "civiform"
+  name      = "civiform"
   server_id = azurerm_postgresql_flexible_server.civiform.id
   #resource_group_name = data.azurerm_resource_group.rg.name
   #server_name         = azurerm_postgresql_flexible_server.civiform.name
-  charset             = "utf8"
-  collation           = "en_US.utf8"
+  charset   = "utf8"
+  collation = "en_US.utf8"
 }
 
 # Configure private link
-resource "azurerm_subnet" "postgres_subnet" {
-  name                 = "postgres_subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes     = var.postgres_subnet_address_prefixes
-}
+# resource "azurerm_subnet" "postgres_subnet" {
+#   name                 = "postgres_subnet"
+#   resource_group_name  = data.azurerm_resource_group.rg.name
+#   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
+#   address_prefixes     = var.postgres_subnet_address_prefixes
+# }
 
-resource "azurerm_private_dns_zone" "privatelink" {
-  name                = "privatelink.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
+# resource "azurerm_private_dns_zone" "privatelink" {
+#   name                = "privatelink.postgres.database.azure.com"
+#   resource_group_name = data.azurerm_resource_group.rg.name
+# }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  name                  = "vnet-link-private-dns"
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
-  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-}
+# resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+#   name                  = "vnet-link-private-dns"
+#   resource_group_name   = data.azurerm_resource_group.rg.name
+#   private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
+#   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
+# }
 
-resource "azurerm_private_endpoint" "endpoint" {
-  name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.postgres_subnet.id
+# resource "azurerm_private_endpoint" "endpoint" {
+#   name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
+#   location            = data.azurerm_resource_group.rg.location
+#   resource_group_name = data.azurerm_resource_group.rg.name
+#   subnet_id           = azurerm_subnet.postgres_subnet.id
 
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
-  }
+#   private_dns_zone_group {
+#     name                 = "private-dns-zone-group"
+#     private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
+#   }
 
-  private_service_connection {
-    name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
-    private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
-    subresource_names              = ["postgresqlServer"]
-    is_manual_connection           = false
-  }
-}
+#   private_service_connection {
+#     name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
+#     private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
+#     subresource_names              = ["postgresqlServer"]
+#     is_manual_connection           = false
+#   }
+# }
 
 module "bastion" {
   source = "../bastion"
