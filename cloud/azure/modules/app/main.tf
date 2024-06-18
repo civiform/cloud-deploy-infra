@@ -226,7 +226,7 @@ resource "azurerm_postgresql_flexible_server_database" "civiform" {
 resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
   name      = "azure.extensions"
   server_id = azurerm_postgresql_flexible_server.civiform.id
-  value     = "PG_TRGM"
+  value     = "PG_TRGM, btree_gin"
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
@@ -248,7 +248,6 @@ resource "azurerm_subnet" "postgres_subnet" {
 #   name                = "privatelink.postgres.database.azure.com"
 #   resource_group_name = data.azurerm_resource_group.rg.name
 # }
-//civiform-moral-werewolf
 
 # resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 #   name                  = "vnet-link-private-dns"
