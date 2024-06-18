@@ -242,7 +242,7 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-}
+}  
 
 # resource "azurerm_private_dns_zone" "privatelink" {
 #   name                = "privatelink.postgres.database.azure.com"
