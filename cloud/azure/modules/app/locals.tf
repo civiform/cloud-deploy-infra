@@ -21,7 +21,7 @@ locals {
 
     DB_USERNAME    = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
     DB_PASSWORD    = data.azurerm_key_vault_secret.postgres_password.value
-    DB_JDBC_STRING = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=psqladmin&password=${data.azurerm_key_vault_secret.postgres_password.value}&sslmode=require"
+    DB_JDBC_STRING = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.fqdn}/postgres?user=psqladmin&password=${data.azurerm_key_vault_secret.postgres_password.value}&sslmode=require"
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
