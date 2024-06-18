@@ -226,7 +226,7 @@ resource "azurerm_postgresql_flexible_server_database" "civiform" {
 resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
   name      = "azure.extensions"
   server_id = azurerm_postgresql_flexible_server.civiform.id
-  value     = "PG_TRGM, btree_gin"
+  value     = "PG_TRGM,BTREE_GIN"
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
