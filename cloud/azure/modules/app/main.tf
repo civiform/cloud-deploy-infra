@@ -233,7 +233,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall" {
   name             = "fw"
   server_id        = azurerm_postgresql_flexible_server.civiform.id
   start_ip_address = "0.0.0.0"
-  end_ip_address   = "255.255.255.255"
+  end_ip_address   = "0.0.0.0"
 }
 
 # Configure private link
