@@ -223,6 +223,12 @@ resource "azurerm_postgresql_flexible_server_database" "civiform" {
   collation = "en_US.utf8"
 }
 
+resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
+  name      = "azure.extensions"
+  server_id = azurerm_postgresql_flexible_server.civiform.id
+  value     = "PG_TRGM"
+}
+
 # Configure private link
 resource "azurerm_subnet" "postgres_subnet" {
   name                 = "postgres_subnet"
