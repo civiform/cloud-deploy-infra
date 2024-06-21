@@ -311,9 +311,9 @@ resource "aws_ecs_task_definition" "civiform_only" {
   tags                     = local.tags
 }
 
-# Get the ALB's instances (the actual EC2 instances it runs on)
 data "aws_lb" "alb_data" {
-  arn = aws_lb.civiform_lb.arn
+  arn       = module.ecs_fargate_service.alb_arn  # Access the ALB's ARN from the module output
+  depends_on = [module.ecs_fargate_service]       # Wait for the module to create the ALB
 }
 
 # Get the IDs of the EC2 instances backing the ALB
