@@ -21,26 +21,49 @@ locals {
 }
 
 #------------------------------------------------------------------------------
-# APPLICATION LOAD BALANCER
+# NETWORK LOAD BALANCER (NLB)
 #------------------------------------------------------------------------------
-resource "aws_lb" "civiform_lb" {
-  name = substr("${local.name_prefix}-lb", 0, 31)
-
-  internal                         = true
-  load_balancer_type               = "network"
-  drop_invalid_header_fields       = false
-  subnets                          = var.public_subnets
-  idle_timeout                     = 60
-  enable_deletion_protection       = false
-  enable_cross_zone_load_balancing = false
-  enable_http2                     = true
-  ip_address_type                  = "ipv4"
-  security_groups                  = [aws_security_group.lb_access_sg.id]
+resource "aws_lb" "nlb" {
+  name               = substr("${local.name_prefix}-nlb", 0, 31)
+  internal           = true
+  load_balancer_type = "network"
+  subnets            = var.public_subnets
+  enable_deletion_protection = false
 
   tags = merge(
     var.tags,
     {
-      Name = "${local.name_prefix}-lb"
+      Name = substr("${local.name_prefix}-nlb", 0, 31)
+    },
+  )
+}
+
+resource "aws_lb_listener" "nlb_listener" {
+  load_balancer_arn = aws_lb.nlb.arn
+  port              = 443
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.lb_https_tgs.arnexpand_more
+  }
+}
+
+#------------------------------------------------------------------------------
+# APPLICATION LOAD BALANCER (ALB) - Now acts as the target for NLB
+#------------------------------------------------------------------------------
+resource "aws_lb" "civiform_lb" {
+  name               = substr("${local.name_prefix}-alb", 0, 31)  # Renamed for clarity
+  internal           = true
+  load_balancer_type = "application"
+  subnets            = var.public_subnets
+  enable_deletion_protection = false
+  enable_http2        = true
+
+  tags = merge(
+    var.tags,
+    {
+      Name = substr("${local.name_prefix}-alb", 0, 31) 
     },
   )
 }
@@ -78,78 +101,44 @@ moved {
   to   = aws_security_group.lb_access_sg
 }
 
-resource "aws_security_group_rule" "ingress_through_http" {
-  security_group_id = aws_security_group.lb_access_sg.id
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  prefix_list_ids   = []
-}
 
-moved {
-  from = module.ecs-alb[0].aws_security_group_rule.ingress_through_http["default_http"]
-  to   = aws_security_group_rule.ingress_through_http
-}
-
-resource "aws_security_group_rule" "ingress_through_https" {
-  security_group_id = aws_security_group.lb_access_sg.id
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  prefix_list_ids   = []
-}
-
-moved {
-  from = module.ecs-alb[0].aws_security_group_rule.ingress_through_https["default_http"]
-  to   = aws_security_group_rule.ingress_through_https
-}
 
 #------------------------------------------------------------------------------
-# AWS LOAD BALANCER - Target Groups
+# AWS LOAD BALANCER - Target Groups (ALB)
 #------------------------------------------------------------------------------
 resource "aws_lb_target_group" "lb_https_tgs" {
-  name                          = "${var.app_prefix}-https-${var.https_target_port}"
-  port                          = var.https_target_port
-  protocol                      = "HTTP"
-  vpc_id                        = var.vpc_id
-  deregistration_delay          = 300
-  slow_start                    = 0
-  load_balancing_algorithm_type = "round_robin"
-  target_type                   = "ip"
+    name                 = "${var.app_prefix}-https-${var.https_target_port}"
+    port                 = var.https_target_port
+    protocol             = "HTTPS"             # Change to HTTPS to match the listener
+    vpc_id               = var.vpc_id
+    deregistration_delay = 300
+    slow_start           = 0
+    target_type          = "ip"                # Target type is now IP
 
-  stickiness {
-    type            = "lb_cookie"
-    cookie_duration = 86400
-    enabled         = true
-  }
+    health_check {
+        enabled             = true
+        interval            = 20
+        path                = "/health"         # Change to a health check path on your ALB
+        port                = "traffic-port"    # Check on the port the target receives traffic
+        protocol            = "HTTPS"           # Match the listener protocol
+        timeout             = 15
+        healthy_threshold   = 2
+        unhealthy_threshold = 10
+        matcher             = "200-399"         # Allow for a range of successful responses
+    }
 
-  health_check {
-    enabled             = true
-    interval            = 20
-    path                = "/playIndex"
-    protocol            = "HTTP"
-    timeout             = 15
-    healthy_threshold   = 2
-    unhealthy_threshold = 10
-    matcher             = "200"
-  }
+    tags = merge(
+        var.tags,
+        {
+            Name = "${local.name_prefix}-https-${var.https_target_port}"
+        },
+    )
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${local.name_prefix}-https-${var.https_target_port}"
-    },
-  )
+    lifecycle {
+        create_before_destroy = true
+    }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  depends_on = [aws_lb.civiform_lb]
+    depends_on = [aws_lb.civiform_lb]
 }
 
 moved {
@@ -157,53 +146,21 @@ moved {
   to   = aws_lb_target_group.lb_https_tgs
 }
 
-#------------------------------------------------------------------------------
-# AWS LOAD BALANCER - Listeners
-#------------------------------------------------------------------------------
-resource "aws_lb_listener" "lb_http_listeners" {
-  load_balancer_arn = aws_lb.civiform_lb.arn
-  port              = 80
-  protocol          = "HTTP"
 
-  default_action {
-    type = "redirect"
-    redirect {
-      host        = "#{host}"
-      path        = "/#{path}"
-      port        = 443
-      protocol    = "HTTPS"
-      query       = "#{query}"
-      status_code = "HTTP_301"
-    }
-  }
-
-  tags = var.tags
+# Get the NLB's internal IP addresses
+data "aws_lb" "nlb_data" {
+    arn = aws_lb.nlb.arn
 }
 
-moved {
-  from = module.ecs-alb[0].aws_lb_listener.lb_http_listeners["default_http"]
-  to   = aws_lb_listener.lb_http_listeners
+# Attach NLB instances to the target group (one attachment per AZ)
+resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
+    count             = length(data.aws_lb.nlb_data.availability_zones)
+    target_group_arn  = aws_lb_target_group.lb_https_tgs.arn
+    target_id         = element(data.aws_lb.nlb_data.load_balancer_attributes.*.zone_id, count.index)  
+    port              = 443
 }
 
-resource "aws_lb_listener" "lb_https_listeners" {
-  load_balancer_arn = aws_lb.civiform_lb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = var.ssl_policy
-  certificate_arn   = var.default_certificate_arn
 
-  default_action {
-    target_group_arn = aws_lb_target_group.lb_https_tgs.arn
-    type             = "forward"
-  }
-
-  tags = var.tags
-}
-
-moved {
-  from = module.ecs-alb[0].aws_lb_listener.lb_https_listeners["default_http"]
-  to   = aws_lb_listener.lb_https_listeners
-}
 ### end ecs-alb replacement
 
 #------------------------------------------------------------------------------
