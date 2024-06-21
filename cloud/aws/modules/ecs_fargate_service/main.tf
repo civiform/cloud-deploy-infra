@@ -152,11 +152,12 @@ data "aws_lb" "nlb_data" {
   arn = aws_lb.nlb.arn
 }
 
-# Attach NLB instances to the target group (one attachment per instance)
+# Attach NLB instance to the target group (one attachment per instance)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-  count            = length(data.aws_lb.nlb_data.arns)
+  count            = 1 
+
   target_group_arn = aws_lb_target_group.lb_https_tgs.arn
-  target_id        = data.aws_lb.nlb_data.arns[count.index]
+  target_id        = data.aws_lb.nlb_data.arn
   port             = 443
 }
 
