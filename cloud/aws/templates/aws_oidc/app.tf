@@ -324,13 +324,17 @@ data "aws_instances" "alb_instances" {
   }
 }
 
+locals {
+  instance_count = length(data.aws_instances.alb_instances.ids)
+}
+
 # Attach ALB instances to the target group (one attachment per instance)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
   # Assuming the ALB is in a private subnet and can only be accessed by the NLB, the NLB's target group should be defined as follows:
-  for_each = toset(data.aws_instances.alb_instances.ids)
+   count = local.instance_count
 
   target_group_arn = module.ecs_fargate_service.alb_target_group_arn
-  target_id        = each.key
+  target_id        = data.aws_instances.alb_instances.ids[count.index]
   port             = var.port
 
   depends_on = [module.ecs_fargate_service]  
