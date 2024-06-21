@@ -45,7 +45,7 @@ resource "aws_lb_listener" "nlb_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.lb_https_tgs.arnexpand_more
+    target_group_arn = aws_lb_target_group.lb_https_tgs.arn
   }
 }
 
@@ -154,9 +154,9 @@ data "aws_lb" "nlb_data" {
 
 # Attach NLB instances to the target group (one attachment per AZ)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-    count             = length(data.aws_lb.nlb_data.availability_zones)
+    count             = length(data.aws_lb.nlb_data.load_balancer_attributes)
     target_group_arn  = aws_lb_target_group.lb_https_tgs.arn
-    target_id         = element(data.aws_lb.nlb_data.load_balancer_attributes.*.zone_id, count.index)  
+    target_id         = data.aws_lb.nlb_data.load_balancer_attributes[count.index].zone_id
     port              = 443
 }
 
