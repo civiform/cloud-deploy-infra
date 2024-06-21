@@ -154,10 +154,10 @@ data "aws_lb" "nlb_data" {
 
 # Attach NLB instances to the target group (one attachment per AZ)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-    count             = length(data.aws_lb.nlb_data.load_balancer_attributes)
-    target_group_arn  = aws_lb_target_group.lb_https_tgs.arn
-    target_id         = data.aws_lb.nlb_data.load_balancer_attributes[count.index].zone_id
-    port              = 443
+    count            = length(data.aws_lb.nlb_data.availability_zones)
+    target_group_arn = aws_lb_target_group.lb_https_tgs.arn
+    target_id        = data.aws_lb.nlb_data.zone_id[count.index]   # Direct access to zone_id
+    port             = 443
 }
 
 
