@@ -331,7 +331,7 @@ resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
 
   target_group_arn = module.ecs_fargate_service.lb_target_group_arn 
   target_id        = data.aws_instances.alb_instances.ids[count.index]
-  port            = var.https_target_port
+  port            = var.port
 
   depends_on = [module.ecs_fargate_service] 
 }
