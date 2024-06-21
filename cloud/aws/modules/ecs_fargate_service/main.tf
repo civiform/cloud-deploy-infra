@@ -147,16 +147,16 @@ moved {
 }
 
 
-# Get the NLB's internal IP addresses
+# Get the NLB's data 
 data "aws_lb" "nlb_data" {
     arn = aws_lb.nlb.arn
 }
 
-# Attach NLB instances to the target group (one attachment per AZ)
+# Attach NLB instances to the target group (one attachment per instance)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-    count            = length(data.aws_lb.nlb_data.availability_zones)
+    for_each         = toset(data.aws_lb.nlb_data.load_balancer_arns)   
     target_group_arn = aws_lb_target_group.lb_https_tgs.arn
-    target_id        = data.aws_lb.nlb_data.zone_id[count.index]   # Direct access to zone_id
+    target_id        = each.value  # ARN of each NLB instance
     port             = 443
 }
 
