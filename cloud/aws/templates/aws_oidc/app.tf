@@ -325,15 +325,11 @@ data "aws_instances" "alb_instances" {
 }
 
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-  dynamic "attachment" {
-    for_each = data.aws_instances.alb_instances.ids
+  count = 2
 
-    content {
-      target_group_arn = module.ecs_fargate_service.alb_target_group_arn
-      target_id        = attachment.key
-      port             = var.port
-    }
-  }
+  target_group_arn = module.ecs_fargate_service.alb_target_group_arn
+  target_id        = data.aws_instances.alb_instances.ids[count.index]
+  port             = var.port
 
   depends_on = [module.ecs_fargate_service]
 }
