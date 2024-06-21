@@ -329,7 +329,7 @@ resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
   # Assuming the ALB is in a private subnet and can only be accessed by the NLB, the NLB's target group should be defined as follows:
   count         = length(data.aws_instances.alb_instances.ids)
 
-  target_group_arn = modules.ecs_fargate_service.alb_target_group_arn
+  target_group_arn = module.ecs_fargate_service.alb_target_group_arn
   target_id        = data.aws_instances.alb_instances.ids[count.index]
   port             = var.port
 
