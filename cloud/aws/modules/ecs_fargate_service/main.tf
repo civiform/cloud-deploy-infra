@@ -147,19 +147,16 @@ moved {
 }
 
 
-# Get the NLB's data
+# Get the NLB's ARN directly
 data "aws_lb" "nlb_data" {
   arn = aws_lb.nlb.arn
 }
 
 # Attach NLB instances to the target group (one attachment per instance)
 resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
-  for_each         = {
-    for index, lb_attr in data.aws_lb.nlb_data.load_balancer_attributes :
-    index => lb_attr.key  # Use the index as the key to avoid duplicate keys
-  }
+  count            = length(data.aws_lb.nlb_data.arns)
   target_group_arn = aws_lb_target_group.lb_https_tgs.arn
-  target_id        = each.value  # ARN of each NLB instance is the value
+  target_id        = data.aws_lb.nlb_data.arns[count.index]
   port             = 443
 }
 
