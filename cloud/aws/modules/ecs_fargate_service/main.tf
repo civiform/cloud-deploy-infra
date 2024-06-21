@@ -109,7 +109,7 @@ moved {
 resource "aws_lb_target_group" "lb_https_tgs" {
     name                 = "${var.app_prefix}-https-${var.https_target_port}"
     port                 = var.https_target_port
-    protocol             = "HTTPS"             # Change to HTTPS to match the listener
+    protocol             = "TCP"           
     vpc_id               = var.vpc_id
     deregistration_delay = 300
     slow_start           = 0
@@ -159,6 +159,8 @@ resource "aws_lb_target_group_attachment" "nlb_tg_attachment" {
   target_group_arn = aws_lb_target_group.lb_https_tgs.arn
   target_id        = data.aws_lb.nlb_data.arn
   port             = 443
+
+  depends_on = [aws_lb.civiform_lb]
 }
 
 
@@ -211,6 +213,8 @@ resource "aws_ecs_service" "service" {
       Name = "${local.name_prefix}-ecs-tasks-sg"
     },
   )
+
+  depends_on = [aws_lb_target_group_attachment.nlb_tg_attachment]
 }
 
 #------------------------------------------------------------------------------
