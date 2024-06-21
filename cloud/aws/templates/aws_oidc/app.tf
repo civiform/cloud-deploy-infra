@@ -341,7 +341,7 @@ module "ecs_fargate_service" {
 }
 
 resource "aws_lb_listener_rule" "block_external_traffic_to_metrics_rule" {
-  listener_arn = module.ecs_fargate_service.aws_lb_listener.nlb_listener.arn
+  listener_arn = module.ecs_fargate_service.nlb_listener_arn
 
   action {
     type = "fixed-response"
