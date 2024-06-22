@@ -6,6 +6,8 @@ If we want to store non string values here we will need to add in the variables
 and do a lil more advanced file writing
 """
 
+from cloud.shared.bin.lib.variables import Variables
+
 
 class TfVarWriter:
 
@@ -17,14 +19,20 @@ class TfVarWriter:
         with open(self.filepath, "w") as tf_vars_file:
             for name, definition in config_vars.items():
                 # Special key that has a dict value.
-                if name == "civiform_server_environment_variables":
+                if name == Variables.CIVIFORM_SERVER_VARIABLES_KEY:
                     tf_vars_file.write(
-                        "civiform_server_environment_variables = {\n")
+                        f"{Variables.CIVIFORM_SERVER_VARIABLES_KEY} = {{\n")
                     for key, value in definition.items():
                         if value is not None:
                             tf_vars_file.write(f'  "{key}"="{value}"\n')
                     tf_vars_file.write("}\n")
                     continue
 
-                if definition is not None:
+                # Special handling for "list" type variables
+                if name == Variables.TERRAFORM_LIST_VARIABLES_KEY:
+                    for key, value in definition.items():
+                        if value is not None:
+                            tf_vars_file.write(f'{key.lower()}={value}\n')
+
+                elif definition is not None:
                     tf_vars_file.write(f'{name.lower()}="{definition}"\n')

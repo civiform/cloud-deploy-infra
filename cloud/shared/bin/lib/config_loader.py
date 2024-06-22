@@ -17,8 +17,7 @@ from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.write_tfvars import TfVarWriter
 from cloud.shared.bin.lib.variable_definition_loader import \
     load_variables_definitions
-
-CIVIFORM_SERVER_VARIABLES_KEY = "civiform_server_environment_variables"
+from cloud.shared.bin.lib.variables import Variables
 
 
 class ConfigLoader:
@@ -370,13 +369,23 @@ class ConfigLoader:
             self, config_fields: dict, infra_variable_definitions: dict,
             civiform_server_env_var_definitions: dict):
         out = {}
+        terraform_list_variables = {}
 
         for name, definition in infra_variable_definitions.items():
             if not definition.get("tfvar", False):
                 continue
 
             if name in config_fields:
-                out[name] = config_fields[name]
+                # List variables get special handling when writing the tfvars
+                if definition.get("type") == "list":
+                    terraform_list_variables[name] = config_fields[name]
+                else:
+                    out[name] = config_fields[name]
+
+        # Create a map of terraform list variables, since those are handled differently
+        if terraform_list_variables:
+            out[Variables.
+                TERRAFORM_LIST_VARIABLES_KEY] = terraform_list_variables
 
         if civiform_server_env_var_definitions:
             env_vars = {}
@@ -390,7 +399,7 @@ class ConfigLoader:
                     else:
                         env_vars[name] = config_fields[name]
 
-            out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
+            out[Variables.CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
 
         return out
 
