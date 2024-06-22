@@ -18,7 +18,7 @@ jobs:
     concurrency: run-e2e-aws-oidc
     steps:
       - name: Set up Python 3.7
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.7'
         
