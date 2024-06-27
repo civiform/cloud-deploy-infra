@@ -11,8 +11,8 @@ if [[ "${CIVIFORM_MODE}" == "prod" ]]; then
   readonly BASE_URL="https://${CUSTOM_HOSTNAME}"
   readonly STAGING_HOSTNAME=""
 elif [[ "${CIVIFORM_MODE}" == "staging" ]]; then
-  readonly BASE_URL="https://staging-lucky-grouse-canary.azurewebsites.net"
-  readonly STAGING_HOSTNAME="staging-lucky-grouse-canary.azurewebsites.net"
+  readonly BASE_URL="https://staging-azure.civiform.dev"
+  readonly STAGING_HOSTNAME="staging-azure.civiform.dev"
 else
   readonly BASE_URL="https://${PRIMARY_URL}"
   readonly STAGING_HOSTNAME="${PRIMARY_URL}"
