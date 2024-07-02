@@ -13,11 +13,11 @@ import urllib.request
 from enum import Enum
 from typing import Callable, List
 
-from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
+from cloud.shared.bin.lib.color import cyan
 
 
 def run(config: ConfigLoader):
@@ -103,13 +103,35 @@ def _wait_for_pgadmin_response(url):
 def _print_connection_info(config, url):
     aws = AwsCli(config)
     prefix = f"{config.app_prefix}"
+    print(f"\npgadmin connection info:\n"
+          f"  URL: {cyan(url)}\n")
+    pgadmin_username_secret = prefix + '-cf-pgadmin-default-username'
+    pgadmin_password_secret = prefix + '-cf-pgadmin-default-password'
+    database_password_secret = prefix + '-civiform_postgres_password'
     print(
-        f"\npgamdin connection info:\n"
-        f"  URL: {url}\n"
-        f"  login email: {aws.get_secret_value(prefix + '-cf-pgadmin-default-username')}\n"
-        f"  login password: {aws.get_secret_value(prefix + '-cf-pgadmin-default-password')}\n"
-        f"  database password: {aws.get_secret_value(prefix + '-civiform_postgres_password')}"
+        'To use the pgAdmin instance, you will need the pgadmin username, pgadmin password, and the PostgreSQL database password. Because these are sensitive values, you can either choose to print them here, or look them up yourself. To look them up, find the secret in AWS Secrets Manager, or run the "aws secretsmanager get-secret-value --secret-id=<secret name>" command. If you choose not to print them here, the name of the secret will be printed instead.\n'
     )
+    answer = input(
+        'Would you like to print the pgadmin username and password? [y/N]> ')
+    if answer.lower() in ['y', 'yes']:
+        print(
+            f"  pgAdmin login username: {cyan(aws.get_secret_value(pgadmin_username_secret))}\n"
+            f"  pgAdmin login password: {cyan(aws.get_secret_value(pgadmin_password_secret))}\n"
+        )
+    else:
+        print(
+            f"The name of the pgAdmin username secret is '{cyan(pgadmin_username_secret)}' and the pgAdmin password secret is '{cyan(pgadmin_password_secret)}'."
+        )
+
+    answer = input('Would you like to print the database password? [y/N]> ')
+    if answer.lower() in ['y', 'yes']:
+        print(
+            f"  PostgreSQL database password: {cyan(aws.get_secret_value(database_password_secret))}"
+        )
+    else:
+        print(
+            f"The name of the PostgreSQL database password secret is '{cyan(database_password_secret)}'."
+        )
 
 
 UserPrompt = str

@@ -15,16 +15,17 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.color import Color
+from cloud.shared.bin.lib.color import red, yellow, green
 
 
 def run(config: ConfigLoader):
     aws = AwsCli(config)
     print(
+        red(
+            '!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.\n\n'
+        ),
         textwrap.dedent(
-            f"""
-        {Color.RED}!!! WARNING !!!: This command will create a dump of the entire database, including personally identifiable information (PII). Ensure you take the utmost care in handling this data and store it in a secure location.{Color.END}
-
+            """
         This process will set up a temporary EC2 host with access to the database, use SSH to run the pg_dump command on that host, then SCP the file to this machine. You will need to confirm the application of the Terraform manifest that creates these temporary resources, and then confirm the teardown of these resources.
         
         If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.
@@ -127,12 +128,14 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             input(
-                f'{Color.GREEN}Database dump complete. Press Enter to tear down the temporary resources.{Color.END}'
-            )
+                green(
+                    'Database dump complete. Press Enter to tear down the temporary resources.'
+                ))
         except:
             input(
-                f"\n{Color.RED}Error occurred. See details above. Press Enter to tear down the temporary resources.{Color.END}"
-            )
+                red(
+                    '\nError occurred. See details above. Press Enter to tear down the temporary resources.'
+                ))
             raise
         finally:
             print('Cleaning up resources')
@@ -151,8 +154,9 @@ def _detect_public_ip() -> str:
             return ip
     except:
         print(
-            f'{Color.YELLOW}Unable to find the public IP of this machine using checkip.amazonaws.com.{Color.END}'
-        )
+            yellow(
+                'Unable to find the public IP of this machine using checkip.amazonaws.com.'
+            ))
         return _ask_for_ip()
 
 
@@ -163,9 +167,7 @@ def _ask_for_ip() -> str:
             ipaddress.IPv4Address(answer)
             return answer
         except ValueError:
-            print(
-                f'{Color.YELLOW}Invalid IP address. Please try again.{Color.END}'
-            )
+            print(yellow('Invalid IP address. Please try again.'))
 
 
 def _run_cmd(cmd, quiet=False):
@@ -175,12 +177,10 @@ def _run_cmd(cmd, quiet=False):
             break
         except subprocess.CalledProcessError as e:
             if not quiet:
-                print(Color.RED)
-                print('Error running command:')
-                print("Command:", e.cmd)
-                print("Return code:", e.returncode)
-                print("Output:", e.output.decode())
-                print(Color.END)
+                print(red('Error running command:'))
+                print(red("Command: " + e.cmd))
+                print(red("Return code: " + e.returncode))
+                print(red("Output: " + e.output.decode()))
             raise e
 
 

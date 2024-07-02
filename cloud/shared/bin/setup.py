@@ -9,7 +9,7 @@ from cloud.shared.bin.lib.setup_class_loader import get_config_specific_setup
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin import destroy
-from cloud.shared.bin.lib.color import Color
+from cloud.shared.bin.lib.color import red, cyan
 """
 Setup.py sets up and runs the initial terraform deployment. It's broken into
 2 parts:
@@ -53,14 +53,18 @@ def run(config: ConfigLoader, params: List[str]):
     secret_length = config.get_config_var("RANDOM_PASSWORD_LENGTH")
     if not secret_length:
         print(
-            f'{Color.RED}RANDOM_PASSWORD_LENGTH is not set in the config file. Please add {Color.CYAN}export RANDOM_PASSWORD_LENGTH=64{Color.RED} to your config file and rerun this script.{Color.END}'
-        )
+            red(
+                'RANDOM_PASSWORD_LENGTH is not set in the config file. Please add '
+            ) + cyan('export RANDOM_PASSWORD_LENGTH=64') +
+            red(' to your config file and rerun this script.'))
         exit(1)
 
     if int(secret_length) < 32:
         print(
-            f'{Color.RED}RANDOM_PASSWORD_LENGTH is currently set to {secret_length}, but it must be 32 or greater. Please add {Color.CYAN}export RANDOM_PASSWORD_LENGTH=64{Color.RED} to your config file and rerun this script.{Color.END}'
-        )
+            red(
+                f'RANDOM_PASSWORD_LENGTH is currently set to {secret_length}, but it must be 32 or greater. Please add '
+            ) + cyan('export RANDOM_PASSWORD_LENGTH=64') +
+            red(' to your config file and rerun this script.'))
         exit(1)
 
     template_setup = get_config_specific_setup(config)
