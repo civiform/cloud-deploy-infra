@@ -33,7 +33,5 @@ class TfVarWriter:
                         parsed_definition = json.loads(definition)
                     except json.JSONDecodeError as e:
                         parsed_definition = definition
-                    if isinstance(parsed_definition, list):
-                        tf_vars_file.write(f'{name.lower()}={definition}\n')
-                    else:
-                        tf_vars_file.write(f'{name.lower()}="{definition}"\n')
+                    formatted_value = definition if isinstance(parsed_definition, list) else f'"{definition}"'
+                    tf_vars_file.write(f'{name.lower()}={formatted_value}\n')
