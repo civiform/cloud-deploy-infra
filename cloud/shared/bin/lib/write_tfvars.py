@@ -27,4 +27,11 @@ class TfVarWriter:
                     continue
 
                 if definition is not None:
-                    tf_vars_file.write(f'{name.lower()}="{definition}"\n')
+                    try:
+                        parsed_definition = json.loads(definition)
+                    except json.JSONDecodeError as e:
+                        parsed_definition = definition
+                    if isinstance(parsed_definition, list):
+                        tf_vars_file.write(f'{name.lower()}={definition}\n')
+                    else:
+                        tf_vars_file.write(f'{name.lower()}="{definition}"\n')
