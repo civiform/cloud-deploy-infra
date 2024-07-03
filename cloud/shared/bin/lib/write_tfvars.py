@@ -6,6 +6,8 @@ If we want to store non string values here we will need to add in the variables
 and do a lil more advanced file writing
 """
 
+import json
+
 
 class TfVarWriter:
 
