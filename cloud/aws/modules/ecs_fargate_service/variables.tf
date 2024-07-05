@@ -55,6 +55,11 @@ variable "container_name" {
   description = "Name of the running container"
 }
 
+variable "lb_internal" {
+  description = "Whether the load balancer should be internal"
+  default     = false
+}
+
 #------------------------------------------------------------------------------
 # AWS ECS SERVICE AUTOSCALING
 #------------------------------------------------------------------------------
