@@ -34,7 +34,7 @@ resource "aws_db_instance" "civiform" {
     Type = "Civiform Database"
   }
 
-  apply_immediately = true
+  apply_immediately = var.apply_database_changes_immediately
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
   snapshot_identifier             = var.postgres_restore_snapshot_identifier
@@ -137,6 +137,17 @@ resource "aws_security_group" "rds" {
       to_port     = 5432
       protocol    = "tcp"
       cidr_blocks = ["${ingress.value}/32"]
+    }
+  }
+
+  dynamic "ingress" {
+    for_each = local.enable_managed_vpc ? [] : [1]
+    # If the VPC is managed outside of terraform, we need to ensure that the tasks have access to the database to make connections
+    content {
+      from_port       = 5432
+      to_port         = 5432
+      protocol        = "tcp"
+      security_groups = [module.ecs_fargate_service.aws_security_group_ecs_tasks_access_sg_id]
     }
   }
 }

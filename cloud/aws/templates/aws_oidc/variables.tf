@@ -508,6 +508,12 @@ variable "postgresql_version" {
   default     = "16"
 }
 
+variable "apply_database_changes_immediately" {
+  type        = bool
+  description = "Apply database changes, such as a database version upgrade, during this deployment. When false, database changes will apply during the next maintenance window. This variable will be forced to 'true' when a major PostgreSQL version upgrade is needed."
+  default     = false
+}
+
 variable "external_vpc_database_subnet_group_name" {
   type        = string
   description = "The externally managed database subnet group name."

@@ -5,7 +5,7 @@ from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.color import Color
+from cloud.shared.bin.lib.color import red, yellow, cyan
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 
@@ -38,8 +38,9 @@ def _check_application_secret_length(config: ConfigLoader, aws: AwsCli):
         secret_length = aws.get_application_secret_length()
         if secret_length < 32:
             print(
-                f'{Color.RED}The application secret must be at least 32 characters in length, and ideally 64 characters. The current secret has a length of {secret_length}. See https://docs.civiform.us/it-manual/sre-playbook/initial-deployment/terraform-deploy-system#rotating-the-application-secret for details on how to regenerate the secret with a longer length.{Color.END}'
-            )
+                red(
+                    f'The application secret must be at least 32 characters in length, and ideally 64 characters. The current secret has a length of {secret_length}. See https://docs.civiform.us/it-manual/sre-playbook/initial-deployment/terraform-deploy-system#rotating-the-application-secret for details on how to regenerate the secret with a longer length.'
+                ))
             exit(1)
 
 
@@ -74,38 +75,44 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
         if major_to_apply != current_major:
             print(
                 textwrap.dedent(
-                    f'''
-                {Color.CYAN}This version of CiviForm contains an upgrade to PostgreSQL {major_to_apply}. Your install is currently using PostgreSQL version {current_version}.
+                    cyan(
+                        f'''
+                This version of CiviForm contains an upgrade to PostgreSQL {major_to_apply}. Your install is currently using PostgreSQL version {current_version}.
                 
                 The upgrade may take an extra 10-20 minutes to complete, during which time the CiviForm application will be unavailable. Before upgrading, ensure you have a backup of your database. You can do this by running bin/run and choosing the dumpdb command.
                 
-                Additionally, a snapshot will be performed just prior to the upgrade. The snapshot will have a name that starts with "preupgrade". You may also have a snapshot called "{config.app_prefix}-civiform-db-finalsnapshot".{Color.END}
-                '''))
+                Additionally, a snapshot will be performed just prior to the upgrade. The snapshot will have a name that starts with "preupgrade". You may also have a snapshot called "{config.app_prefix}-civiform-db-finalsnapshot".
+                ''')))
             if major_to_apply < current_major:
                 print(
-                    f'{Color.RED}Your current version of PostgreSQL appears to be newer than the version specified for this CiviForm release. Ensure you are using the correct version of the cloud-deploy-infra repo and POSTGRESQL_VERSION is unset or set appropriately.{Color.END}'
-                )
+                    red(
+                        'Your current version of PostgreSQL appears to be newer than the version specified for this CiviForm release. Ensure you are using the correct version of the cloud-deploy-infra repo and POSTGRESQL_VERSION is unset or set appropriately.'
+                    ))
                 exit(1)
             if major_to_apply != 16:
                 print(
-                    f'{Color.RED}Unsupported upgrade to PostgreSQL version {major_to_apply} specified for POSTGRESQL_VERSION. If this seems incorrect, contact a CiviForm maintainer.{Color.END}'
-                )
+                    red(
+                        f'Unsupported upgrade to PostgreSQL version {major_to_apply} specified for POSTGRESQL_VERSION. If this seems incorrect, contact a CiviForm maintainer.'
+                    ))
                 exit(1)
             if current_major == 12 and current_minor < 17:
                 print(
-                    f'{Color.RED}In order to upgrade to PostgreSQL {major_to_apply}, you must first upgrade to PostgreSQL 12.17 or a later PostgreSQL 12 minor version. You will need to perform this upgrade in the AWS RDS console before proceeding.{Color.END}'
-                )
+                    red(
+                        f'In order to upgrade to PostgreSQL {major_to_apply}, you must first upgrade to PostgreSQL 12.17 or a later PostgreSQL 12 minor version. You will need to perform this upgrade in the AWS RDS console before proceeding.'
+                    ))
                 exit(1)
             if current_version not in upgrade_path.keys():
                 print(
-                    f'{Color.YELLOW}This version of the CiviForm deployment tool has no information about your current PostgreSQL version of {current_version} and thus cannot choose the correct version to upgrade to. If you proceed, we will attempt to upgrade to the latest {major_to_apply}.x version, but this may not succeed. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html to verify that this is a valid upgrade path.{Color.END}'
-                )
+                    yellow(
+                        f'This version of the CiviForm deployment tool has no information about your current PostgreSQL version of {current_version} and thus cannot choose the correct version to upgrade to. If you proceed, we will attempt to upgrade to the latest {major_to_apply}.x version, but this may not succeed. Check https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.html to verify that this is a valid upgrade path.'
+                    ))
                 if os.getenv('SKIP_USER_INPUT'):
                     print('Proceeding since SKIP_USER_INPUT is set.')
                 else:
                     answer = input(
-                        f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
-                    )
+                        yellow(
+                            'Would you like to proceed with the upgrade? (y/N): '
+                        ))
                     if answer.lower() not in ['y', 'yes']:
                         exit(1)
             else:
@@ -122,12 +129,20 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                         'Proceeding with upgrade since SKIP_USER_INPUT is set.')
                 else:
                     answer = input(
-                        f'{Color.YELLOW}Would you like to proceed with the upgrade? (y/N): {Color.END}'
-                    )
+                        yellow(
+                            'Would you like to proceed with the upgrade? (y/N): '
+                        ))
                     if answer.lower() not in ['y', 'yes']:
                         exit(2)
                 config.add_config_value('ALLOW_POSTGRESQL_UPGRADE', 'true')
 
+            # We must force APPLY_DATABASE_CHANGES_IMMEDIATELY to true, since we are changing the database parameters along
+            # with the database itself, and we need to apply both changes at the same time. We can't wait for the next
+            # maintenance window.
+            config.add_config_value(
+                'APPLY_DATABASE_CHANGES_IMMEDIATELY', 'true')
+
             print(
-                f'{Color.CYAN}Proceeding with upgrade to PostgreSQL {config.get_config_var("POSTGRESQL_VERSION")}.{Color.END}'
-            )
+                cyan(
+                    f'Proceeding with upgrade to PostgreSQL {config.get_config_var("POSTGRESQL_VERSION")}.'
+                ))

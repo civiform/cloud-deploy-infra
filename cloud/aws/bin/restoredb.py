@@ -13,20 +13,24 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
-from cloud.shared.bin.lib.color import Color
+from cloud.shared.bin.lib.color import red, yellow, green
 
 
 def run(config: ConfigLoader):
     aws = AwsCli(config)
     print(
+        red(
+            textwrap.dedent(
+                f"""
+                !!! WARNING !!!: This command will overwrite the entire database with the contents of the dump file. Ensure this is really what you want to do before proceeding. 
+                
+                You should ideally only restore the database to the same version of CiviForm that the dump was taken from. Restoring an older database to a newer CiviForm version may work, but may require additional steps, such as redeploying the application. Restoring a newer database dump to an older CiviForm version is not supported.
+                
+                Additionally, any files uploaded as part of applications that were submitted after the time of the database dump will become orphaned and may need to be manually cleaned up.
+                
+                """)),
         textwrap.dedent(
-            f"""
-            {Color.RED}!!! WARNING !!!: This command will overwrite the entire database with the contents of the dump file. Ensure this is really what you want to do before proceeding. 
-            
-            You should ideally only restore the database to the same version of CiviForm that the dump was taken from. Restoring an older database to a newer CiviForm version may work, but may require additional steps, such as redeploying the application. Restoring a newer database dump to an older CiviForm version is not supported.
-            
-            Additionally, any files uploaded as part of applications that were submitted after the time of the database dump will become orphaned and may need to be manually cleaned up.{Color.END}
-
+            """
             The input to this command is expected to be a dump file generated via the 'dumpdb' command. This process will set up a temporary EC2 host with access to the database, use SCP to copy the dump file to that host, then SSH to run the pg_restore command.
 
             If something goes wrong and this process is interrupted before it tears down the resources, you can find them all with the "Module = dbaccess" tag in the AWS console. They should be deleted manually.
@@ -42,14 +46,14 @@ def run(config: ConfigLoader):
         dumpfile = input('Enter the full path of the dump file to restore: ')
         if not os.path.isfile(dumpfile):
             print(
-                f'{Color.YELLOW}File not found. Please verify the path and try again.{Color.END}'
-            )
+                yellow('File not found. Please verify the path and try again.'))
             continue
         with open(dumpfile, 'rb') as f:
             if f.read(5) != b'PGDMP':
                 answer = input(
-                    f'{Color.YELLOW}File does not appear to be a valid PostgreSQL dump file. Are you sure you wish to use this file? (y/N): {Color.END}'
-                )
+                    yellow(
+                        'File does not appear to be a valid PostgreSQL dump file. Are you sure you wish to use this file? (y/N): '
+                    ))
                 if answer.lower() == 'y':
                     break
             else:
@@ -131,12 +135,14 @@ def run(config: ConfigLoader):
             _run_cmd(cmd)
 
             input(
-                f'{Color.GREEN}Database restore complete. Press Enter to tear down the temporary resources.{Color.END}'
-            )
+                green(
+                    'Database restore complete. Press Enter to tear down the temporary resources.'
+                ))
         except:
             input(
-                f"\n{Color.RED}Error occurred. See details above. Press Enter to tear down the temporary resources.{Color.END}"
-            )
+                red(
+                    '\nError occurred. See details above. Press Enter to tear down the temporary resources.'
+                ))
             raise
         finally:
             print('Cleaning up resources')
@@ -155,8 +161,9 @@ def _detect_public_ip() -> str:
             return ip
     except:
         print(
-            f'{Color.YELLOW}Unable to find the public IP of this machine using checkip.amazonaws.com.{Color.END}'
-        )
+            yellow(
+                'Unable to find the public IP of this machine using checkip.amazonaws.com.'
+            ))
         return _ask_for_ip()
 
 
@@ -167,9 +174,7 @@ def _ask_for_ip() -> str:
             ipaddress.IPv4Address(answer)
             return answer
         except ValueError:
-            print(
-                f'{Color.YELLOW}Invalid IP address. Please try again.{Color.END}'
-            )
+            print(yellow('Invalid IP address. Please try again.'))
 
 
 def _run_cmd(cmd, quiet=False):
@@ -179,12 +184,10 @@ def _run_cmd(cmd, quiet=False):
             break
         except subprocess.CalledProcessError as e:
             if not quiet:
-                print(Color.RED)
-                print('Error running command:')
-                print("Command:", e.cmd)
-                print("Return code:", e.returncode)
-                print("Output:", e.output.decode())
-                print(Color.END)
+                print(red('Error running command:'))
+                print(red("Command: " + e.cmd))
+                print(red("Return code: " + e.returncode))
+                print(red("Output: " + e.output.decode()))
             raise e
 
 

@@ -26,7 +26,7 @@ locals {
 resource "aws_lb" "civiform_lb" {
   name = substr("${local.name_prefix}-lb", 0, 31)
 
-  internal                         = false
+  internal                         = var.lb_internal
   load_balancer_type               = "application"
   drop_invalid_header_fields       = false
   subnets                          = var.public_subnets

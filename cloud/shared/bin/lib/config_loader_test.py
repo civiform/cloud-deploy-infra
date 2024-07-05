@@ -381,6 +381,14 @@ class TestConfigLoader(unittest.TestCase):
                     "tfvar": True,
                     "type": "string"
                 },
+            "FOO_2":
+                {
+                    "required": False,
+                    "secret": False,
+                    "tfvar": True,
+                    "type": "list",
+                    "list_type": "string"
+                },
         }
         config_loader._infra_variable_definitions = defs
 
@@ -405,12 +413,14 @@ class TestConfigLoader(unittest.TestCase):
                 mode=Mode.ADMIN_READABLE)
         config_loader._config_fields = config_fields = {
             "FOO_0": "item0, item1, item2",
-            "FOO_1": "normal string"
+            "FOO_1": "normal string",
+            "FOO_2": ["test1", "test2"]
         }
 
         terraform_vars = config_loader.get_terraform_variables()
-        self.assertEqual(2, len(terraform_vars))
+        self.assertEqual(3, len(terraform_vars))
         self.assertEqual(terraform_vars["FOO_1"], "normal string")
+        self.assertEqual(terraform_vars["FOO_2"], ["test1", "test2"])
 
         server_vars = terraform_vars[CIVIFORM_SERVER_VARIABLES_KEY]
         self.assertEqual(server_vars["FOO_1"], "normal string")

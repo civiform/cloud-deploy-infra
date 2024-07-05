@@ -34,11 +34,6 @@ variable "public_subnet" {
   type        = string
   description = "ID of the public subnet to deploy the dbaccess instance in"
 }
-variable "host_ami" {
-  type        = string
-  description = "AMI ID to use for the dbaccess instance"
-  default     = "ami-080e1f13689e07408"
-}
 variable "host_type" {
   type        = string
   description = "Instance type to use for the dbaccess instance"
