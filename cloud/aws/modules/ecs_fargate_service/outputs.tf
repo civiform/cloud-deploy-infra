@@ -8,11 +8,16 @@ output "aws_lb_civiform_lb_arn" {
 }
 
 output "aws_security_group_lb_access_sg_id" {
-  description = "The ID of the security group"
+  description = "The ID of the LB access security group"
   value       = aws_security_group.lb_access_sg.id
 }
 
+output "aws_security_group_ecs_tasks_access_sg_id" {
+  description = "The ID of the ECS tasks access security group"
+  value       = aws_security_group.ecs_tasks_sg.id
+}
+
 output "aws_ecs_service_name" {
-  description = "The service name of the aws ecs service."
+  description = "The name of the AWS ECS service"
   value       = aws_ecs_service.service.name
 }
