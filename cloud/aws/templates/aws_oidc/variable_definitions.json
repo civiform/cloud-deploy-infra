@@ -424,5 +424,11 @@
     "tfvar": true,
     "type": "list",
     "list_type": "string"
+  },
+  "APPLY_DATABASE_CHANGES_IMMEDIATELY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
