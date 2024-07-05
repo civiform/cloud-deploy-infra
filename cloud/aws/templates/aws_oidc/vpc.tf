@@ -19,6 +19,7 @@ locals {
   vpc_public_subnets             = local.enable_managed_vpc ? module.vpc[0].public_subnets : data.aws_subnets.external_public_subnets
   vpc_private_subnet_ids         = local.enable_managed_vpc ? module.vpc[0].private_subnets : var.external_vpc_private_subnet_ids
   vpc_public_subnet_ids          = local.enable_managed_vpc ? module.vpc[0].public_subnets : var.external_vpc_public_subnet_ids
+  vpc_database_subnet_group_name = local.enable_managed_vpc ? module.vpc[0].database_subnet_group_name : data.aws_db_subnet_group.external[0].name
 }
 
 module "vpc" {
