@@ -51,6 +51,9 @@ export DOCKER_USERNAME="civiform"
 # Supported values: "oidc", "saml"
 export CIVIFORM_APPLICANT_AUTH_PROTOCOL="oidc"
 
+# Allow for setting admin writeable values in this config file
+export ALLOW_ADMIN_WRITEABLE=true
+
 # Deployment-specific Civiform configuration
 #################################################
 
