@@ -175,7 +175,7 @@ variable "rds_create_low_memory_alarm" {
 variable "rds_low_memory_threshold" {
   type        = string
   description = "The threshold for the low freeable memory (in bytes) before the alarm gets triggered (if enabled)."
-  default     = "150000000" // ~150 MB
+  default     = "75000000" // ~75 MB
 }
 
 variable "rds_create_low_cpu_credit_alarm" {
