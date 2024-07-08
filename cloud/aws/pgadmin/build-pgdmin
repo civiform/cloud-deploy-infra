@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+# Builds the customized pgadmin Docker image.
+
+set -e
+set +x
+
+readonly SHORT_SHA="$(git rev-parse --short HEAD)"
+readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
+readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
+readonly IMAGE="pgadmin"
+readonly PLATFORM=linux/amd64
+
+echo "start ${IMAGE} build"
+docker buildx create --use
+docker buildx build --push \
+  --platform "${PLATFORM}" \
+  -t "docker.io/civiform/${IMAGE}:latest" \
+  -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
+  -f pgadmin.Dockerfile .

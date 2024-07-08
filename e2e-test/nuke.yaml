@@ -1,0 +1,58 @@
+regions:
+  - us-east-1
+  - global
+
+account-blocklist:
+  - "664198874744"
+  - "305584670637" 
+  - "496466114051"
+  - "559421412203"
+  - "859704899281"
+  - "098472360576"
+
+accounts:
+  "296877675213": # civiform-deploy-e2e-tests AWS account.
+    filters:
+      ACMCertificate:
+        - type: glob
+          property: "DomainName"
+          value: "*.civiform.dev"
+      IAMOpenIDConnectProvider:
+        - type: glob
+          value: "arn:aws:iam::*:oidc-provider/token.actions.githubusercontent.com"
+      IAMRole:
+        - "OrganizationAccountAccessRole"
+        - "e2e-test-runner"
+        - property: "Name"
+          regex: "^AWSReservedSSO_.+$"
+        - property: "Name"
+          type: glob
+          value: "*-deploy-action"
+      IAMRolePolicy:
+        - property: "Name"
+          regex: "^AWSReservedSSO_.+$"
+      IAMRolePolicyAttachment:
+        - "OrganizationAccountAccessRole -> AdministratorAccess"
+        - "e2e-test-runner -> AdministratorAccess"
+        - property: "RoleName"
+          regex: "^AWSReservedSSO_.+$"
+        - property: "RoleName"
+          type: glob
+          value: "*-deploy-action"
+      IAMSAMLProvider:
+        - type: glob
+          value: "arn:aws:iam::*:saml-provider/AWSSSO_*"
+      OpsWorksUserProfile:
+        - type: glob
+          value: "arn:aws:sts::*:assumed-role/OrganizationAccountAccessRole/*"
+      OSPackage:
+        - property: "PackageName"
+          type: regex
+          value: "^(analysis-\\w+|amazon-personalized-ranking)*"
+      IAMUser:
+        - 'e2e-test-runner'
+      IAMUserAccessKey:
+        - property: "UserName"
+          value: "e2e-test-runner"
+      IAMUserPolicyAttachment:
+        - "e2e-test-runner -> AdministratorAccess"

@@ -16,13 +16,21 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      USE_LOCAL_BACKEND: true
+      SKIP_USER_INPUT: true
     steps:
       - name: Check out branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+        
+      - name: Install requests
+        run: pip install requests
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -35,8 +43,9 @@ jobs:
         run: |
           #  Grab the config from the staging deploy repo to confirm
           #  the changes work with actual data
-          curl https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/aws_staging_civiform_config.sh > civiform_config.sh
-          echo 'CIVIFORM_MODE="test"' >> civiform_config.sh
+          curl https://raw.githubusercontent.com/civiform/civiform-staging-deploy/main/aws_staging_civiform_config.sh -H "Authorization: Bearer ${{ secrets.CIVIFORM_GITHUB_AUTOMATION_PERSONAL_ACCESS_TOKEN }}" > civiform_config.sh
+          echo 'export CIVIFORM_MODE="test"' >> civiform_config.sh
+          echo 'export USE_LOCAL_BACKEND=true' >> civiform_config.sh
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run deploy with latest tag
         run: |
@@ -46,7 +55,8 @@ jobs:
 
       - name: Source config, set CIVIFORM_MODE to be "test", Run setup with latest tag
         run: |
-          echo 'APP_PREFIX="$(git rev-parse --short HEAD)"' >> civiform_config.sh
+          export TEST_CONFIG_CONTENT="export APP_PREFIX="$(git rev-parse --short HEAD)
+          echo $TEST_CONFIG_CONTENT >> civiform_config.sh
           export IMAGE_TAG="${LATEST_SNAPSHOT_TAG}"
           cloud/shared/bin/setup
           exit $?

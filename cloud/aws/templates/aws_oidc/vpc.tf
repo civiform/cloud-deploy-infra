@@ -2,9 +2,29 @@
 
 data "aws_availability_zones" "available" {}
 
+locals {
+  // If any of the external_vpc variables are not set, we will switch to use the
+  // managed VPC (use this Terraform config to create the VPC network).
+  enable_managed_vpc = anytrue([
+    var.external_vpc_database_subnet_group_name == "",
+    var.external_vpc_id == "",
+    length(var.external_vpc_private_subnet_ids) > 0,
+    length(var.external_vpc_public_subnet_ids) > 0,
+  ])
+}
+
+locals {
+  vpc_id                         = local.enable_managed_vpc ? module.vpc[0].vpc_id : data.aws_vpc.external[0].id
+  vpc_private_subnets            = local.enable_managed_vpc ? module.vpc[0].private_subnets : data.aws_subnets.external_private_subnets
+  vpc_public_subnets             = local.enable_managed_vpc ? module.vpc[0].public_subnets : data.aws_subnets.external_public_subnets
+  vpc_database_subnet_group_name = local.enable_managed_vpc ? module.vpc[0].database_subnet_group_name : data.aws_db_subnet_group.external[0].name
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.18.0"
+  version = "5.1.1"
+
+  count = local.enable_managed_vpc ? 1 : 0
 
   name             = "${var.app_prefix}-${var.vpc_name}"
   cidr             = var.vpc_cidr
@@ -72,19 +92,7 @@ module "vpc" {
 
 }
 
-resource "aws_security_group" "rds" {
-  tags = {
-    Name = "${var.app_prefix} Civiform DB Security Group"
-    Type = "Civiform DB Security Group"
-  }
-  name   = "${var.app_prefix}-civiform_rds"
-  vpc_id = module.vpc.vpc_id
-
-  ingress {
-    from_port = 5432
-    to_port   = 5432
-    protocol  = "tcp"
-    # Only apps within VPCs can access the database.
-    cidr_blocks = var.private_subnets
-  }
+moved {
+  from = module.vpc
+  to   = module.vpc[0]
 }

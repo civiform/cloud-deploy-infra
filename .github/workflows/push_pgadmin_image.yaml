@@ -1,0 +1,46 @@
+name: build_push_pgadmin_image
+
+on:
+  push:
+    branches: 
+    - main
+  # Setting this enables manually triggering workflow in the GitHub UI
+  # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+  workflow_dispatch: {}
+
+permissions: read-all
+
+# Build and push the pgadmin image.
+jobs:
+  build_pgadmin:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: build-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    name: Build pgadmin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - id: file_changes
+        uses: tj-actions/changed-files@v44
+        with:
+          json: 'true'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Run build
+        id: build_and_push_pgadmin
+        env:
+          DOCKER_BUILDKIT: 1
+          PLATFORM: 'linux/amd64'
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/pgadmin/')
+        run: |
+          cd $GITHUB_WORKSPACE/cloud/aws/pgadmin
+          ./build-pgdmin

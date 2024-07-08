@@ -3,6 +3,7 @@ import tempfile
 import shutil
 
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
 
 
@@ -17,7 +18,7 @@ class AwsSetupTemplate(SetupTemplate):
             os.path.join(
                 self.config.get_template_dir(), 'setup',
                 self.config.tfvars_filename))
-        terraform.perform_apply(self.config, is_destroy, template_dir)
+        return terraform.perform_apply(self.config, is_destroy, template_dir)
 
     def setup_log_file(self):
         # TODO(#2606): If remote file exist fetch it here.

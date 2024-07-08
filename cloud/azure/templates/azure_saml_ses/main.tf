@@ -2,11 +2,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.36.1"
+      version = "5.15.0"
     }
     azurerm = {
       source  = "azurerm"
-      version = "3.28.0"
+      version = "3.111.0"
     }
     random = {}
   }
@@ -39,11 +39,7 @@ module "app" {
 
   civiform_time_zone_id = var.civiform_time_zone_id
 
-  civic_entity_short_name            = var.civic_entity_short_name
-  civic_entity_full_name             = var.civic_entity_full_name
-  civic_entity_support_email_address = var.civic_entity_support_email_address
-  civic_entity_logo_with_name_url    = var.civic_entity_logo_with_name_url
-  civic_entity_small_logo_url        = var.civic_entity_small_logo_url
+  civic_entity_small_logo_url = var.civic_entity_small_logo_url
 
   adfs_admin_group = var.adfs_admin_group
 
@@ -60,9 +56,11 @@ module "app" {
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
 
+  feature_flag_reporting_enabled       = var.feature_flag_reporting_enabled
   feature_flag_status_tracking_enabled = var.feature_flag_status_tracking_enabled
   civiform_api_keys_ban_global_subnet  = var.civiform_api_keys_ban_global_subnet
   civiform_server_metrics_enabled      = var.civiform_server_metrics_enabled
+  feature_flag_overrides_enabled       = var.feature_flag_overrides_enabled
 }
 
 module "custom_hostname" {

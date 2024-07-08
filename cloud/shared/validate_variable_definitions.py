@@ -2,8 +2,7 @@ import json
 import os
 import re
 
-from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLoader
-
+from cloud.shared.bin.lib.variable_definition_loader import load_variables_definitions
 
 # Loads all configuration variable definition files and validates each
 # definition for correctness. Exercised by the accompanying test file
@@ -17,14 +16,26 @@ from cloud.shared.bin.lib.variable_definition_loader import VariableDefinitionLo
 #
 #   - Variable definitions may include additional configuration based on their
 #     type.
+
+
+# TODO(#2887) generalize validation code to work on all config files and move
+#       validation into config_loader.py so validation happens during development
+#       rather than only when github action are run during submits.
 class ValidateVariableDefinitions:
 
     def __init__(self, variable_definitions={}):
         self.variable_definitions = variable_definitions
 
+        self.type_specific_validators = {
+            "float": self.validate_float_definition_type,
+            "integer": self.validate_integer_definition_type,
+            "string": self.validate_string_definition_type,
+            "enum": self.validate_enum_definition_type,
+            "bool": self.validate_bool_definition_type,
+            "list": self.validate_list_definition_type,
+        }
+
     def load_repo_variable_definitions_files(self):
-        variable_def_loader = VariableDefinitionLoader(
-            self.variable_definitions)
         # As more variable definition files are added for each cloud provider,
         # add their paths here.
         cwd = os.getcwd()
@@ -34,10 +45,10 @@ class ValidateVariableDefinitions:
             f"{cwd}/cloud/azure/templates/azure_saml_ses/variable_definitions.json",
         ]
 
+        vars = {}
         for path in definition_file_paths:
-            variable_def_loader.load_definition_file(path)
-        self.variable_definitions = variable_def_loader.get_variable_definitions(
-        )
+            vars.update(load_variables_definitions(path))
+        self.variable_definitions = vars
 
     def get_validation_errors(self):
         all_errors = {}
@@ -66,21 +77,13 @@ class ValidateVariableDefinitions:
             errors.append("Missing 'type' field.")
             return errors
 
-        type_specific_validators = {
-            "float": self.validate_float_definition_type,
-            "integer": self.validate_integer_definition_type,
-            "string": self.validate_string_definition_type,
-            "enum": self.validate_enum_definition_type,
-            "bool": self.validate_bool_definition_type,
-        }
-
-        validator = type_specific_validators.get(
+        validator = self.type_specific_validators.get(
             variable_definition["type"], None)
 
         if validator:
             errors.extend(validator(variable_definition))
         else:
-            supported_typed = list(type_specific_validators.keys())
+            supported_typed = list(self.type_specific_validators.keys())
             errors.append(
                 f"Unknown or missing 'type' field. Supported types {supported_typed}"
             )
@@ -95,6 +98,22 @@ class ValidateVariableDefinitions:
 
     def validate_bool_definition_type(self, variable_definition):
         return []
+
+    def validate_list_definition_type(self, variable_definition):
+        errors = []
+
+        list_type = variable_definition.get("list_type", None)
+        supported_types = list(self.type_specific_validators.keys())
+
+        if list_type is None:
+            errors.append(
+                "'list_type' field is required for list type variables.")
+        elif list_type not in supported_types:
+            errors.append(
+                f"Invalid 'list_type' value '{list_type}'. Supported types are {supported_types}."
+            )
+
+        return errors
 
     def validate_string_definition_type(self, variable_definition):
         maybe_value_regex = variable_definition.get("value_regex", None)

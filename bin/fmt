@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+# DOC: Format terraform, python, and shell script files.
+
+if which terraform; then
+  echo "Formatting Terraform files"
+  terraform fmt -recursive -write
+else
+  echo "Can not find the terraform binary. Please install Terraform first."
+  exit 1
+fi
+
+if which shfmt; then
+  echo "Formatting shell scripts"
+  shfmt -bn -ci -i 2 -w -l $(shfmt -f .)
+else
+  echo "Could not find the shfmt binary. Please install shfmt first."
+  exit 1
+fi
+
+if which yapf; then
+  echo "Formatting python files"
+  yapf \
+    --verbose \
+    --style='{based_on_style: google, SPLIT_BEFORE_FIRST_ARGUMENT:true}' \
+    --in-place \
+    --recursive \
+    .
+else
+  echo "Could not find yapf. Please install it first."
+  exit 1
+fi

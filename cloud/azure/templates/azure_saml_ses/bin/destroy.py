@@ -3,13 +3,14 @@
 import os
 import subprocess
 
+from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
-"""
-Destroy the setup
-"""
 
 
 class Destroy(SetupTemplate):
+    """
+    Destroy the setup
+    """
 
     def post_terraform_destroy(self):
         print(" - Purge the keyvault")
@@ -31,8 +32,7 @@ class Destroy(SetupTemplate):
         subprocess.run(
             [
                 "az", "keyvault", "purge", "--subscription",
-                self.config.get_config_variables.get("AZURE_SUBSCRIPTION"),
-                "-n",
-                self.config.get_config_variables.get("KEY_VAULT_NAME")
+                self.config.get_config_var("AZURE_SUBSCRIPTION"), "-n",
+                self.config.get_config_var("KEY_VAULT_NAME")
             ],
             check=True)

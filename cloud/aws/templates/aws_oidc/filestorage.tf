@@ -1,3 +1,4 @@
+##### Applicant-uploaded files bucket #####
 resource "aws_s3_bucket" "civiform_files_s3" {
   tags = {
     Name = "${var.app_prefix} Civiform Files"
@@ -81,6 +82,69 @@ resource "aws_s3_bucket_logging" "civiform_files_logging" {
   target_prefix = "file-access-log/"
 }
 
+##### Public files bucket (for program images etc.) #####
+resource "aws_s3_bucket" "civiform_public_files_s3" {
+  tags = {
+    Name = "${var.app_prefix} Civiform Public Files"
+    Type = "Civiform Public Files"
+  }
+
+  bucket        = "${var.app_prefix}-civiform-public-files-s3"
+  force_destroy = local.force_destroy_s3
+}
+
+resource "aws_s3_bucket_public_access_block" "civiform_public_files_access" {
+  bucket = aws_s3_bucket.civiform_public_files_s3.id
+  # We specifically want files in this bucket to be publicly accessible via the
+  # policy specified in civiform_public_files_policy.
+  block_public_policy     = false
+  restrict_public_buckets = false
+  # Because this bucket is BucketOwnerEnforced, we use policies instead of ACLs
+  # to control access, which is why the public_acls values can still be blocked.
+  block_public_acls  = true
+  ignore_public_acls = true
+}
+
+resource "aws_s3_bucket_policy" "civiform_public_files_policy" {
+  bucket     = aws_s3_bucket.civiform_public_files_s3.id
+  policy     = data.aws_iam_policy_document.civiform_public_files_policy.json
+  depends_on = [aws_s3_bucket_public_access_block.civiform_public_files_access]
+}
+
+data "aws_iam_policy_document" "civiform_public_files_policy" {
+  statement {
+    actions = ["s3:*"]
+    effect  = "Allow"
+    resources = [aws_s3_bucket.civiform_public_files_s3.arn,
+    "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+    }
+  }
+  # Allows anyone to view program images.
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    # The location of program images is controlled in the civiform repo in
+    # server/app/services/cloud/PublicFileNameFormatter.java. Be sure to keep these files in sync.
+    resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "civiform_public_files_ownership" {
+  bucket = aws_s3_bucket.civiform_public_files_s3.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+##### Log bucket #####
 resource "aws_s3_bucket" "log_bucket" {
   tags = {
     Name = "${var.app_prefix} Civiform Logs"
@@ -92,8 +156,17 @@ resource "aws_s3_bucket" "log_bucket" {
 }
 
 resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  bucket     = aws_s3_bucket.log_bucket.id
+  depends_on = [aws_s3_bucket_ownership_controls.file_access_logs_bucket_ownership]
+  acl        = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_ownership_controls" "file_access_logs_bucket_ownership" {
   bucket = aws_s3_bucket.log_bucket.id
-  acl    = "log-delivery-write"
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "logging_versioning" {

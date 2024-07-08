@@ -6,20 +6,23 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.print import print
 
-# TODO(#3116): move these to variable_definitions.json and read docs from there.
-# Map of secrets that need to be set by the user and can't be empty values.
-# Key is the name of the secret without app prefix, value is doc shown to user
-# if the secret is unset.
 SECRETS: Dict[str, str] = {
     resources.ADFS_CLIENT_ID:
         'Client id for the ADFS configuration. Enter any value if you do not use ADFS.',
     resources.ADFS_SECRET:
         'Secret for the ADFS configuration. Enter any value if you do not use ADFS.',
     resources.APPLICANT_OIDC_CLIENT_ID:
-        'Client ID for your OIDC provider. Enter any value if you have not set it up yet.',
+        'Client ID for your OIDC provider for applicants. Enter any value if not applicable.',
     resources.APPLICANT_OIDC_CLIENT_SECRET:
-        'Client secret for your OIDC provider. Enter any value if you have not set it up yet.',
+        'Client secret for your OIDC provider for applicants. Enter any value if not applicable.',
+    resources.ADMIN_OIDC_CLIENT_ID:
+        'Client ID for your OIDC provider for admins. Enter any value if not applicable.',
+    resources.ADMIN_OIDC_CLIENT_SECRET:
+        'Client secret for your OIDC provider for admins. Enter any value if not applicable.',
+    resources.ESRI_ARCGIS_API_TOKEN_SECRET:
+        'Client secret for your Esri ArcGis Online api token. Enter any value if not applicable.',
 }
 
 
@@ -35,9 +38,54 @@ class Setup(AwsSetupTemplate):
             raise RuntimeError('Could not find the logged in user')
         return current_user
 
+    def detect_backend_state_resources(self) -> Dict:
+        """
+        Detects if the S3 bucket and DynamoDB table exist that are set up
+        to store the Terraform backend. Returns a dict with two top-level
+        keys of 'bucket' and 'table'. If either of these don't exist, they
+        will have values of None. Otherwise, they will contain data needed
+        to destroy the resource.
+        """
+        print(' - Checking for existing backend state resources')
+        result = {'bucket': None, 'table': None}
+        bucket_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}'
+        bucket_exists = self._aws_cli.resource_exists('bucket', bucket_name)
+        if bucket_exists:
+            result['bucket'] = {'name': bucket_name}
+            key_id = self._aws_cli.s3_bucket_encryption(bucket_name)
+            result['bucket']['encryption_key'] = key_id
+        table_name = f'{self.config.app_prefix}-{resources.S3_TERRAFORM_LOCK_TABLE}'
+        if self._aws_cli.resource_exists('table', table_name):
+            result['table'] = {'name': table_name}
+        return result
+
+    def destroy_backend_resources(self, resources: Dict):
+        """
+        Destroys AWS resources used for storting the Terraform state.
+        Takes a dictionary that is the output of detect_backend_state_resources.
+        Attempts to delete all resources, even if one of the deletions fails.
+        Since we're in a can't-turn-back kind of state once we delete one of
+        these resources, we delete as much as we can so there's less for the user
+        to clean up if something fails.
+        """
+        success = True
+        if resources['bucket']:
+            bucket_name = resources['bucket']['name']
+            success = self._aws_cli.delete_bucket_files(bucket_name) and success
+            if 'encryption_key' in resources['bucket'].keys():
+                success = self._aws_cli.delete_bucket_encryption_key(
+                    resources['bucket']['encryption_key']) and success
+            success = self._aws_cli.delete_bucket_policy(
+                bucket_name) and success
+            success = self._aws_cli.delete_bucket(bucket_name) and success
+        if resources['table']:
+            success = self._aws_cli.delete_table(
+                resources['table']['name']) and success
+        return success
+
     def pre_terraform_setup(self):
         print(' - Running the setup script in terraform')
-        self._tf_run_for_aws(is_destroy=False)
+        return self._tf_run_for_aws(is_destroy=False)
 
     def requires_post_terraform_setup(self):
         return True
@@ -51,6 +99,7 @@ class Setup(AwsSetupTemplate):
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
         self._maybe_change_default_db_password()
+        self._aws_cli.wait_for_ecs_service_healthy()
         self._print_final_message()
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):
@@ -101,9 +150,7 @@ class Setup(AwsSetupTemplate):
                 f'{app_prefix}-{resources.DATABASE}', new_password)
             print('Database password has been changed.')
             self._aws_cli.set_secret_value(secret_name, new_password)
-            self._aws_cli.restart_ecs_service(
-                f'{app_prefix}-{resources.CLUSTER}',
-                f'{app_prefix}-{resources.FARGATE_SERVICE}')
+            self._aws_cli.restart_ecs_service()
             print(f'ECS service has been restarted to pickup the new password.')
         else:
             print('Password has already been changed. Not touching it.')
@@ -114,26 +161,17 @@ class Setup(AwsSetupTemplate):
     def _print_final_message(self):
         app = self.config.app_prefix
 
-        # Print link to ECS tasks.
-        print()
-        fargate_service = f'{app}-{resources.FARGATE_SERVICE}'
-        cluster = f'{app}-{resources.CLUSTER}'
-        tasks_url = self._aws_cli.get_url_of_fargate_tasks(
-            cluster, fargate_service)
-        print('Setup finished. You can monitor civiform tasks status here:')
-        print(tasks_url)
-
         # Print info about load balancer url.
         print()
         lb_dns = self._aws_cli.get_load_balancer_dns(
             f'{app}-{resources.LOAD_BALANCER}')
         print(f'Server is available on url: {lb_dns}')
         print('\nNext steps to complete your Civiform setup:')
-        base_url = self.config.get_config_variables()['BASE_URL']
+        base_url = self.config.get_base_url()
         print(
             f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'
         )
-        ses_address = self.config.get_config_variables()['SENDER_EMAIL_ADDRESS']
+        ses_address = self.config.get_config_var('SENDER_EMAIL_ADDRESS')
         print(
             f'Verify email address {ses_address}. If you didn\'t receive the ' +
             'confirmation email, check that your SES is not in sandbox mode.')

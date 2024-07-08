@@ -1,0 +1,126 @@
+#! /usr/bin/env bash
+# Script for running the commands supported by the deploy system by calling run.py.
+# See comments below for why we need this script rather than running run.py directly.
+
+# In the server code repository in git(civiform), we define a python package
+# called env-var-docs: https://github.com/civiform/civiform/tree/main/env-var-docs
+# Its purpose is to automate various aspects of adding a variable to application.conf.
+# Variables in application.conf make the server configurable.
+# To make the variables configurable via the deploy system, we need the env-var-docs package.
+# To get access to the package, we create a python virtual environment(venv),
+# install the package and activate the venv. The activation has to happen in the
+# parent process before the python code is run.
+# This is why we need a bash script that preceeds the python code
+set -e
+set -o pipefail
+
+source cloud/shared/bin/python_env_setup
+
+# Get the arguments that we want to pass to run.py
+while getopts s:c:t:u:d: flag; do
+  case "${flag}" in
+    # The civiform_config file that contains the values to configure the deployment
+    s) source_config=${OPTARG} ;;
+    # The command that the run.py script should execute
+    c) command=${OPTARG} ;;
+    # The tag of the image that should be used for this deployment (e.g. "latest")
+    t) tag=${OPTARG} ;;
+  esac
+done
+
+# if the tag is "latest", resolve it to the specific snapshot tag from Docker
+# Go templating is used to parse the snapshot tag from the json returned by docker inspect
+# https://docs.docker.com/engine/reference/commandline/inspect/#options
+if [[ "${tag}" == "latest" ]]; then
+  docker pull --platform linux/x86_64 docker.io/civiform/civiform:latest
+  snapshot_tag="$(docker inspect docker.io/civiform/civiform:latest \
+    --format='{{range .Config.Env}}{{if eq (printf "%.19s" .) "CIVIFORM_IMAGE_TAG="}}{{slice . 19}}{{end}}{{end}}')"
+
+  if [[ -z "${snapshot_tag}" ]]; then
+    # Adding a newline before the error message helps it stand out to the user
+    echo 1>&2
+    echo "Latest snapshot tag not found." 1>&2
+    exit 1
+  fi
+
+  echo "Resolved 'latest' to snapshot tag ${snapshot_tag}"
+  tag="${snapshot_tag}"
+fi
+
+#######################################
+# Get the value in a JSON document at the given URL.
+# Arguments:
+#   1: Identifier for the object getting fetched
+#   2: URL of the JSON document
+#   3: Path of the value in bracket notation e.g. "['object']['sha']"
+# Returns:
+#   Value found at the specified path in the JSON document
+#######################################
+function fetch_json_val() {
+  local response="$(curl -s "${2}")"
+
+  if echo "${response}" | grep -q '"message": "Not Found"'; then
+    # Adding a newline before the error message helps it stand out to the user
+    echo 1>&2
+    echo "No matching CiviForm version found for \"${1}\"" 1>&2
+    exit 1
+  fi
+
+  echo "${response}" | python3 -c "import sys, json; print(json.load(sys.stdin)${3})"
+}
+
+commit_sha=""
+
+if [[ "${tag}" == "SNAPSHOT"* || "${tag}" == "DEV"* ]]; then
+  # In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the
+  # shortened commit sha. Use this to get the full commit sha.
+  split_tag=(${tag//-/ })
+  short_sha=${split_tag[1]}
+  commit_sha=$(fetch_json_val "${tag}" "https://api.github.com/repos/civiform/civiform/commits/${short_sha}" "['sha']")
+else
+  # Tag is a specific version of CiviForm (e.g. v1.2.3)
+
+  # Validate that the tag provided at least looks like a release tag. If the
+  # tag is the right format but does not refer to an actual release this
+  # won't catch it.
+  if [[ ! "${tag}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    # Adding a newline before the error message helps it stand out to the user
+    echo
+    echo "Invalid value for CIVIFORM_VERSION provided: \"${tag}\"" 1>&2
+    exit 1
+  fi
+
+  # If the tag is missing a "v" prefix then add it
+  if [[ "${tag}" != v* ]]; then
+    tag="v${tag}"
+  fi
+
+  #  Get the commit sha at the tip of the provided version
+  tag_url=$(fetch_json_val \
+    "${tag}" \
+    "https://api.github.com/repos/civiform/civiform/git/refs/tags/${tag}" \
+    "['object']['url']")
+  commit_sha=$(fetch_json_val ${tag} ${tag_url} "['object']['sha']")
+fi
+echo "Fetched commit sha ${commit_sha}"
+
+dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
+
+# Write the correct version of the env-var-docs/parser-package to the
+# dependencies file to be downloaded
+echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}\
+#subdirectory=env-var-docs/parser-package" >>$dependencies_file_path
+
+initialize_python_env $dependencies_file_path
+
+args=("--command" "${command}" "--tag" "${tag}" "--config" "${source_config}")
+
+if [[ -n "${FORCE_UNLOCK_ID}" ]]; then
+  args=("${args[@]}" "--force-unlock" "${FORCE_UNLOCK_ID}")
+fi
+
+if [[ -n "${LOCK_TABLE_DIGEST_VALUE}" ]]; then
+  args=("${args[@]}" "--lock-table-digest-value" "${LOCK_TABLE_DIGEST_VALUE}")
+fi
+
+cloud/shared/bin/run.py "${args[@]}"

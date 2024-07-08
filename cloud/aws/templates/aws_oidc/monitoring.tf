@@ -1,10 +1,16 @@
 resource "aws_prometheus_workspace" "metrics" {
+  count = var.monitoring_stack_enabled ? 1 : 0
   alias = "${var.app_prefix}-CiviForm_metrics"
 }
 
+resource "random_id" "grafana_workspace_id" {
+  byte_length = 1
+}
+
 resource "aws_grafana_workspace" "CiviForm_metrics" {
+  count                    = var.monitoring_stack_enabled ? 1 : 0
   name                     = "${var.app_prefix}-civiform-metrics"
-  description              = "Grafana instance for ${var.app_prefix}-civiform-metrics"
+  description              = "Grafana instance for ${var.app_prefix}-civiform-metrics-${random_id.grafana_workspace_id.dec}"
   data_sources             = ["PROMETHEUS"]
   account_access_type      = "CURRENT_ACCOUNT"
   role_arn                 = aws_iam_role.grafana_assume_role.arn

@@ -1,0 +1,76 @@
+name: e2e-test
+on:
+  # Runs every day at 3:12 UTC.
+  schedule:
+    - cron: "12 3 * * *"
+  # Allow manually triggered runs.
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run-e2e-aws-oidc:
+    runs-on: ubuntu-latest
+    # Makes it so only one instance of this workflow can run at a time:
+    # https://docs.github.com/en/actions/using-jobs/using-concurrency
+    concurrency: run-e2e-aws-oidc
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+        
+      - name: Install requests
+        run: pip install requests
+        
+      - name: Checkout civiform/cloud-deploy-infra
+        uses: actions/checkout@v4
+        with:
+          repository: civiform/cloud-deploy-infra
+          path: cloud-deploy-infra
+
+      - name: Checkout civiform/civiform-deploy
+        uses: actions/checkout@v4
+        with:
+          repository: civiform/civiform-deploy
+          path: civiform-deploy
+
+      - id: get-nuke
+        name: Get aws-nuke
+        run: |
+          wget https://github.com/rebuy-de/aws-nuke/releases/download/v2.25.0/aws-nuke-v2.25.0-linux-amd64.tar.gz -O aws-nuke-v2.25.0-linux-amd64.tar.gz
+          tar -xzf aws-nuke-v2.25.0-linux-amd64.tar.gz
+          sudo mv aws-nuke-v2.25.0-linux-amd64 /aws-nuke
+          sudo chmod u+x /aws-nuke
+
+      - id: get-aws-creds
+        name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Role in civiform-deploy-e2e-tests account.
+          role-to-assume: arn:aws:iam::296877675213:role/e2e-test-runner
+          aws-region: us-east-1
+
+      - name: Pre nuke
+        run: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
+
+      - name: Run bin/setup
+        run: |
+          # Must run setup scripts from this directory due to 'source' lines in the scripts.
+          cd $GITHUB_WORKSPACE/civiform-deploy
+          yes yes | bin/setup --config=$GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/civiform_config_aws_oidc.sh
+
+      - name: Post nuke
+        # Post nuke should run even if bin/setup fails. Therefore we need the
+        # '(success() || failure())' condition: if a status check function is
+        # not included in the 'if', the success() function is included by
+        # default:
+        # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
+        if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3

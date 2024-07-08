@@ -79,7 +79,7 @@ resource "aws_secretsmanager_secret_version" "postgres_password_secret_version" 
 
 # Create a random generated password to use for app_secret_key.
 resource "random_password" "app_secret_key" {
-  length           = 16
+  length           = var.random_password_length
   special          = true
   override_special = "_%@"
 }
@@ -180,5 +180,44 @@ resource "aws_secretsmanager_secret" "applicant_oidc_client_id_secret" {
 # Creating a AWS secret versions for applicant_oidc_client_id
 resource "aws_secretsmanager_secret_version" "applicant_oidc_client_id_secret_version" {
   secret_id     = aws_secretsmanager_secret.applicant_oidc_client_id_secret.id
+  secret_string = " "
+}
+
+# Creating an AWS secret for admin_oidc_secret
+resource "aws_secretsmanager_secret" "admin_oidc_client_secret_secret" {
+  name                    = "${var.app_prefix}-civiform_admin_oidc_client_secret"
+  kms_key_id              = aws_kms_key.civiform_kms_key.arn
+  recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+# Creating an AWS secret versions for admin_oidc_secret
+resource "aws_secretsmanager_secret_version" "admin_oidc_client_secret_secret_version" {
+  secret_id     = aws_secretsmanager_secret.admin_oidc_client_secret_secret.id
+  secret_string = " "
+}
+
+# Creating an AWS secret for admin_oidc_client_id
+resource "aws_secretsmanager_secret" "admin_oidc_client_id_secret" {
+  name                    = "${var.app_prefix}-civiform_admin_oidc_client_id"
+  kms_key_id              = aws_kms_key.civiform_kms_key.arn
+  recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+# Creating an AWS secret versions for admin_oidc_client_id
+resource "aws_secretsmanager_secret_version" "admin_oidc_client_id_secret_version" {
+  secret_id     = aws_secretsmanager_secret.admin_oidc_client_id_secret.id
+  secret_string = " "
+}
+
+# Creating an AWS secret for esri_arcgis_api_token
+resource "aws_secretsmanager_secret" "esri_arcgis_api_token_secret" {
+  name                    = "${var.app_prefix}-civiform_esri_arcgis_api_token"
+  kms_key_id              = aws_kms_key.civiform_kms_key.arn
+  recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+# Creating an AWS secret versions for esri_arcgis_api_token
+resource "aws_secretsmanager_secret_version" "esri_arcgis_api_token_secret_version" {
+  secret_id     = aws_secretsmanager_secret.esri_arcgis_api_token_secret.id
   secret_string = " "
 }

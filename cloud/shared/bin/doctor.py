@@ -4,6 +4,8 @@ from lib.check import Check
 import platform
 import re
 
+from cloud.shared.bin.lib.print import print
+
 detected_platform = platform.system()
 is_linux = detected_platform == 'Linux'
 is_mac = detected_platform == 'Darwin'
@@ -211,7 +213,7 @@ for check in checks:
     if check.should_skip():
         continue
 
-    print(check.name().ljust(30, "."), end="", flush=True)
+    print(check.name().ljust(30, "."), end="")
 
     if check.is_ok():
         print("OK")

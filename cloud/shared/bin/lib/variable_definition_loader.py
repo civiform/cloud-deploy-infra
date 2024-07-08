@@ -1,28 +1,13 @@
-import os
 import json
+import os
 
 
-# Loads all configuration variable definition files
-#
-# Requires that:
-#   - Each variable definition file is referenced in
-#     def load_repo_variable_definitions_files():
-class VariableDefinitionLoader:
-
-    def __init__(self, variable_definitions={}):
-        self.variable_definitions: dict = variable_definitions
-
-    def load_definition_file(self, definition_file_path: str):
-        with open(definition_file_path, "r") as file:
-            definitions = json.loads(file.read())
-
-            for name, definition in definitions.items():
-                if name in self.variable_definitions:
-                    raise RuntimeError(
-                        f"Duplicate variable name: {name} at {definition_file_path}"
-                    )
-
-                self.variable_definitions[name] = definition
-
-    def get_variable_definitions(self) -> dict:
-        return self.variable_definitions
+def load_variables_definitions(definition_file_path: str) -> dict:
+    """Returns all definitions in a variable definitions file."""
+    out = {}
+    with open(definition_file_path) as f:
+        # note: loading automatically removes duplicates
+        variable_definitions = json.load(f)
+        for name, definition in variable_definitions.items():
+            out[name] = definition
+    return out

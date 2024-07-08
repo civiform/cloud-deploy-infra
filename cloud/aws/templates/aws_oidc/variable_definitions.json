@@ -41,107 +41,6 @@
       "cn-northwest-1"
     ]
   },
-  "STAGING_HOSTNAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "BASE_URL": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string",
-    "value_regex": "https?://[^\\s]+",
-    "value_regex_error_message": "needs to be a url that starts with http(s)://."
-  },
-  "CIVIFORM_APPLICANT_IDP": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "enum",
-    "values": ["idcs", "generic-oidc", "adfs", "disabled", "login-gov", "auth0"]
-  },
-  "APPLICANT_OIDC_PROVIDER_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string",
-    "value_regex": "[^\\s]*",
-    "value_regex_error_message": "needs to be url safe. No spaces are allowed."
-  },
-  "APPLICANT_OIDC_DISCOVERY_URI": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_RESPONSE_MODE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_RESPONSE_TYPE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_ADDITIONAL_SCOPES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_LOCALE_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_EMAIL_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_FIRST_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_MIDDLE_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "APPLICANT_OIDC_LAST_NAME_ATTRIBUTE": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "ADFS_DISCOVERY_URI": {
-    "required": true,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "ADFS_ADDITIONAL_SCOPES": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
-  "AD_GROUPS_ATTRIBUTE_NAME": {
-    "required": false,
-    "secret": false,
-    "tfvar": true,
-    "type": "string"
-  },
   "SSL_CERTIFICATE_ARN": {
     "required": true,
     "secret": false,
@@ -153,6 +52,12 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "MONITORING_STACK_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   },
   "POSTGRES_INSTANCE_CLASS": {
     "required": false,
@@ -170,10 +75,19 @@
       "db.m4.2xlarge",
       "db.m5.large",
       "db.m5.xlarge",
-      "db.m5.2xlarge"
+      "db.m5.2xlarge",
+      "db.m6g.large",
+      "db.m6g.xlarge",
+      "db.m6g.2large"
     ]
   },
   "POSTGRES_STORAGE_GB": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "POSTGRES_MAX_ALLOCATED_STORAGE_GB": {
     "required": false,
     "secret": false,
     "tfvar": true,
@@ -184,5 +98,337 @@
     "secret": false,
     "tfvar": true,
     "type": "integer"
+  },
+  "POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_PERFORMANCE_INSIGHTS_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_ENHANCED_MONITORING_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_ENHANCED_MONITORING_INTERVAL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "RDS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_ALARM_STATISTIC_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CIVIFORM_ALARM_EMAIL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_HIGH_CPU_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_MAX_CPU_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_HIGH_QUEUE_DEPTH_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_QUEUE_DEPTH_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_DISK_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_FREE_STORAGE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_MEMORY_SPACE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_LOW_MEMORY_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_CPU_CREDIT_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_LOW_CPU_CREDIT_BALANCE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_LOW_DISK_BURST_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_DISK_BURST_BALANCE_LOW_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_SWAP_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_HIGH_SWAP_USAGE_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_MAX_USED_TRANSACTION_IDS_HIGH_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_ANOMALY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "RDS_ANOMALY_BANDWIDTH": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_ANOMALY_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "RDS_CREATE_TRANSACTION_ID_WRAPAROUND_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "AWS_DB_STORAGE_TYPE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "AWS_DB_STORAGE_THROUGHPUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "AWS_DB_IOPS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_TASK_CPU": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_TASK_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_SERVER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_SERVER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_METRICS_SCRAPER_CONTAINER_MEMORY_RESERVATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_MAX_CPU_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MAX_CPU_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MAX_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_MIN_CPU_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_CREATE_HIGH_MEMORY_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "ECS_MAX_MEMORY_UTILIZATION_THRESHOLD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_EVALUATION_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_ALARM_STATISTIC_PERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "ECS_SCALE_TARGET_MAX_CAPACITY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ECS_SCALE_TARGET_MIN_CAPACITY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "RANDOM_PASSWORD_LENGTH": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
+  "ALLOW_POSTGRESQL_UPGRADE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "POSTGRESQL_VERSION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_DATABASE_SUBNET_GROUP_NAME": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_ID": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "EXTERNAL_VPC_PRIVATE_SUBNET_IDS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "list",
+    "list_type": "string"
+  },
+  "EXTERNAL_VPC_PUBLIC_SUBNET_IDS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "list",
+    "list_type": "string"
+  },
+  "APPLY_DATABASE_CHANGES_IMMEDIATELY": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
