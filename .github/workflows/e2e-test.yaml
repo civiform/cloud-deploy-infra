@@ -17,10 +17,10 @@ jobs:
     # https://docs.github.com/en/actions/using-jobs/using-concurrency
     concurrency: run-e2e-aws-oidc
     steps:
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.7'
+          python-version: '3.12'
         
       - name: Install requests
         run: pip install requests
@@ -69,7 +69,7 @@ jobs:
         # default:
         # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
         if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
