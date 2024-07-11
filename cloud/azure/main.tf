@@ -12,5 +12,4 @@ terraform {
 }
 provider "azurerm" {
   features {}
-  version = ">=2"
 }
