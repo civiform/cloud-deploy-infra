@@ -78,7 +78,7 @@ resource "azurerm_app_service_plan" "plan" {
   kind             = "Linux"
   reserved = true
   # Choose size
-    sku {
+  sku {
     tier     = var.app_sku["tier"]
     size     = var.app_sku["size"]
     capacity = var.app_sku["capacity"]
