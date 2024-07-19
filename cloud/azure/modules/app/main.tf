@@ -71,25 +71,27 @@ resource "azurerm_subnet" "canary_subnet" {
   }
 }
 
-resource "azurerm_app_service_plan" "plan" {
+resource "azurerm_service_plan" "plan" {
   name                = "${data.azurerm_resource_group.rg.name}-plan"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  kind                = "Linux"
-  reserved = true
+  os_type                = "Linux"
+  sku_name = "S2"
+  zone_balancing_enabled = true
+  #reserved = true
   # Choose size
-  sku {
-    tier     = var.app_sku["tier"]
-    size     = var.app_sku["size"]
-    capacity = var.app_sku["capacity"]
-  }
+  # sku {
+  #   tier     = var.app_sku["tier"]
+  #   size     = var.app_sku["size"]
+  #   capacity = var.app_sku["capacity"]
+  # }
 }
 
 resource "azurerm_app_service" "civiform_app" {
   name                = "${var.application_name}-${random_pet.server.id}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  app_service_plan_id = azurerm_app_service_plan.plan.id
+  app_service_plan_id = azurerm_service_plan.plan.id
 
   app_settings = local.app_settings
 
@@ -139,7 +141,7 @@ resource "azurerm_app_service_slot" "canary" {
   name                = "canary"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  app_service_plan_id = azurerm_app_service_plan.plan.id
+  app_service_plan_id = azurerm_service_plan.plan.id
   app_service_name    = azurerm_app_service.civiform_app.name
 
   app_settings = local.app_settings
