@@ -11,7 +11,7 @@ azure_log::fetch_log_file
 if ! terraform::perform_apply; then
   out::error "Terraform deployment failed."
   log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
-  # azure_log::upload_log_file
+  azure_log::upload_log_file
   exit 1
 fi
 
@@ -25,9 +25,9 @@ azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${IM
 if health::wait_for_success "${AZURE_CANARY_URL}/loginForm"; then
   echo "New container successfully started in canary slot"
 else
-   log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
-   azure_log::upload_log_file
-   exit 1
+  log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
+  azure_log::upload_log_file
+  exit 1
 fi
 
 echo "Swapping deployment slot 'canary' into production. This may take up to 10 minutes."

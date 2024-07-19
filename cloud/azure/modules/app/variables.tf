@@ -12,7 +12,7 @@ variable "application_name" {
 variable "aws_region" {
   type        = string
   description = "Region for the aws account, if using"
-  default     = "us-east-2"
+  default     = "us-east-1"
 }
 
 variable "image_tag" {
