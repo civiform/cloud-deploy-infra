@@ -537,3 +537,9 @@ variable "external_vpc_public_subnet_ids" {
   description = "The externally managed VPC's public subnet ID."
   default     = []
 }
+
+variable "lb_logging_enabled" {
+  type        = bool
+  description = "Whether to enable LB access logging."
+  default     = false
+}
