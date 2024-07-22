@@ -8,7 +8,6 @@ resource "random_string" "resource_code" {
 
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
-  location = "unitedstates"
 }
 
 resource "azurerm_virtual_network" "civiform_vnet" {
