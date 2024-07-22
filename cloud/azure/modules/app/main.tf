@@ -76,7 +76,7 @@ resource "azurerm_service_plan" "plan" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type                = "Linux"
-  sku_name = "F1"
+  sku_name = "SHARED"
   zone_balancing_enabled = true
   #reserved = true
   # Choose size
