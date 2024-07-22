@@ -4,7 +4,7 @@ locals {
   # and record set configured.
   # postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   # fqdn = "${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com"
-  generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
+  generated_hostname = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
   postgres_password_keyvault_id   = "postgres-password"
   app_secret_key_keyvault_id      = "app-secret-key"
@@ -33,24 +33,21 @@ locals {
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
-    ADFS_SECRET    = data.azurerm_key_vault_secret.adfs_secret.value
-    ADFS_CLIENT_ID = data.azurerm_key_vault_secret.adfs_client_id.value
-    APPLICANT_OIDC_CLIENT_SECRET= data.azurerm_key_vault_secret.adfs_secret.value
-    APPLICANT_OIDC_CLIENT_ID= data.azurerm_key_vault_secret.adfs_client_id.value
-    APPLICANT_OIDC_DISCOVERY_URI=data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    ADFS_SECRET                  = data.azurerm_key_vault_secret.adfs_secret.value
+    ADFS_CLIENT_ID               = data.azurerm_key_vault_secret.adfs_client_id.value
+    ADFS_DISCOVERY_URI           = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    APPLICANT_OIDC_CLIENT_SECRET = data.azurerm_key_vault_secret.adfs_secret.value
+    APPLICANT_OIDC_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    APPLICANT_OIDC_CLIENT_ID     = data.azurerm_key_vault_secret.adfs_client_id.value
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
     LOGIN_RADIUS_KEYSTORE_NAME    = (var.saml_keystore_filename != null ? "/saml/${var.saml_keystore_filename}" : "")
     LOGIN_RADIUS_KEYSTORE_PASS    = var.saml_keystore_password
     LOGIN_RADIUS_PRIVATE_KEY_PASS = var.saml_private_key_password
 
-    CIVIFORM_API_SECRET_SALT = data.azurerm_key_vault_secret.api_secret_salt_key.value
-    DATABASE_APPLY_DESTRUCTIVE_CHANGES=true
+    CIVIFORM_API_SECRET_SALT           = data.azurerm_key_vault_secret.api_secret_salt_key.value
+    DATABASE_APPLY_DESTRUCTIVE_CHANGES = true
 
-    # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
-    # but we need to set an initial value for them here so that the ignore_changes block will work
-
-    ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
     # kept as such (set to empty string, rather than undefined).
     # This allows for the default to include atallclaims and for

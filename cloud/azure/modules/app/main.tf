@@ -202,7 +202,6 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   name                = "${random_pet.server.id}-civiform"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  # public_network_access_enabled = false
   administrator_login = var.postgres_admin_login
   #administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
   administrator_password = "Password1!"
