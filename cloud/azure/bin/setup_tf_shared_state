@@ -69,7 +69,8 @@ else
   echo "Creating the container"
   az storage container create \
     --name ${CONTAINER_NAME} \
-    --account-name ${STORAGE_ACCOUNT_NAME}
+    --account-name ${STORAGE_ACCOUNT_NAME} \
+    --auth-mode login
 fi
 
 echo "storing the account key"
