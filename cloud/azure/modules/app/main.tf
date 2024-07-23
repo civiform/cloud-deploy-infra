@@ -142,7 +142,7 @@ resource "azurerm_app_service_slot" "canary" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_service_plan.plan.id
-  app_service_name    = azurerm_app_service.civiform_app.name
+  app_service_name    = azurerm_linux_web_app.civiform_app.name
 
   app_settings = local.app_settings
 
@@ -188,12 +188,12 @@ resource "azurerm_app_service_slot" "canary" {
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "appservice_vnet_connection" {
-  app_service_id = azurerm_app_service.civiform_app.id
+  app_service_id = azurerm_linux_web_app.civiform_app.id
   subnet_id      = azurerm_subnet.server_subnet.id
 }
 
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vnet_connection" {
-  app_service_id = azurerm_app_service.civiform_app.id
+  app_service_id = azurerm_linux_web_app.civiform_app.id
   subnet_id      = azurerm_subnet.server_subnet.id
   slot_name      = azurerm_app_service_slot.canary.name
 }

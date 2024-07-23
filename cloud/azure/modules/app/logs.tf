@@ -8,7 +8,7 @@ resource "azurerm_log_analytics_workspace" "civiform_logs" {
 
 resource "azurerm_monitor_diagnostic_setting" "app_service_log_analytics" {
   name                       = "${var.application_name}_log_analytics"
-  target_resource_id         = azurerm_app_service.civiform_app.id
+  target_resource_id         = azurerm_linux_web_app.civiform_app.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.civiform_logs.id
 
   log {
