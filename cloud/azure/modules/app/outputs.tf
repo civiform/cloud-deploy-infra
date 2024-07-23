@@ -13,3 +13,7 @@ output "app_service_name" {
 output "resource_group_name" {
   value = data.azurerm_resource_group.rg.name
 }
+
+output "custom_domain_verification_id" {
+  value = azurerm_linux_web_app.civiform_app.custom_domain_verification_id
+}
