@@ -191,6 +191,7 @@ function azure::ensure_role_assignment() {
   if azure::is_service_principal; then
     object_id="$(az account show --query user.name -o tsv)"
   else
+    print(id)
     object_id="$(az ad signed-in-user show --query id -o tsv)"
   fi
 
