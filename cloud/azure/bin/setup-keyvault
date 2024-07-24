@@ -48,8 +48,7 @@ key_vault::assign_secrets_officer_role_to_user "${resource_group}"
 echo "Generating and setting secrets"
   # [[ $SECRET_RESULT =~ "SecretNotFound" ]] && echo "False" || echo "True"
 
-POSTGRES_PASSWORD_VALUE= key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"
-echo $POSTGRES_PASSWORD_VALUE
+POSTGRES_PASSWORD_VALUE=$(key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}")
 if [[ "$POSTGRES_PASSWORD_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \

@@ -25,7 +25,8 @@ if [[ ! "${VAULT_NAME}" ]] \
   exit 1
 fi
 
-if key_vault::has_secret "${VAULT_NAME}" "${AWS_ACCESS_KEY_ID_NAME}"; then
+HAS_AWS_ACCESS_KEY_ID_NAME=$(key_vault::has_secret "${VAULT_NAME}" "${AWS_ACCESS_KEY_ID_NAME}")
+if [[ "$HAS_AWS_ACCESS_KEY_ID_NAME" =~ "SecretNotFound" ]]; then
   echo "Access key exists in the secret store"
   exit 0
 fi
