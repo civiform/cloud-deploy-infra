@@ -68,7 +68,6 @@ class Setup(SetupTemplate):
         self._configure_slot_settings()
         print("in post terrform setup")
         # Run terraform again as get_adfs_user_inputs updated secret variables.
-        print(self)
         terraform.perform_apply(self.config)
 
     def cleanup(self):
@@ -157,7 +156,6 @@ class Setup(SetupTemplate):
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
-        print(aws_username)
         subprocess.run(
             [
                 "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
