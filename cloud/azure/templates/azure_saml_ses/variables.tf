@@ -42,7 +42,7 @@ variable "postgres_sku_name" {
 variable "postgres_storage_mb" {
   type        = number
   description = "The mb of storage for postgres instance"
-  default     = 5120
+  default     = 32768
 }
 
 variable "image_tag" {
