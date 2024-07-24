@@ -48,9 +48,6 @@ key_vault::assign_secrets_officer_role_to_user "${resource_group}"
 echo "Generating and setting secrets"
 if key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"; then
   echo "Key ${POSTGRES_PASSWORD_NAME} exists in the secret store"
-  key_vault::add_generated_secrets \
-    "${vault_name}" \
-    "${POSTGRES_PASSWORD_NAME}"
 else
   key_vault::add_generated_secrets \
     "${vault_name}" \
