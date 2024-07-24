@@ -72,11 +72,11 @@ resource "azurerm_subnet" "canary_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}-plan"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  name                   = "${data.azurerm_resource_group.rg.name}-plan"
+  location               = data.azurerm_resource_group.rg.location
+  resource_group_name    = data.azurerm_resource_group.rg.name
   os_type                = "Linux"
-  sku_name = "B1"
+  sku_name               = "B1"
   zone_balancing_enabled = true
   #reserved = true
   # Choose size
@@ -91,7 +91,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
   name                = "${var.application_name}-${random_pet.server.id}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  service_plan_id = azurerm_service_plan.plan.id
+  service_plan_id     = azurerm_service_plan.plan.id
 
   app_settings = local.app_settings
 
@@ -203,7 +203,6 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   administrator_login = var.postgres_admin_login
-  #administrator_login_password = 
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
@@ -248,38 +247,7 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-}  
-
-# resource "azurerm_private_dns_zone" "privatelink" {
-#   name                = "privatelink.postgres.database.azure.com"
-#   resource_group_name = data.azurerm_resource_group.rg.name
-# }
-
-# resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-#   name                  = "vnet-link-private-dns"
-#   resource_group_name   = data.azurerm_resource_group.rg.name
-#   private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
-#   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-# }
-
-# resource "azurerm_private_endpoint" "endpoint" {
-#   name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
-#   location            = data.azurerm_resource_group.rg.location
-#   resource_group_name = data.azurerm_resource_group.rg.name
-#   subnet_id           = azurerm_subnet.postgres_subnet.id
-
-#   private_dns_zone_group {
-#     name                 = "private-dns-zone-group"
-#     private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
-#   }
-
-#   private_service_connection {
-#     name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
-#     private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
-#     subresource_names              = ["postgresqlServer"]
-#     is_manual_connection           = false
-#   }
-# }
+}
 
 module "bastion" {
   source = "../bastion"
