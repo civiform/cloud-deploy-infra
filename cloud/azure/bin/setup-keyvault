@@ -49,6 +49,7 @@ echo "Generating and setting secrets"
   # [[ $SECRET_RESULT =~ "SecretNotFound" ]] && echo "False" || echo "True"
 
 POSTGRES_PASSWORD_VALUE= key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"
+echo $POSTGRES_PASSWORD_VALUE
 if [[ "$POSTGRES_PASSWORD_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \
@@ -58,6 +59,8 @@ else
 fi
 
 APP_SECRET_KEY_VALUE= key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}"
+echo "$APP_SECRET_KEY_VALUE"
+echo $APP_SECRET_KEY_VALUE
 if [[ "$APP_SECRET_KEY_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \
