@@ -21,7 +21,6 @@ module "app" {
 
   postgres_admin_login = var.postgres_admin_login
 
-  # note that we must use GP tier
   postgres_sku_name = var.postgres_sku_name
   postgres_storage_mb = var.postgres_storage_mb
   image_tag = var.image_tag

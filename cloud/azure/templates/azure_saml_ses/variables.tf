@@ -32,11 +32,11 @@ variable "postgres_admin_login" {
   description = "Postgres admin login"
   default     = "psqladmin"
 }
-
+# note that we must use GP tier
 variable "postgres_sku_name" {
   type        = string
   description = "The sku name for postgres server"
-  default     = "B_Standard_B1ms"
+  default     = "GP_Gen5_2"
 }
 
 variable "postgres_storage_mb" {
