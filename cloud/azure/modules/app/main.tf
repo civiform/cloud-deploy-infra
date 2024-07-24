@@ -206,7 +206,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   sku_name               = var.postgres_sku_name
   version                = "15"
-  storage_mb             = "32768"
+  storage_mb             = var.postgres_storage_mb
   lifecycle {
     ignore_changes = [
       zone

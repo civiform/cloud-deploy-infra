@@ -33,6 +33,18 @@ variable "postgres_admin_login" {
   default     = "psqladmin"
 }
 
+variable "postgres_sku_name" {
+  type        = string
+  description = "The sku name for postgres server"
+  default     = "B_Standard_B1ms"
+}
+
+variable "postgres_storage_mb" {
+  type        = number
+  description = "The mb of storage for postgres instance"
+  default     = 5120
+}
+
 variable "image_tag" {
   type        = string
   description = "Tag for docker image to deploy"
