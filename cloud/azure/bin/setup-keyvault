@@ -46,15 +46,16 @@ echo "Adding key vault secrets officer role to signed in user"
 key_vault::assign_secrets_officer_role_to_user "${resource_group}"
 
 echo "Generating and setting secrets"
-if key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"; then
+local has_postgres_password = key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"
+if [[ "$has_postgres_password" == "True" ]]; then
   echo "Key ${POSTGRES_PASSWORD_NAME} exists in the secret store"
 else
   key_vault::add_generated_secrets \
     "${vault_name}" \
     "${POSTGRES_PASSWORD_NAME}"
 fi
-
-if key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}"; then
+local has_app_secret = key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}"
+if [[ "$has_app_secret" == "True" ]]; then
   echo "Key ${APP_SECRET_KEY_NAME} exists in the secret store"
 else
   key_vault::add_generated_secrets \
@@ -62,7 +63,8 @@ else
     "${APP_SECRET_KEY_NAME}"
 fi
 
-if key_vault::has_secret "${vault_name}" "${API_SECRET_SALT_NAME}"; then
+local has_api_secret_salt = key_vault::has_secret "${vault_name}" "${API_SECRET_SALT_NAME}"
+if [[ "$has_api_secret_salt" == "True" ]]; then
   echo "Key ${API_SECRET_SALT_NAME} exists in the secret store"
 else
   key_vault::add_generated_secrets \
@@ -71,7 +73,8 @@ else
 fi
 
 echo "Adding placeholder values for secrets we set later"
-if key_vault::has_secret "${vault_name}" "${ADFS_SECRET_NAME}"; then
+local has_adfs_secret = key_vault::has_secret "${vault_name}" "${ADFS_SECRET_NAME}"
+if [[ "$has_adfs_secret" == "True" ]]; then
   echo "Key ${ADFS_SECRET_NAME} exists in the secret store"
 else
   key_vault::add_secret \
@@ -80,7 +83,8 @@ else
     "${TEMPORARY_SECRET}"
 fi
 
-if key_vault::has_secret "${vault_name}" "${ADFS_CLIENT_ID}"; then
+local has_adfs_client = key_vault::has_secret "${vault_name}" "${ADFS_CLIENT_ID}"
+if [[ "$has_adfs_client" == "True" ]]; then
   echo "Key ${ADFS_CLIENT_ID} exists in the secret store"
 else
   key_vault::add_secret \
@@ -88,8 +92,8 @@ else
     "${ADFS_CLIENT_ID}" \
     "${TEMPORARY_SECRET}"
 fi
-
-if key_vault::has_secret "${vault_name}" "${ADFS_DISCOVERY_URI}"; then
+local has_adfs_discovery_uri = key_vault::has_secret "${vault_name}" "${ADFS_DISCOVERY_URI}"
+if [[ "$has_adfs_discovery_uri" == "True" ]]; then
   echo "Key ${ADFS_DISCOVERY_URI} exists in the secret store"
 else
   key_vault::add_secret \
