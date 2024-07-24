@@ -199,19 +199,14 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vne
 }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
-  name                = "${random_pet.server.id}-civiform"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  administrator_login = var.postgres_admin_login
+  name                   = "${random_pet.server.id}-civiform"
+  location               = data.azurerm_resource_group.rg.location
+  resource_group_name    = data.azurerm_resource_group.rg.name
+  administrator_login    = var.postgres_admin_login
   administrator_password = data.azurerm_key_vault_secret.postgres_password.value
-  # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
-  # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
-  # ssl_enforcement_enabled = true
-  sku_name = "B_Standard_B1ms"
-  #sku_name   = var.postgres_sku_name
-  version    = "15"
-  storage_mb = "32768"
-  # geo_redundant_backup_enabled = false
+  sku_name               = var.postgres_sku_name
+  version                = "15"
+  storage_mb             = "32768"
   lifecycle {
     ignore_changes = [
       zone
