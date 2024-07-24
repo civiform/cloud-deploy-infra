@@ -191,10 +191,9 @@ function azure::ensure_role_assignment() {
   if azure::is_service_principal; then
     object_id="$(az account show --query user.name -o tsv)"
   else
-    echo "print decode ${id}"
     object_id="$(az ad signed-in-user show --query id -o tsv)"
   fi
-
+  echo "print decode ${object_id}" 
   local ROLE_ASSIGNMENTS="$(az role assignment list --assignee ${object_id} --resource-group ${1})"
 
   if echo "${ROLE_ASSIGNMENTS}" | grep -q "${2}"; then
