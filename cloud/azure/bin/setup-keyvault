@@ -46,58 +46,61 @@ echo "Adding key vault secrets officer role to signed in user"
 key_vault::assign_secrets_officer_role_to_user "${resource_group}"
 
 echo "Generating and setting secrets"
-local has_postgres_password = key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"
-if [[ "$has_postgres_password" == "True" ]]; then
-  echo "Key ${POSTGRES_PASSWORD_NAME} exists in the secret store"
-else
+  # [[ $SECRET_RESULT =~ "SecretNotFound" ]] && echo "False" || echo "True"
+
+POSTGRES_PASSWORD_VALUE= key_vault::has_secret "${vault_name}" "${POSTGRES_PASSWORD_NAME}"
+if [[ "$POSTGRES_PASSWORD_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \
     "${POSTGRES_PASSWORD_NAME}"
-fi
-local has_app_secret = key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}"
-if [[ "$has_app_secret" == "True" ]]; then
-  echo "Key ${APP_SECRET_KEY_NAME} exists in the secret store"
 else
+  echo "Key ${POSTGRES_PASSWORD_NAME} exists in the secret store"
+fi
+
+APP_SECRET_KEY_VALUE= key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}"
+if [[ "$APP_SECRET_KEY_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \
     "${APP_SECRET_KEY_NAME}"
+else
+  echo "Key ${APP_SECRET_KEY_NAME} exists in the secret store"
 fi
 
-local has_api_secret_salt = key_vault::has_secret "${vault_name}" "${API_SECRET_SALT_NAME}"
-if [[ "$has_api_secret_salt" == "True" ]]; then
-  echo "Key ${API_SECRET_SALT_NAME} exists in the secret store"
-else
+API_SECRET_SALT_NAME_VALUE= key_vault::has_secret "${vault_name}" "${API_SECRET_SALT_NAME}"
+if [[ "$API_SECRET_SALT_NAME_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_generated_secrets \
     "${vault_name}" \
     "${API_SECRET_SALT_NAME}"
+else
+  echo "Key ${API_SECRET_SALT_NAME} exists in the secret store"
 fi
 
 echo "Adding placeholder values for secrets we set later"
-local has_adfs_secret = key_vault::has_secret "${vault_name}" "${ADFS_SECRET_NAME}"
-if [[ "$has_adfs_secret" == "True" ]]; then
-  echo "Key ${ADFS_SECRET_NAME} exists in the secret store"
-else
+ADFS_SECRET_NAME_VALUE= key_vault::has_secret "${vault_name}" "${ADFS_SECRET_NAME}"
+if [[ "$ADFS_SECRET_NAME_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_secret \
     "${vault_name}" \
     "${ADFS_SECRET_NAME}" \
-    "${TEMPORARY_SECRET}"
+    "${TEMPORARY_SECRET}" 
+else
+  echo "Key ${ADFS_SECRET_NAME} exists in the secret store"
 fi
 
-local has_adfs_client = key_vault::has_secret "${vault_name}" "${ADFS_CLIENT_ID}"
-if [[ "$has_adfs_client" == "True" ]]; then
-  echo "Key ${ADFS_CLIENT_ID} exists in the secret store"
-else
+ADFS_CLIENT_ID_VALUE= key_vault::has_secret "${vault_name}" "${ADFS_CLIENT_ID}"
+if [[ "$ADFS_CLIENT_ID_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_secret \
     "${vault_name}" \
     "${ADFS_CLIENT_ID}" \
     "${TEMPORARY_SECRET}"
-fi
-local has_adfs_discovery_uri = key_vault::has_secret "${vault_name}" "${ADFS_DISCOVERY_URI}"
-if [[ "$has_adfs_discovery_uri" == "True" ]]; then
-  echo "Key ${ADFS_DISCOVERY_URI} exists in the secret store"
 else
+  echo "Key ${ADFS_CLIENT_ID} exists in the secret store"
+fi
+ADFS_DISCOVERY_URI_VALUE= key_vault::has_secret "${vault_name}" "${ADFS_DISCOVERY_URI}"
+if [[ "$ADFS_DISCOVERY_URI_VALUE" =~ "SecretNotFound" ]]; then
   key_vault::add_secret \
     "${vault_name}" \
     "${ADFS_DISCOVERY_URI}" \
     "${TEMPORARY_SECRET}"
+else
+  echo "Key ${ADFS_DISCOVERY_URI} exists in the secret store"
 fi
