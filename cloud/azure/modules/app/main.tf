@@ -203,8 +203,8 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   administrator_login = var.postgres_admin_login
-  #administrator_login_password = data.azurerm_key_vault_secret.postgres_password.value
-  administrator_password = "Password1!"
+  #administrator_login_password = 
+  administrator_password = data.azurerm_key_vault_secret.postgres_password.value
   # delegated_subnet_id    = azurerm_subnet.postgres_subnet.id
   # private_dns_zone_id    = azurerm_private_dns_zone.privatelink.id
   # ssl_enforcement_enabled = true
