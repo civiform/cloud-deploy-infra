@@ -59,7 +59,7 @@ variable "bastion_address_prefixes" {
 }
 
 variable "app_sku" {
-  type        = map(string)
+  type        = string
   description = "SKU tier/size/capacity information"
   default = "S2"
 }
