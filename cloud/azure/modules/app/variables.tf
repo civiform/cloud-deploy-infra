@@ -79,17 +79,6 @@ variable "postgres_admin_login" {
   default = "psqladmin"
 }
 
-variable "postgres_sku_name" {
-  type        = string
-  description = "The sku name for postgres server"
-  default     = "B_Standard_B1ms"
-}
-variable "postgres_storage_mb" {
-  type        = number
-  description = "The mb of storage for postgres instance"
-  default     = 5120
-}
-
 variable "postgres_backup_retention_days" {
   type        = number
   description = "Number of days to retain postgres backup"

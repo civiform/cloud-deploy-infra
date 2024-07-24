@@ -21,15 +21,15 @@ locals {
 
     DB_USERNAME    = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
     DB_PASSWORD    = data.azurerm_key_vault_secret.postgres_password.value
-    DB_JDBC_STRING = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=psqladmin&password=${data.azurerm_key_vault_secret.postgres_password.value}&sslmode=require"
+    DB_JDBC_STRING = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${var.postgres_admin_login}&password=${data.azurerm_key_vault_secret.postgres_password.value}&sslmode=require"
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
     AZURE_STORAGE_ACCOUNT_CONTAINER = azurerm_storage_container.files_container.name
 
-    AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
-    AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
+    # AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
+    # AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
