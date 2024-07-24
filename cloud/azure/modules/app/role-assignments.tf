@@ -7,7 +7,7 @@ resource "azurerm_role_assignment" "storage_blob_delegator" {
 }
 
 resource "azurerm_role_assignment" "key_vault_secrets_user" {
-  scope                = "/subscriptions/4ef4ae1b-c966-4ac4-9b7c-a837ea410821"
+  scope                = data.azurerm_key_vault.civiform_key_vault.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_linux_web_app.civiform_app.identity.0.principal_id
 }
