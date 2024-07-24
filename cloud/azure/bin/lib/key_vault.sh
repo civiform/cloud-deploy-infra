@@ -38,8 +38,6 @@ function key_vault::check_if_vault_exists() {
 #######################################
 function key_vault::assign_secrets_officer_role_to_user() {
   local SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
-  echo "keyvault guid"
-  echo "${KEY_VAULT_SECRETS_OFFICER_GUID}"
   azure::ensure_role_assignment \
     "${1}" \
     ${KEY_VAULT_SECRETS_OFFICER_GUID} \
@@ -125,6 +123,5 @@ function key_vault::has_secret() {
     --name "${2}" \
     --query value \
     -o tsv 2>&1 >/dev/null)"
-  echo "SECRET #####"
   echo ${SECRET_RESULT}
 }
