@@ -58,7 +58,7 @@ else
   echo "Key ${POSTGRES_PASSWORD_NAME} exists in the secret store"
 fi
 
-APP_SECRET_KEY_VALUE= $(key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}")
+APP_SECRET_KEY_VALUE=$(key_vault::has_secret "${vault_name}" "${APP_SECRET_KEY_NAME}")
 echo "### APP_SECRET_KEY_VALUE ####"
 echo "$APP_SECRET_KEY_VALUE"
 echo $APP_SECRET_KEY_VALUE
