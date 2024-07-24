@@ -16,7 +16,7 @@ function key_vault::create_vault() {
   az keyvault create \
     --name "${3}" \
     --resource-group "${1}" \
-    --location "${2}" 
+    --location "${2}"
 }
 
 #######################################
@@ -125,6 +125,7 @@ function key_vault::has_secret() {
     --name "${2}" \
     --query value \
     -o tsv 2>&1 >/dev/null)"
-
+  echo "SECRET #####"
+  echo ${SECRET_RESULT}
   echo "${SECRET_RESULT}" | grep -q -v "SecretNotFound"
 }
