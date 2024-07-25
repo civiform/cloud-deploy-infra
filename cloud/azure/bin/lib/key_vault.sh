@@ -56,8 +56,7 @@ function key_vault::add_secret() {
   az keyvault secret set \
     --vault-name "${1}" \
     --name "${2}" \
-    --value "${3}" >/dev/null \
-    --enable-rbac-authorization
+    --value "${3}" >/dev/null
 }
 
 #######################################
