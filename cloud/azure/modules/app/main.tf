@@ -95,9 +95,15 @@ resource "azurerm_linux_web_app" "civiform_app" {
   app_settings = local.app_settings
 
   site_config {
-    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
+    linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
+  }
+
+  connection_string {
+     name = "postgres-database"
+     type = "PostgreSQL"
+     value = local.app_settings.DB_JDBC_STRING
   }
 
   # We will only mount this storage container if SAML authentication is being used
@@ -146,7 +152,7 @@ resource "azurerm_linux_web_app_slot" "canary" {
   app_settings = local.app_settings
 
   site_config {
-    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
+    linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
   }
