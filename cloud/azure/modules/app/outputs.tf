@@ -3,7 +3,7 @@ output "app_service_default_hostname" {
 }
 
 output "app_service_canary_hostname" {
-  value = "https://${azurerm_linux_web_app_slot.canary.default_site_hostname}"
+  value = "https://${azurerm_linux_web_app_slot.canary.name}.azurewebsites.net"
 }
 
 output "app_service_name" {
