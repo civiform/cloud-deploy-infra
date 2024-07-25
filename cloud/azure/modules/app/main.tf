@@ -95,9 +95,12 @@ resource "azurerm_linux_web_app" "civiform_app" {
   app_settings = local.app_settings
 
   site_config {
-    linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
+    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
+    application_stack {
+      docker_image_name = "DOCKER|civiform/civiform:${var.image_tag}"
+    }
   }
 
   connection_string {
@@ -137,7 +140,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
     ignore_changes = [
       app_settings["STAGING_HOSTNAME"],
       app_settings["BASE_URL"],
-      site_config[0].linux_fx_version
+      # site_config[0].linux_fx_version
     ]
   }
 }
@@ -151,10 +154,14 @@ resource "azurerm_linux_web_app_slot" "canary" {
 
   app_settings = local.app_settings
 
+
   site_config {
-    linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
+    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
+    application_stack {
+      docker_image_name = "DOCKER|civiform/civiform:${var.image_tag}"
+    }
   }
 
   # We will only mount this storage container if SAML authentication is being used
@@ -187,7 +194,7 @@ resource "azurerm_linux_web_app_slot" "canary" {
     ignore_changes = [
       app_settings["STAGING_HOSTNAME"],
       app_settings["BASE_URL"],
-      site_config[0].linux_fx_version
+      # site_config[0].linux_fx_version
     ]
   }
 }
