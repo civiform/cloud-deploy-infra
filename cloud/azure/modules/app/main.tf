@@ -140,7 +140,7 @@ resource "azurerm_linux_web_app_slot" "canary" {
   name                = "canary"
   # location            = data.azurerm_resource_group.rg.location
   # resource_group_name = data.azurerm_resource_group.rg.name
-  app_service_id = azurerm_service_plan.plan.id
+  app_service_id = azurerm_linux_web_app.civiform_app.id
   # app_service_name    = azurerm_linux_web_app.civiform_app.name
 
   app_settings = local.app_settings
