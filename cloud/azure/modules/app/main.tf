@@ -72,7 +72,7 @@ resource "azurerm_subnet" "canary_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}"
+  name                = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
@@ -100,8 +100,8 @@ resource "azurerm_linux_web_app" "civiform_app" {
     application_stack {
       docker_registry_url = "https://docker.io"
       # docker_image_name   = "DOCKER|civiform/civiform"
-      docker_image_tag    = "${var.image_tag}"
-      docker_image = "civiform/civiform"
+      docker_image_tag = var.image_tag
+      docker_image     = "civiform/civiform"
     }
   }
 
@@ -156,16 +156,17 @@ resource "azurerm_linux_web_app_slot" "canary" {
 
   app_settings = local.app_settings
 
-
   site_config {
     # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      docker_image_name = "DOCKER|civiform/civiform:${var.image_tag}"
+      docker_registry_url = "https://docker.io"
+      # docker_image_name   = "DOCKER|civiform/civiform"
+      docker_image_tag = var.image_tag
+      docker_image     = "civiform/civiform"
     }
   }
-
   # We will only mount this storage container if SAML authentication is being used
   dynamic "storage_account" {
     for_each = var.civiform_applicant_auth_protocol == "saml" ? [1] : []
