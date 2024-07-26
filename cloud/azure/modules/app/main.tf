@@ -72,7 +72,7 @@ resource "azurerm_subnet" "canary_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}-plan"
+  name                = "${data.azurerm_resource_group.rg.name}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
