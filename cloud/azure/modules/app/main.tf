@@ -72,11 +72,11 @@ resource "azurerm_subnet" "canary_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                   = "${data.azurerm_resource_group.rg.name}-plan"
-  location               = data.azurerm_resource_group.rg.location
-  resource_group_name    = data.azurerm_resource_group.rg.name
-  os_type                = "Linux"
-  sku_name               = var.app_sku
+  name                = "${data.azurerm_resource_group.rg.name}-plan"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  os_type             = "Linux"
+  sku_name            = var.app_sku
   #reserved = true
   # Choose size
   # sku {
@@ -91,22 +91,23 @@ resource "azurerm_linux_web_app" "civiform_app" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.plan.id
-  app_settings = local.app_settings
+  app_settings        = local.app_settings
 
   site_config {
     # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      docker_image_name = "DOCKER|civiform/civiform"
-      docker_image_tag = "${var.image_tag}"
+      docker_registry_url = "https://docker.io"
+      docker_image_name   = "DOCKER|civiform/civiform"
+      docker_image_tag    = var.image_tag
     }
   }
 
   connection_string {
-     name = "postgres-database"
-     type = "PostgreSQL"
-     value = local.app_settings.DB_JDBC_STRING
+    name  = "postgres-database"
+    type  = "PostgreSQL"
+    value = local.app_settings.DB_JDBC_STRING
   }
 
   # We will only mount this storage container if SAML authentication is being used
@@ -146,7 +147,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
 }
 
 resource "azurerm_linux_web_app_slot" "canary" {
-  name                = "canary"
+  name = "canary"
   # location            = data.azurerm_resource_group.rg.location
   # resource_group_name = data.azurerm_resource_group.rg.name
   app_service_id = azurerm_linux_web_app.civiform_app.id
