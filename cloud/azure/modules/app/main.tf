@@ -91,7 +91,6 @@ resource "azurerm_linux_web_app" "civiform_app" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.plan.id
-
   app_settings = local.app_settings
 
   site_config {
@@ -99,7 +98,8 @@ resource "azurerm_linux_web_app" "civiform_app" {
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      docker_image_name = "DOCKER|civiform/civiform:${var.image_tag}"
+      docker_image_name = "DOCKER|civiform/civiform"
+      docker_image_tag = "${var.image_tag}"
     }
   }
 
