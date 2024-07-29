@@ -39,5 +39,5 @@ function health::wait_for_success() {
 #   2: (Optional) Amount of time to wait before timing out, default
 #######################################
 function health::get_status() {
-  curl --silent --max-time 10 --output /dev/null -w "%{http_code}" "${1}"
+  curl --silent --max-time 10 --output /dev/null -w "%{http_code}" "https://${1}"
 }
