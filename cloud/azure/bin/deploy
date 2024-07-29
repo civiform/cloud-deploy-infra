@@ -22,7 +22,7 @@ fi
 
 azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${IMAGE_TAG}"
 
-if health::wait_for_success "${AZURE_PRIMARY_URL}/loginForm"; then
+if health::wait_for_success "${AZURE_PRIMARY_URL}/programs"; then
   echo "New container successfully started in canary slot"
 else
   log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
