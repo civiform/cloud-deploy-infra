@@ -125,18 +125,6 @@ variable "saml_keystore_container_name" {
   default     = "saml-keystore"
 }
 
-variable "feature_flag_reporting_enabled" {
-  type        = bool
-  description = "Whether or not to enable the reporting feature"
-  default     = false
-}
-
-variable "feature_flag_status_tracking_enabled" {
-  type        = bool
-  description = "When set to true enable Status Tracking."
-  default     = false
-}
-
 variable "civiform_api_keys_ban_global_subnet" {
   type        = bool
   description = "Whether to allow 0.0.0.0/0 subnet for API key access."
@@ -146,11 +134,5 @@ variable "civiform_api_keys_ban_global_subnet" {
 variable "civiform_server_metrics_enabled" {
   type        = bool
   description = "Whether to enable exporting server metrics on the /metrics route."
-  default     = false
-}
-
-variable "feature_flag_overrides_enabled" {
-  type        = bool
-  description = "Whether feature flags can be override using /dev/feature/.../enable url."
   default     = false
 }
