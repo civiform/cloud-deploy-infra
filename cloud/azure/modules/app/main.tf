@@ -257,7 +257,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 }
 
 resource "azurerm_private_endpoint" "endpoint" {
-  name                = "${azurerm_postgresql_server.civiform.name}-endpoint"
+  name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.postgres_subnet.id
