@@ -1,5 +1,5 @@
 output "app_service_default_hostname" {
-  value = "https://${azurerm_linux_web_app.civiform_app.default_site_hostname}"
+  value = "https://${azurerm_linux_web_app.civiform_app.name}.azurewebsites.net"
 }
 
 # output "app_service_canary_hostname" {
