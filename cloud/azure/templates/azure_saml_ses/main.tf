@@ -37,7 +37,8 @@ module "app" {
   staging_program_admin_notification_mailing_list = var.staging_program_admin_notification_mailing_list
   staging_ti_notification_mailing_list            = var.staging_ti_notification_mailing_list
   staging_applicant_notification_mailing_list     = var.staging_applicant_notification_mailing_list
-  
+  civic_entity_small_logo_url = var.civic_entity_small_logo_url
+
   saml_keystore_filename     = module.saml_keystore.filename
 
   # These two values need to match for PKCS12 keys
