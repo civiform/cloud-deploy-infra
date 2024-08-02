@@ -77,7 +77,6 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = var.app_sku
-  reserved            = true # Mandatory for Linux plans
 }
 
 resource "azurerm_linux_web_app" "civiform_app" {
