@@ -77,13 +77,6 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = var.app_sku
-  #reserved = true
-  # Choose size
-  # sku {
-  #   tier     = var.app_sku["tier"]
-  #   size     = var.app_sku["size"]
-  #   capacity = var.app_sku["capacity"]
-  # }
 }
 
 resource "azurerm_linux_web_app" "civiform_app" {
@@ -94,12 +87,9 @@ resource "azurerm_linux_web_app" "civiform_app" {
   app_settings        = local.app_settings
 
   site_config {
-    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      # docker_registry_url = "https://docker.io"
-      # docker_image_name   = "DOCKER|civiform/civiform"
       docker_image_tag = "${var.image_tag}"
       docker_image     = "civiform/civiform"
     }
@@ -142,27 +132,20 @@ resource "azurerm_linux_web_app" "civiform_app" {
     ignore_changes = [
       app_settings["STAGING_HOSTNAME"],
       app_settings["BASE_URL"],
-      # site_config[0].linux_fx_version
     ]
   }
 }
 
 resource "azurerm_linux_web_app_slot" "canary" {
   name = "canary"
-  # location            = data.azurerm_resource_group.rg.location
-  # resource_group_name = data.azurerm_resource_group.rg.name
   app_service_id = azurerm_linux_web_app.civiform_app.id
-  # app_service_name    = azurerm_linux_web_app.civiform_app.name
 
   app_settings = local.app_settings
 
   site_config {
-    # linux_fx_version       = "DOCKER|civiform/civiform:${var.image_tag}"
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      # docker_registry_url = "https://docker.io"
-      # docker_image_name   = "DOCKER|civiform/civiform"
       docker_image_tag = "${var.image_tag}"
       docker_image     = "civiform/civiform"
     }
@@ -197,7 +180,6 @@ resource "azurerm_linux_web_app_slot" "canary" {
     ignore_changes = [
       app_settings["STAGING_HOSTNAME"],
       app_settings["BASE_URL"],
-      # site_config[0].linux_fx_version
     ]
   }
 }
@@ -232,8 +214,6 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
 resource "azurerm_postgresql_flexible_server_database" "civiform" {
   name      = "civiform"
   server_id = azurerm_postgresql_flexible_server.civiform.id
-  #resource_group_name = data.azurerm_resource_group.rg.name
-  #server_name         = azurerm_postgresql_flexible_server.civiform.name
   charset   = "utf8"
   collation = "en_US.utf8"
 }

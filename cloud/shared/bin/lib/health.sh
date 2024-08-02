@@ -29,6 +29,7 @@ function health::wait_for_success() {
 
     echo "Time elapsed: $((${CURRENT_TIME} - ${START_TIME})) seconds"
     health_status="$(health::get_status "${1}")"
+    echo "Current ${health_status}"
   done
 }
 
