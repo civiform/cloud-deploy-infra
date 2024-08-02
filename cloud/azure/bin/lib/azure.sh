@@ -10,7 +10,7 @@
 function azure::set_common_vars() {
   export AZURE_USER_ID="$(azure::get_current_user_id)"
   export AZURE_APP_NAME="$(azure::get_app_name "${AZURE_RESOURCE_GROUP}")"
-  export AZURE_CANARY_URL="$(azure::get_canary_url "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}")"
+  # export AZURE_CANARY_URL="$(azure::get_canary_url "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}")"
   export AZURE_PRIMARY_URL="$(azure::get_primary_url "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}")"
 }
 
