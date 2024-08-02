@@ -18,6 +18,7 @@ variable "civiform_time_zone_id" {
 variable "civic_entity_small_logo_url" {
   type        = string
   description = "Logo with name used on the applicant-facing program index page"
+  default = ""
 }
 
 variable "favicon_url" {
@@ -67,6 +68,7 @@ variable "custom_hostname" {
 variable "adfs_admin_group" {
   type        = string
   description = "Active Directory Federation Service group name"
+  default = ""
 }
 
 variable "staging_program_admin_notification_mailing_list" {
