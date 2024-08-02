@@ -77,14 +77,7 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = var.app_sku
-  reserved = true # Mandatory for Linux plans
-
-  # Choose size
-  sku {
-    tier     = var.app_sku["tier"]
-    size     = var.app_sku["size"]
-    capacity = var.app_sku["capacity"]
-  }
+  reserved            = true # Mandatory for Linux plans
 }
 
 resource "azurerm_linux_web_app" "civiform_app" {
@@ -98,7 +91,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      docker_image_tag = "${var.image_tag}"
+      docker_image_tag = var.image_tag
       docker_image     = "civiform/civiform"
     }
   }
