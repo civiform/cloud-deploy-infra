@@ -42,14 +42,6 @@ variable "subnet_address_prefixes" {
   ]
 }
 
-variable "canary_subnet_address_prefixes" {
-  type        = list(string)
-  description = "List of the apps subnet address prefixes (must be distinct from the postgress subnet)"
-  default = [
-    "10.0.0.0/24"
-  ]
-}
-
 variable "bastion_address_prefixes" {
   type        = list(string)
   description = "Prefixes for the bastion instance (must be distinct from other subnets)"
@@ -59,13 +51,9 @@ variable "bastion_address_prefixes" {
 }
 
 variable "app_sku" {
-  type        = map(string)
+  type        = string
   description = "SKU tier/size/capacity information"
-  default = {
-    tier     = "Standard",
-    size     = "S2",
-    capacity = "2"
-  }
+  default = "S2"
 }
 
 variable "resource_group_name" {
@@ -76,17 +64,18 @@ variable "resource_group_name" {
 variable "postgres_admin_login" {
   type        = string
   description = "Postgres admin login"
+  default = "psqladmin"
 }
 
 variable "postgres_sku_name" {
   type        = string
   description = "The sku name for postgres server"
-  default     = "GP_Gen5_2"
+  default     = "GP_Standard_D2s_v3"
 }
 variable "postgres_storage_mb" {
   type        = number
   description = "The mb of storage for postgres instance"
-  default     = 5120
+  default     = 32768
 }
 
 variable "postgres_backup_retention_days" {

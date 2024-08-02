@@ -18,10 +18,9 @@ locals {
 
     DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
 
-    DB_USERNAME    = "${azurerm_postgresql_server.civiform.administrator_login}@${azurerm_postgresql_server.civiform.name}"
+    DB_USERNAME    = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"   
     DB_PASSWORD    = data.azurerm_key_vault_secret.postgres_password.value
-    DB_JDBC_STRING = "jdbc:postgresql://${local.postgres_private_link}:5432/postgres?ssl=true&sslmode=require"
-
+    DB_JDBC_STRING = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
     STORAGE_SERVICE_NAME = "azure-blob"
 
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
@@ -32,8 +31,12 @@ locals {
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
-    ADFS_SECRET    = data.azurerm_key_vault_secret.adfs_secret.value
-    ADFS_CLIENT_ID = data.azurerm_key_vault_secret.adfs_client_id.value
+    ADFS_SECRET                  = data.azurerm_key_vault_secret.adfs_secret.value
+    ADFS_CLIENT_ID               = data.azurerm_key_vault_secret.adfs_client_id.value
+    ADFS_DISCOVERY_URI           = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    APPLICANT_OIDC_CLIENT_SECRET = data.azurerm_key_vault_secret.adfs_secret.value
+    APPLICANT_OIDC_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
+    APPLICANT_OIDC_CLIENT_ID     = data.azurerm_key_vault_secret.adfs_client_id.value
 
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
@@ -42,13 +45,13 @@ locals {
     LOGIN_RADIUS_PRIVATE_KEY_PASS = var.saml_private_key_password
 
     CIVIFORM_API_SECRET_SALT = data.azurerm_key_vault_secret.api_secret_salt_key.value
+    DATABASE_APPLY_DESTRUCTIVE_CHANGES = true
 
     # STAGING_HOSTNAME and BASE_URL are slot settings which are managed outside of Terraform
     # but we need to set an initial value for them here so that the ignore_changes block will work
     STAGING_HOSTNAME = "placeholder"
     BASE_URL         = "placeholder"
 
-    ADFS_DISCOVERY_URI = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     # In HOCON, env variables set to the empty string are
     # kept as such (set to empty string, rather than undefined).
     # This allows for the default to include atallclaims and for
