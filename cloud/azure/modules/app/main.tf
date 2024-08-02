@@ -55,21 +55,21 @@ resource "azurerm_subnet" "server_subnet" {
   }
 }
 
-resource "azurerm_subnet" "canary_subnet" {
-  name                 = "canary-subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes     = var.canary_subnet_address_prefixes
+# resource "azurerm_subnet" "canary_subnet" {
+#   name                 = "canary-subnet"
+#   resource_group_name  = data.azurerm_resource_group.rg.name
+#   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
+#   address_prefixes     = var.canary_subnet_address_prefixes
 
-  delegation {
-    name = "app-service-delegation"
+#   delegation {
+#     name = "app-service-delegation"
 
-    service_delegation {
-      name    = "Microsoft.Web/serverFarms"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
-}
+#     service_delegation {
+#       name    = "Microsoft.Web/serverFarms"
+#       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+#     }
+#   }
+# }
 
 resource "azurerm_service_plan" "plan" {
   name                = data.azurerm_resource_group.rg.name
@@ -136,64 +136,64 @@ resource "azurerm_linux_web_app" "civiform_app" {
   }
 }
 
-resource "azurerm_linux_web_app_slot" "canary" {
-  name = "canary"
-  app_service_id = azurerm_linux_web_app.civiform_app.id
+# resource "azurerm_linux_web_app_slot" "canary" {
+#   name = "canary"
+#   app_service_id = azurerm_linux_web_app.civiform_app.id
 
-  app_settings = local.app_settings
+#   app_settings = local.app_settings
 
-  site_config {
-    always_on              = true
-    vnet_route_all_enabled = true
-    application_stack {
-      docker_image_tag = "${var.image_tag}"
-      docker_image     = "civiform/civiform"
-    }
-  }
-  # We will only mount this storage container if SAML authentication is being used
-  dynamic "storage_account" {
-    for_each = var.civiform_applicant_auth_protocol == "saml" ? [1] : []
-    content {
-      name         = "civiform-saml-keystore"
-      type         = "AzureBlob"
-      account_name = var.saml_keystore_storage_account_name
-      share_name   = var.saml_keystore_storage_container_name
-      access_key   = var.saml_keystore_storage_access_key
-      mount_path   = "/saml"
-    }
-  }
+#   site_config {
+#     always_on              = true
+#     vnet_route_all_enabled = true
+#     application_stack {
+#       docker_image_tag = "${var.image_tag}"
+#       docker_image     = "civiform/civiform"
+#     }
+#   }
+#   # We will only mount this storage container if SAML authentication is being used
+#   dynamic "storage_account" {
+#     for_each = var.civiform_applicant_auth_protocol == "saml" ? [1] : []
+#     content {
+#       name         = "civiform-saml-keystore"
+#       type         = "AzureBlob"
+#       account_name = var.saml_keystore_storage_account_name
+#       share_name   = var.saml_keystore_storage_container_name
+#       access_key   = var.saml_keystore_storage_access_key
+#       mount_path   = "/saml"
+#     }
+#   }
 
-  identity {
-    type = "SystemAssigned"
-  }
+#   identity {
+#     type = "SystemAssigned"
+#   }
 
-  logs {
-    http_logs {
-      file_system {
-        retention_in_days = 1
-        retention_in_mb   = 35
-      }
-    }
-  }
+#   logs {
+#     http_logs {
+#       file_system {
+#         retention_in_days = 1
+#         retention_in_mb   = 35
+#       }
+#     }
+#   }
 
-  lifecycle {
-    ignore_changes = [
-      app_settings["STAGING_HOSTNAME"],
-      app_settings["BASE_URL"],
-    ]
-  }
-}
+#   lifecycle {
+#     ignore_changes = [
+#       app_settings["STAGING_HOSTNAME"],
+#       app_settings["BASE_URL"],
+#     ]
+#   }
+# }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "appservice_vnet_connection" {
   app_service_id = azurerm_linux_web_app.civiform_app.id
   subnet_id      = azurerm_subnet.server_subnet.id
 }
 
-resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vnet_connection" {
-  app_service_id = azurerm_linux_web_app.civiform_app.id
-  subnet_id      = azurerm_subnet.server_subnet.id
-  slot_name      = azurerm_linux_web_app_slot.canary.name
-}
+# resource "azurerm_app_service_slot_virtual_network_swift_connection" "canary_vnet_connection" {
+#   app_service_id = azurerm_linux_web_app.civiform_app.id
+#   subnet_id      = azurerm_subnet.server_subnet.id
+#   slot_name      = azurerm_linux_web_app_slot.canary.name
+# }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
   name                   = "${random_pet.server.id}-civiform"
