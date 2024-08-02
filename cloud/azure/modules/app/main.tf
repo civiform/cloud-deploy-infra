@@ -87,8 +87,6 @@ resource "azurerm_linux_web_app" "civiform_app" {
   app_settings        = local.app_settings
 
   site_config {
-    always_on              = true
-    vnet_route_all_enabled = true
     application_stack {
       docker_image_tag = var.image_tag
       docker_image     = "civiform/civiform"
@@ -239,8 +237,6 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-
-  enforce_private_link_endpoint_network_policies = true
 }
 
 resource "azurerm_private_dns_zone" "privatelink" {
