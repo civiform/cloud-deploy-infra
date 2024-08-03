@@ -20,6 +20,32 @@ locals {
   name_prefix = "${var.app_prefix}-civiform"
 }
 
+resource "aws_s3_bucket" "lb_logs" {
+  count  = var.lb_logging_enabled ? 1 : 0
+  bucket = "${local.name_prefix}-lb-logs"
+}
+
+resource "aws_s3_bucket_policy" "lb_logs_policy" {
+  count  = var.lb_logging_enabled ? 1 : 0
+  bucket = aws_s3_bucket.lb_logs[count.index].id
+  policy = data.aws_iam_policy_document.lb_logs_policy[count.index].json
+}
+
+data "aws_iam_policy_document" "lb_logs_policy" {
+  count = var.lb_logging_enabled ? 1 : 0
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_elb_service_account.default.arn]
+    }
+    actions = ["s3:PutObject"]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.lb_logs[count.index].bucket}/*"
+    ]
+  }
+}
+
 #------------------------------------------------------------------------------
 # APPLICATION LOAD BALANCER
 #------------------------------------------------------------------------------
@@ -43,6 +69,11 @@ resource "aws_lb" "civiform_lb" {
       Name = "${local.name_prefix}-lb"
     },
   )
+
+  access_logs {
+    bucket  = var.lb_logging_enabled ? aws_s3_bucket.lb_logs[0].id : ""
+    enabled = var.lb_logging_enabled
+  }
 }
 
 moved {

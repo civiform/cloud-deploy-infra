@@ -334,6 +334,7 @@ module "ecs_fargate_service" {
   scale_target_min_capacity = var.ecs_scale_target_min_capacity
   https_target_port         = var.port
   lb_internal               = local.enable_managed_vpc ? false : true
+  lb_logging_enabled        = var.lb_logging_enabled
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"
