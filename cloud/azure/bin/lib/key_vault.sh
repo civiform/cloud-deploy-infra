@@ -16,7 +16,7 @@ function key_vault::create_vault() {
   az keyvault create \
     --name "${3}" \
     --resource-group "${1}" \
-    --location "${2}" \
+    --location "${2}"
 }
 
 #######################################
