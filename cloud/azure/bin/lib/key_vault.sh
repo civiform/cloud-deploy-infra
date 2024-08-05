@@ -17,7 +17,6 @@ function key_vault::create_vault() {
     --name "${3}" \
     --resource-group "${1}" \
     --location "${2}" \
-    --enable-rbac-authorization
 }
 
 #######################################
