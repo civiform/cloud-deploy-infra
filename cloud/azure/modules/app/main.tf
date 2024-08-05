@@ -165,29 +165,22 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-  delegation {
-    name = "delegation"
-    service_delegation {
-      name = "Microsoft.DBforPostgreSQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/publicIPAddresses/read",
-        "Microsoft.Network/networkinterfaces/*",
-        "Microsoft.Network/virtualNetworks/subnets/action",
-        "Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
+  # delegation {
+  #   name = "delegation"
+  #   service_delegation {
+  #     name = "Microsoft.DBforPostgreSQL/flexibleServers"
+  #     actions = [
+  #       "Microsoft.Network/publicIPAddresses/read",
+  #       "Microsoft.Network/networkinterfaces/*",
+  #       "Microsoft.Network/virtualNetworks/subnets/action",
+  #       "Microsoft.Network/virtualNetworks/subnets/join/action"]
+  #   }
+  # }
 }
 
 resource "azurerm_private_dns_zone" "privatelink" {
   name                = "privatelink.postgres.database.azure.com"
   resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  name                  = "vnet-link-private-dns"
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
-  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
 }
 
 resource "azurerm_private_endpoint" "endpoint" {
@@ -208,6 +201,7 @@ resource "azurerm_private_endpoint" "endpoint" {
     is_manual_connection           = false
   }
 }
+
 module "bastion" {
   source = "../bastion"
 
