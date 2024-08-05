@@ -144,7 +144,6 @@ function azure::set_new_container_tag() {
   az webapp config container set \
     --resource-group "${1}" \
     --name "${2}" \
-    --slot "primary" \
     --container-image-name "DOCKER|civiform/civiform:${3}"
 }
 
