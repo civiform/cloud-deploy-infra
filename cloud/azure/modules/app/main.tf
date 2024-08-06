@@ -90,8 +90,8 @@ resource "azurerm_linux_web_app" "civiform_app" {
     always_on              = true
     vnet_route_all_enabled = true
     application_stack {
-      docker_image_tag = "${var.image_tag}"
-      docker_image     = "civiform/civiform"
+      docker_image_name = "${var.image_tag}"
+      docker_registry_url   = "https://index.docker.io"
     }
   }
 
