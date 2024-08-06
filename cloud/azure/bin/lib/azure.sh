@@ -141,6 +141,7 @@ function azure::get_container_tag() {
 #   3. The new tag version
 #######################################
 function azure::set_new_container_tag() {
+  echo "setting new container tag ${3}"
   az webapp config container set \
     --resource-group "${1}" \
     --name "${2}" \
