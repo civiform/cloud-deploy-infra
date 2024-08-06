@@ -73,7 +73,7 @@ function terraform::perform_apply() {
   if civiform_mode::skip_confirmations; then
     "${TERRAFORM_APPLY[@]}" -auto-approve
   else
-    "${TERRAFORM_APPLY[@]}" -auto-approve
+    "${TERRAFORM_APPLY[@]}"
   fi
 }
 
