@@ -52,7 +52,6 @@ function key_vault::assign_secrets_officer_role_to_user() {
 #   3: The value of the secret
 #######################################
 function key_vault::add_secret() {
-  echo "${1} ${2} ${3}"
   az keyvault secret set \
     --vault-name "${1}" \
     --name "${2}" \
