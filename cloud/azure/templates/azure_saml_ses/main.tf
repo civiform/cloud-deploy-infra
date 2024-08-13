@@ -55,8 +55,8 @@ module "app" {
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
 
-  civiform_api_keys_ban_global_subnet = var.civiform_api_keys_ban_global_subnet
-  civiform_server_metrics_enabled     = var.civiform_server_metrics_enabled
+  # civiform_api_keys_ban_global_subnet = var.civiform_api_keys_ban_global_subnet
+  # civiform_server_metrics_enabled     = var.civiform_server_metrics_enabled
 }
 
 module "custom_hostname" {
