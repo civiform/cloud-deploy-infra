@@ -153,7 +153,6 @@ def perform_apply(
         terraform_apply_cmd += ' -destroy'
 
     print(f" - Run {terraform_apply_cmd}")
-    print("DEBUG HERE")
 
     output, exit_code = capture_stderr(terraform_apply_cmd)
     if exit_code > 0:
