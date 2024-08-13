@@ -72,8 +72,8 @@ resource "azurerm_linux_web_app" "civiform_app" {
 
   site_config {
     application_stack {
-      docker_image_tag = var.image_tag
-      docker_image     = "civiform/civiform"
+      docker_image_name   = var.image_tag
+      docker_registry_url = "https://index.docker.io"
     }
   }
 
@@ -133,7 +133,7 @@ resource "azurerm_subnet" "postgres_subnet" {
         "Microsoft.Network/publicIPAddresses/read",
         "Microsoft.Network/networkinterfaces/*",
         "Microsoft.Network/virtualNetworks/subnets/action",
-        "Microsoft.Network/virtualNetworks/subnets/join/action"]
+      "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
   }
 }
@@ -160,7 +160,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   sku_name               = var.postgres_sku_name
   version                = "15"
   storage_mb             = var.postgres_storage_mb
-  depends_on = [ azurerm_private_dns_zone_virtual_network_link.virtual]
+  depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
   lifecycle {
     ignore_changes = [
       zone
