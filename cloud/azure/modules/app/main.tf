@@ -118,11 +118,6 @@ resource "azurerm_linux_web_app" "civiform_app" {
   }
 }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "appservice_vnet_connection" {
-  app_service_id = azurerm_linux_web_app.civiform_app.id
-  subnet_id      = azurerm_subnet.server_subnet.id
-}
-
 # Configure private link
 resource "azurerm_subnet" "postgres_subnet" {
   name                 = "postgres_subnet"
