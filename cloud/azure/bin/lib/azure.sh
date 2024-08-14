@@ -8,7 +8,7 @@
 #   AZURE_CANARY_URL
 #######################################
 function azure::set_common_vars() {
-  source checkout/cloud/shared/bin/resolve-latest-snapshot-tag
+  source /shared/bin/resolve-latest-snapshot-tag
   export IMAGE_TAG=“${LATEST_SNAPSHOT_TAG}”
   export AZURE_USER_ID="$(azure::get_current_user_id)"
   export AZURE_APP_NAME="$(azure::get_app_name "${AZURE_RESOURCE_GROUP}")"
