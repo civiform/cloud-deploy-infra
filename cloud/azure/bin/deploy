@@ -20,7 +20,7 @@ if civiform_mode::is_test; then
   exit 0
 fi
 
-azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${IMAGE_TAG}"
+azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${LATEST_SNAPSHOT_TAG}"
 
 if health::wait_for_success "${AZURE_PRIMARY_URL}/programs"; then
   echo "New container successfully started in prod slot"
