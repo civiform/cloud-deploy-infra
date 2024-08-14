@@ -145,7 +145,7 @@ function azure::set_new_container_tag() {
     --resource-group "${1}" \
     --name "${2}" \
     --slot "primary" \
-    --container-image-image "DOCKER|civiform/civiform:${3}"
+    --container-image-name "DOCKER|civiform/civiform:${3}"
 }
 
 #######################################
