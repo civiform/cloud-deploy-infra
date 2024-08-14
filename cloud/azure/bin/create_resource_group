@@ -21,4 +21,4 @@ if [[ ! "${RESOURCE_GROUP}" ]] \
 fi
 
 echo "Creating resource group ${RESOURCE_GROUP}"
-azure::create_resource_group "${RESOURCE_GROUP}" "${LOCATION}"
+azure::create_resource_group "${RESOURCE_GROUP}" "${AZURE_LOCATION}"
