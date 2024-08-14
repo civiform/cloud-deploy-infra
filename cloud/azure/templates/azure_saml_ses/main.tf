@@ -22,7 +22,7 @@ module "app" {
   postgres_admin_login = var.postgres_admin_login
 
   # note that we must use GP tier
-  postgres_sku_name = "GP_Standard_D2s_v3"
+  postgres_sku_name   = "GP_Standard_D2s_v3"
   postgres_storage_mb = "32768"
 
   image_tag = var.image_tag
@@ -38,7 +38,7 @@ module "app" {
   staging_ti_notification_mailing_list            = var.staging_ti_notification_mailing_list
   staging_applicant_notification_mailing_list     = var.staging_applicant_notification_mailing_list
 
-  saml_keystore_filename     = module.saml_keystore.filename
+  saml_keystore_filename = module.saml_keystore.filename
 
   # These two values need to match for PKCS12 keys
   saml_keystore_password    = module.saml_keystore.keystore_password
@@ -50,11 +50,11 @@ module "app" {
 }
 
 module "custom_hostname" {
-  for_each            = var.custom_hostname != "" ? toset([var.custom_hostname]) : toset([])
-  source              = "../../modules/custom_hostname"
-  custom_hostname     = var.custom_hostname
-  app_service_name    = module.app.app_service_name
-  resource_group_name = module.app.resource_group_name
+  for_each                      = var.custom_hostname != "" ? toset([var.custom_hostname]) : toset([])
+  source                        = "../../modules/custom_hostname"
+  custom_hostname               = var.custom_hostname
+  app_service_name              = module.app.app_service_name
+  resource_group_name           = module.app.resource_group_name
   custom_domain_verification_id = module.app.custom_domain_verification_id
 }
 

@@ -53,7 +53,7 @@ variable "bastion_address_prefixes" {
 variable "app_sku" {
   type        = string
   description = "SKU tier/size/capacity information"
-  default = "S2"
+  default     = "S2"
 }
 
 variable "resource_group_name" {
@@ -64,7 +64,7 @@ variable "resource_group_name" {
 variable "postgres_admin_login" {
   type        = string
   description = "Postgres admin login"
-  default = "psqladmin"
+  default     = "psqladmin"
 }
 
 variable "postgres_sku_name" {

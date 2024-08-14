@@ -14,6 +14,6 @@ variable "resource_group_name" {
 }
 
 variable "custom_domain_verification_id" {
-  type = string
+  type        = string
   description = "custom domain verification id"
 }

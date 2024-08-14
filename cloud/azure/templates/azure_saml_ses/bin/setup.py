@@ -9,6 +9,7 @@ from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 
+
 class Setup(SetupTemplate):
     """
     Template Setup
