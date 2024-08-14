@@ -26,7 +26,7 @@ function terraform::perform_destory() {
   if azure::is_service_principal; then
     "${TERRAFORM_APPLY[@]}" -auto-approve
   else
-    "${TERRAFORM_APPLY[@]}" -auto-approve
+    "${TERRAFORM_APPLY[@]}"
   fi
 }
 
