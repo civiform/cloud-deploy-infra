@@ -156,6 +156,7 @@ class Setup(SetupTemplate):
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
+        # fails silently for now. AWS setup not required for azure deployment.
         subprocess.run(
             [
                 "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
