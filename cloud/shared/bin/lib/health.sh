@@ -18,7 +18,7 @@ function health::wait_for_success() {
   echo "Polling ${1} for successful response. This may take a few minutes"
   local health_status="$(health::get_status "${1}")"
 
-  until [[ "${health_status}" -eq "200" ]] || [[ "${health_status}" -eq "303" ]]; do
+  until [[ "${health_status}" -eq "200" ]] || [[ "${health_status}" -eq "302" ]]; do
     sleep 10
     local CURRENT_TIME=$(date +%s)
 
