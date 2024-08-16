@@ -67,6 +67,7 @@ module "saml_keystore" {
   resource_group_name          = var.azure_resource_group
 }
 
+# Removing reliance on AWS for the email service
 # module "email_service" {
 #   for_each = toset([
 #     var.sender_email_address,
