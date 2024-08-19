@@ -53,7 +53,7 @@ variable "bastion_address_prefixes" {
 
 variable "app_sku" {
   type        = string
-  description = "SKU tier/size/capacity information"
+  description = "SKU tier information"
   default     = "S2"
 }
 
@@ -66,17 +66,6 @@ variable "postgres_admin_login" {
   type        = string
   description = "Postgres admin login"
   default     = "psqladmin"
-}
-
-variable "postgres_sku_name" {
-  type        = string
-  description = "The sku name for postgres server"
-  default     = "GP_Standard_D2s_v3"
-}
-variable "postgres_storage_mb" {
-  type        = number
-  description = "The mb of storage for postgres instance"
-  default     = 32768
 }
 
 variable "postgres_backup_retention_days" {
