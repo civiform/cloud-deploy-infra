@@ -21,10 +21,6 @@ module "app" {
 
   postgres_admin_login = var.postgres_admin_login
 
-  # note that we must use GP tier
-  postgres_sku_name   = "GP_Standard_D2s_v3"
-  postgres_storage_mb = "32768"
-
   image_tag = var.image_tag
 
   civiform_applicant_auth_protocol = var.civiform_applicant_auth_protocol
