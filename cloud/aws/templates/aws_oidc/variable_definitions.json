@@ -436,5 +436,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "EXTRA_INBOUND_RULE_CIDR": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   }
 }

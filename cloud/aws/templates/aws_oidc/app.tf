@@ -335,6 +335,7 @@ module "ecs_fargate_service" {
   https_target_port         = var.port
   lb_internal               = local.enable_managed_vpc ? false : true
   lb_logging_enabled        = var.lb_logging_enabled
+  extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"

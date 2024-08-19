@@ -543,3 +543,9 @@ variable "lb_logging_enabled" {
   description = "Whether to enable LB access logging."
   default     = false
 }
+
+variable "extra_inbound_rule_cidr" {
+  description = "(Optional) The CIDR block of the inbound rule to be added. Required if using a custom VPC"
+  type        = string
+  default     = null
+}

@@ -320,6 +320,16 @@ resource "aws_security_group_rule" "ingress_through_http_and_https" {
   source_security_group_id = aws_security_group.lb_access_sg.id
 }
 
+resource "aws_security_group_rule" "ingress_with_custom_cidr" {
+  count                    = var.extra_inbound_rule_cidr != null ? 1 : 0
+  security_group_id        = aws_security_group.ecs_tasks_sg.id
+  type                     = "ingress"
+  from_port                = 9000
+  to_port                  = 9000
+  protocol                 = "tcp"
+  cidr_blocks              = [var.extra_inbound_rule_cidr]
+}
+
 moved {
   from = aws_security_group_rule.ingress_through_http_and_https["9000"]
   to   = aws_security_group_rule.ingress_through_http_and_https
