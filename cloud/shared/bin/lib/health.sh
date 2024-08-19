@@ -6,7 +6,7 @@
 #   1: The url for the healthcheck endpoint
 #   2: (Optional) Amount of time to wait before timing out, default
 #######################################
-function health::wait_for_success() {
+function health::wait_for_healthy() {
   local TIMEOUT=600 # 10 min
   local START_TIME="$(date +%s)"
 
