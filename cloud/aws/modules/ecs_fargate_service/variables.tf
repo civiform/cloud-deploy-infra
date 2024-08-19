@@ -137,3 +137,9 @@ variable "default_certificate_arn" {
   type        = string
   default     = null
 }
+
+variable "lb_logging_enabled" {
+  description = "Whether to enable LB access logs."
+  type        = bool
+  default     = false
+}

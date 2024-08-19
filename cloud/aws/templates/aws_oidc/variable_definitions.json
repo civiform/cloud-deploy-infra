@@ -430,5 +430,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "LB_LOGGING_ENABLED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }
 }
