@@ -47,16 +47,17 @@ module "app" {
   saml_keystore_storage_access_key     = module.saml_keystore.storage_access_key
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
+ 
+  # TODO(jcma): Attributes not being detected for some reason. 
+  # civiform_time_zone_id = var.civiform_time_zone_id
 
-  civiform_time_zone_id = var.civiform_time_zone_id
+  # civic_entity_small_logo_url = var.civic_entity_small_logo_url
 
-  civic_entity_small_logo_url = var.civic_entity_small_logo_url
+  # adfs_admin_group = var.adfs_admin_group
 
-  adfs_admin_group = var.adfs_admin_group
-
-  login_radius_api_key       = var.login_radius_api_key
-  login_radius_metadata_uri  = var.login_radius_metadata_uri
-  login_radius_saml_app_name = var.login_radius_saml_app_name
+  # login_radius_api_key       = var.login_radius_api_key
+  # login_radius_metadata_uri  = var.login_radius_metadata_uri
+  # login_radius_saml_app_name = var.login_radius_saml_app_name
 }
 
 module "custom_hostname" {
