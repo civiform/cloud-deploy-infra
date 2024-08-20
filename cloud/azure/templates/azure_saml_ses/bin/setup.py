@@ -157,7 +157,7 @@ class Setup(SetupTemplate):
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
         aws_input = input("If using AWS email service input y")
-        if (aws_input = "y"):
+        if (aws_input == "y"):
             subprocess.run(
                 [
                     "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
