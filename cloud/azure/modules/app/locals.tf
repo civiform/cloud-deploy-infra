@@ -2,10 +2,9 @@ locals {
   # The hard-coded zero indexes here are necessary to access the fqdn from the record set associated with it
   # because the private_dns_zone_configs and record_sets blocks expose lists, even if we only have one dns zone
   # and record set configured.
-
-  # commenting postgres_private_link out for now as I set up the private link network
-  # right now postgres server is protected by password, subnet, and firewall, which is enough
-  # for staging purposes.
+  # TODO(https://github.com/civiform/civiform/issues/8364): commenting postgres_private_link out for now as I
+  # set up the private link network right now postgres server is protected by password, subnet, and firewall, 
+  # which is enough for staging purposes.
   # postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   generated_hostname = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
