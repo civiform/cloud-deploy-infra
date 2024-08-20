@@ -22,7 +22,7 @@ fi
 
 azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${IMAGE_TAG}"
 
-if health::wait_for_healthy "${AZURE_PRIMARY_URL}/callback?client_name=GuestClient"; then
+if health::wait_for_healthy "${AZURE_PRIMARY_URL}/playIndex"; then
   echo "New container returns expected signal on ping"
 else
   log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
