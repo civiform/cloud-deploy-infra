@@ -156,7 +156,7 @@ class Setup(SetupTemplate):
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
-        aws_input = input("If using AWS email service input y")
+        aws_input = input("If using AWS email service input y. Input n for no. ")
         if (aws_input == "y"):
             subprocess.run(
                 [
