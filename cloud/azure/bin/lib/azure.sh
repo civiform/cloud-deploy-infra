@@ -10,7 +10,7 @@
 function azure::set_common_vars() {
   export AZURE_USER_ID="$(azure::get_current_user_id)"
   export AZURE_APP_NAME="$(azure::get_app_name "${AZURE_RESOURCE_GROUP}")"
-  export AZURE_CANARY_URL="$(azure::get_canary_url "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}")"
+  export AZURE_PRIMARY_URL="$(azure::get_primary_url "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}")"
 }
 
 #######################################
@@ -140,11 +140,11 @@ function azure::get_container_tag() {
 #   3. The new tag version
 #######################################
 function azure::set_new_container_tag() {
+  echo "setting new container tag ${3}"
   az webapp config container set \
     --resource-group "${1}" \
     --name "${2}" \
-    --slot "canary" \
-    --docker-custom-image-name "DOCKER|civiform/civiform:${3}"
+    --container-image-name "DOCKER|civiform/civiform:${3}"
 }
 
 #######################################
@@ -191,7 +191,7 @@ function azure::ensure_role_assignment() {
   if azure::is_service_principal; then
     object_id="$(az account show --query user.name -o tsv)"
   else
-    object_id="$(az ad signed-in-user show --query objectId -o tsv)"
+    object_id="$(az ad signed-in-user show --query id -o tsv)"
   fi
 
   local ROLE_ASSIGNMENTS="$(az role assignment list --assignee ${object_id} --resource-group ${1})"
