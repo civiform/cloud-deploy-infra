@@ -74,3 +74,12 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
+      - name: Notify Slack Complete
+        if: always()
+        uses: slackapi/slack-github-action@v1
+        with:
+          channel-id:  'C03UXPUEXU4'
+          slack-message: "${{ env.STATUS_ICON }} AWS e2e test: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.CIVIBOT_TOKEN }}
+          STATUS_ICON: ${{fromJSON('[":no_entry:", ":white_check_mark:"]')[job.status == 'success']}}
