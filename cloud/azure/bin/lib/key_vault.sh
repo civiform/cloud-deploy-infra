@@ -125,8 +125,10 @@ function key_vault::has_secret() {
     -o tsv 2>&1 >/dev/null)"
 
   # -v inverses the result
-  echo "${SECRET_RESULT}" | grep -q -v "SecretNotFound"
+  echo "secret result starts here"
+  echo "${SECRET_RESULT}"
   echo "first result" $?
-  echo "${SECRET_RESULT}" | grep -q "SecretNotFound"
+  echo "${SECRET_RESULT}" | grep -q -v "SecretNotFound"
   echo "second result" $?
+  echo "${SECRET_RESULT}" | grep -q "SecretNotFound"
 }
