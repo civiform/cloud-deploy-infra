@@ -6,7 +6,7 @@
 #   1: The url for the healthcheck endpoint
 #   2: (Optional) Amount of time to wait before timing out, default
 #######################################
-function health::wait_for_healthy() {
+function health::wait_for_success() {
   local TIMEOUT=600 # 10 min
   local START_TIME="$(date +%s)"
 
@@ -18,7 +18,7 @@ function health::wait_for_healthy() {
   echo "Polling ${1} for successful response. This may take a few minutes"
   local health_status="$(health::get_status "${1}")"
 
-  until [[ "${health_status}" -eq "200" ]] || [[ "${health_status}" -eq "302" ]]; do
+  until [[ "${health_status}" -eq "200" ]]; do
     sleep 10
     local CURRENT_TIME=$(date +%s)
 
