@@ -128,7 +128,7 @@ function key_vault::has_secret() {
   echo "secret result starts here"
   echo "${SECRET_RESULT}"
   echo "${SECRET_RESULT}" | grep -q -v "SecretNotFound"
-  echo "first result" $?
+  echo "first result changed" $?
   echo "${SECRET_RESULT}" | grep -q "SecretNotFound"
-  echo "second result" $?
+  echo "second result changed" $?
 }
