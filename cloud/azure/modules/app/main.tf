@@ -162,6 +162,14 @@ resource "azurerm_private_endpoint" "endpoint" {
   }
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "virtual" {
+  name                  = "civiformvnetzone.com"
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
+  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
+  resource_group_name   = data.azurerm_resource_group.rg.name
+  depends_on            = [azurerm_subnet.postgres_subnet]
+}
+
 resource "azurerm_postgresql_flexible_server" "civiform" {
   name                          = random_pet.server.id
   location                      = data.azurerm_resource_group.rg.location
