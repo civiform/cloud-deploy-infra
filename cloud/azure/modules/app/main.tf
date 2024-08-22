@@ -163,7 +163,7 @@ resource "azurerm_private_endpoint" "endpoint" {
 }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
-  name                   = "${random_pet.server.id}-civiform"
+  name                   = "${random_pet.server.id}"
   location               = data.azurerm_resource_group.rg.location
   resource_group_name    = data.azurerm_resource_group.rg.name
   administrator_login    = var.postgres_admin_login
