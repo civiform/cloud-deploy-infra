@@ -18,7 +18,7 @@ variable "aws_region" {
 variable "image_tag" {
   type        = string
   description = "Tag for container image"
-  default     = "latest"
+  default     = "prod"
 }
 
 variable "location_name" {
