@@ -172,7 +172,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   version                       = "15"
   storage_mb                    = var.postgres_storage_mb
   public_network_access_enabled = false
-  depends_on             = [azurerm_private_endpoint.endpoint]
+  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.virtual]
   lifecycle {
     ignore_changes = [
       zone
