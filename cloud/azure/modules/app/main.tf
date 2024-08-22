@@ -124,18 +124,18 @@ resource "azurerm_subnet" "postgres_subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.postgres_subnet_address_prefixes
-  service_endpoints    = ["Microsoft.Storage"]
-  delegation {
-    name = "delegation"
-    service_delegation {
-      name = "Microsoft.DBforPostgreSQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/publicIPAddresses/read",
-        "Microsoft.Network/networkinterfaces/*",
-        "Microsoft.Network/virtualNetworks/subnets/action",
-      "Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
+  # service_endpoints    = ["Microsoft.Storage"]
+  # delegation {
+  #   name = "delegation"
+  #   service_delegation {
+  #     name = "Microsoft.DBforPostgreSQL/flexibleServers"
+  #     actions = [
+  #       "Microsoft.Network/publicIPAddresses/read",
+  #       "Microsoft.Network/networkinterfaces/*",
+  #       "Microsoft.Network/virtualNetworks/subnets/action",
+  #     "Microsoft.Network/virtualNetworks/subnets/join/action"]
+  #   }
+  # }
 }
 
 resource "azurerm_private_dns_zone" "privatelink" {
