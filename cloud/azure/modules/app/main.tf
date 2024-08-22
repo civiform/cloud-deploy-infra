@@ -77,11 +77,11 @@ resource "azurerm_linux_web_app" "civiform_app" {
     }
   }
 
-  # connection_string {
-  #   name  = "postgres-database"
-  #   type  = "PostgreSQL"
-  #   value = local.app_settings.DB_JDBC_STRING
-  # }
+  connection_string {
+    name  = "postgres-database"
+    type  = "PostgreSQL"
+    value = local.app_settings.DB_JDBC_STRING
+  }
 
   # We will only mount this storage container if SAML authentication is being used
   dynamic "storage_account" {
@@ -133,7 +133,7 @@ resource "azurerm_subnet" "postgres_subnet" {
         "Microsoft.Network/publicIPAddresses/read",
         "Microsoft.Network/networkinterfaces/*",
         "Microsoft.Network/virtualNetworks/subnets/action",
-      "Microsoft.Network/virtualNetworks/subnets/join/action"]
+        "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
   }
 }
