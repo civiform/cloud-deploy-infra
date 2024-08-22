@@ -148,7 +148,7 @@ resource "azurerm_private_endpoint" "endpoint" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.postgres_subnet.id
-  
+
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
     private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
@@ -163,15 +163,16 @@ resource "azurerm_private_endpoint" "endpoint" {
 }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
-  name                   = "${random_pet.server.id}"
-  location               = data.azurerm_resource_group.rg.location
-  resource_group_name    = data.azurerm_resource_group.rg.name
-  administrator_login    = var.postgres_admin_login
-  administrator_password = data.azurerm_key_vault_secret.postgres_password.value
-  sku_name               = var.postgres_sku_name
-  version                = "15"
-  storage_mb             = var.postgres_storage_mb
-  # depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
+  name                          = random_pet.server.id
+  location                      = data.azurerm_resource_group.rg.location
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  administrator_login           = var.postgres_admin_login
+  administrator_password        = data.azurerm_key_vault_secret.postgres_password.value
+  sku_name                      = var.postgres_sku_name
+  version                       = "15"
+  storage_mb                    = var.postgres_storage_mb
+  public_network_access_enabled = false
+  depends_on             = [azurerm_private_endpoint.endpoint]
   lifecycle {
     ignore_changes = [
       zone
