@@ -140,14 +140,14 @@ resource "azurerm_subnet" "postgres_subnet" {
 
 resource "azurerm_private_dns_zone" "privatedns" {
   name                = "civiform.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.civiform.name
+  resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "networklink" {
   name                  = "civiformvnetzone.com"
   private_dns_zone_name = azurerm_private_dns_zone.privatedns.name
   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-  resource_group_name   = data.azurerm_resource_group.civiform.name
+  resource_group_name   = data.azurerm_resource_group.rg.name
   depends_on            = [azurerm_subnet.postgres_subnet]
 }
 
