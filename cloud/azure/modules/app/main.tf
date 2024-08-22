@@ -138,20 +138,6 @@ resource "azurerm_subnet" "postgres_subnet" {
   }
 }
 
-resource "azurerm_private_dns_zone" "privatelink" {
-  name                = "privatelink.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-
-resource "azurerm_private_dns_zone_virtual_network_link" "virtual" {
-  name                  = "civiformvnetzone.com"
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
-  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  depends_on            = [azurerm_subnet.postgres_subnet]
-}
-
 resource "azurerm_postgresql_flexible_server" "civiform" {
   name                          = random_pet.server.id
   location                      = data.azurerm_resource_group.rg.location
@@ -162,7 +148,6 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   version                       = "15"
   storage_mb                    = var.postgres_storage_mb
   public_network_access_enabled = false
-  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.virtual]
   lifecycle {
     ignore_changes = [
       zone
