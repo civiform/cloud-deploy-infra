@@ -1,9 +1,9 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.15.0"
-    }
+    # aws = {
+    #   source  = "hashicorp/aws"
+    #   version = "5.15.0"
+    # }
     azurerm = {
       source  = "azurerm"
       version = "3.70.0"
@@ -81,13 +81,13 @@ module "saml_keystore" {
   resource_group_name          = var.azure_resource_group
 }
 
-module "email_service" {
-  for_each = toset([
-    var.sender_email_address,
-    var.staging_applicant_notification_mailing_list,
-    var.staging_ti_notification_mailing_list,
-    var.staging_program_admin_notification_mailing_list
-  ])
-  source               = "../../../aws/modules/ses"
-  sender_email_address = each.key
-}
+# module "email_service" {
+#   for_each = toset([
+#     var.sender_email_address,
+#     var.staging_applicant_notification_mailing_list,
+#     var.staging_ti_notification_mailing_list,
+#     var.staging_program_admin_notification_mailing_list
+#   ])
+#   source               = "../../../aws/modules/ses"
+#   sender_email_address = each.key
+# }
