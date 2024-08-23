@@ -22,7 +22,7 @@ locals {
     # DB_JDBC_STRING       = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
     # DB_JDBC_STRING       = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
     # DB_JDBC_STRING = "jdbc:postgresql://stunning-cod.postgres.database.azure.com:5432/postgres?user=psqladmin&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
-    DB_JDBC_STRING = "jdbc:postgresql://stunning-cod.postgres.database.azure.com:5432/postgres?user=psqladmin1&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
+    DB_JDBC_STRING = "jdbc:postgresql://@stunning-cod.postgres.database.azure.com:5432/postgres?user=psqladmin1&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
     STORAGE_SERVICE_NAME = "azure-blob"
 
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
