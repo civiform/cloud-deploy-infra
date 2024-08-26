@@ -32,7 +32,7 @@ resource "azurerm_data_protection_backup_vault" "backup_vault" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   datastore_type      = "VaultStore"
-  redundancy          = "LocallyRedundant"
+  redundancy          =  "LocallyRedundant"
   identity {
     type = "SystemAssigned"
   }
