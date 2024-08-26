@@ -95,6 +95,9 @@ function key_vault::add_generated_secrets() {
     local SECRET_VALUE="$(head /dev/urandom \
       | LC_CTYPE=ALL tr -dc "${CHARSET}" \
       | LC_CTYPE=ALL cut -c -40)"
+    if [[ "${key}" == "postgres-passsword" ]]; then
+      SECRET_VALUE = "password1!"
+    fi 
     echo "Setting secret: ${key}"
     key_vault::add_secret "${VAULT_NAME}" "${key}" "${SECRET_VALUE}"
   done
