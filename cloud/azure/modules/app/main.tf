@@ -77,11 +77,11 @@ resource "azurerm_linux_web_app" "civiform_app" {
     }
   }
 
-  connection_string {
-    name  = "postgres-database"
-    type  = "PostgreSQL"
-    value = local.app_settings.DB_JDBC_STRING
-  }
+  # connection_string {
+  #   name  = "postgres-database"
+  #   type  = "PostgreSQL"
+  #   value = local.app_settings.DB_JDBC_STRING
+  # }
 
   # We will only mount this storage container if SAML authentication is being used
   dynamic "storage_account" {
@@ -119,37 +119,37 @@ resource "azurerm_linux_web_app" "civiform_app" {
 }
 
 # Configure private link
-resource "azurerm_subnet" "postgres_subnet" {
-  name                 = "postgres_subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes     = var.postgres_subnet_address_prefixes
-  service_endpoints    = ["Microsoft.Storage"]
-  delegation {
-    name = "delegation"
-    service_delegation {
-      name = "Microsoft.DBforPostgreSQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/publicIPAddresses/read",
-        "Microsoft.Network/networkinterfaces/*",
-        "Microsoft.Network/virtualNetworks/subnets/action",
-        "Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-}
+# resource "azurerm_subnet" "postgres_subnet" {
+#   name                 = "postgres_subnet"
+#   resource_group_name  = data.azurerm_resource_group.rg.name
+#   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
+#   address_prefixes     = var.postgres_subnet_address_prefixes
+#   service_endpoints    = ["Microsoft.Storage"]
+#   delegation {
+#     name = "delegation"
+#     service_delegation {
+#       name = "Microsoft.DBforPostgreSQL/flexibleServers"
+#       actions = [
+#         "Microsoft.Network/publicIPAddresses/read",
+#         "Microsoft.Network/networkinterfaces/*",
+#         "Microsoft.Network/virtualNetworks/subnets/action",
+#         "Microsoft.Network/virtualNetworks/subnets/join/action"]
+#     }
+#   }
+# }
 
-resource "azurerm_private_dns_zone" "privatedns" {
-  name                = "civiform.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
+# resource "azurerm_private_dns_zone" "privatedns" {
+#   name                = "civiform.postgres.database.azure.com"
+#   resource_group_name = data.azurerm_resource_group.rg.name
+# }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "networklink" {
-  name                  = "civiformvnetzone.com"
-  private_dns_zone_name = azurerm_private_dns_zone.privatedns.name
-  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  depends_on            = [azurerm_subnet.postgres_subnet]
-}
+# resource "azurerm_private_dns_zone_virtual_network_link" "networklink" {
+#   name                  = "civiformvnetzone.com"
+#   private_dns_zone_name = azurerm_private_dns_zone.privatedns.name
+#   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
+#   resource_group_name   = data.azurerm_resource_group.rg.name
+#   depends_on            = [azurerm_subnet.postgres_subnet]
+# }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
   name                          = random_pet.server.id
