@@ -6,6 +6,7 @@ locals {
   # set up the private link network right now postgres server is protected by password, subnet, and firewall, 
   # which is enough for staging purposes.
 
+
   postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
@@ -20,7 +21,9 @@ locals {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     PORT                                = 9000
 
-    DB_USERNAME = "psqladmin"
+    DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
+
+    DB_USERNAME = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
     DB_PASSWORD = data.azurerm_key_vault_secret.postgres_password.value
     #DB_JDBC_STRING       = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
     DB_JDBC_STRING = "jdbc:postgresql://${local.postgres_private_link}:5432/postgres?user=psqladmin&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
