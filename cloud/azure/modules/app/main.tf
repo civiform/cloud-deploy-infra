@@ -156,7 +156,7 @@ resource "azurerm_private_endpoint" "endpoint" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.postgres_subnet.id
-  
+
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
     private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]

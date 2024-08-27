@@ -5,9 +5,9 @@ locals {
   # TODO(https://github.com/civiform/civiform/issues/8364): commenting postgres_private_link out for now as I
   # set up the private link network right now postgres server is protected by password, subnet, and firewall, 
   # which is enough for staging purposes.
-  
+
   postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
-  generated_hostname = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
+  generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
   postgres_password_keyvault_id   = "postgres-password"
   app_secret_key_keyvault_id      = "app-secret-key"
@@ -22,10 +22,11 @@ locals {
 
     DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
 
-    DB_USERNAME          = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
-    DB_PASSWORD          = data.azurerm_key_vault_secret.postgres_password.value
+    DB_USERNAME = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
+    DB_PASSWORD = data.azurerm_key_vault_secret.postgres_password.value
     #DB_JDBC_STRING       = "jdbc:postgresql://${azurerm_postgresql_flexible_server.civiform.name}.postgres.database.azure.com:5432/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
-    DB_JDBC_STRING       = "jdbc:postgresql://${locals.postgres_private_link}/postgres?user=${azurerm_postgresql_flexible_server.civiform.administrator_login}&password=${azurerm_postgresql_flexible_server.civiform.administrator_password}&sslmode=require"
+    DB_JDBC_STRING = "jdbc:postgresql://${local.postgres_private_link}:5432/postgres?ssl=true&sslmode=require"
+
     STORAGE_SERVICE_NAME = "azure-blob"
 
     AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
