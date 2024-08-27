@@ -1,6 +1,19 @@
 data "azurerm_key_vault" "civiform_key_vault" {
   name                = var.key_vault_name
   resource_group_name = var.resource_group_name
+
+  # network_acls {
+  #   # The Default Action to use when no rules match from ip_rules / 
+  #   # virtual_network_subnet_ids. Possible values are Allow and Deny
+  #   default_action = "Allow"
+
+  #   # Allows all azure services to access your keyvault. Can be set to 'None'
+  #   bypass         = "AzureServices"
+
+  #   # The list of allowed ip addresses.
+  #   ip_rules       = []
+
+  # }
 }
 
 data "azurerm_key_vault_secret" "saml_keystore_pass" {
