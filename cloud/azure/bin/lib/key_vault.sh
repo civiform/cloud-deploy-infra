@@ -4,6 +4,7 @@
 # use when generating a secret value
 readonly CHARSET='A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_{|}~'
 readonly KEY_VAULT_SECRETS_OFFICER_GUID="b86a8fe4-44ce-4948-aee5-eccb2c155cd7"
+readonly URL_SAFE='A-Za-z0-9-._~'
 
 #######################################
 # Create key vault
