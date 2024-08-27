@@ -3,6 +3,7 @@
 # CHARSET is a regex pattern that matches the acceptable characters to
 # use when generating a secret value
 readonly CHARSET='A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_{|}~'
+readonly URL_SAFE='A-Za-z0-9-._~'
 readonly KEY_VAULT_SECRETS_OFFICER_GUID="b86a8fe4-44ce-4948-aee5-eccb2c155cd7"
 
 #######################################
@@ -92,16 +93,16 @@ function key_vault::add_generated_secrets() {
   shift
   for key in "$@"; do
     echo "Generating secret: ${key}"
-    local SECRET_VALUE="$(head /dev/urandom \
-      | LC_CTYPE=ALL tr -dc "${CHARSET}" \
-      | LC_CTYPE=ALL cut -c -40)"
-    echo "Setting secret: ${key}"
+    local USECHARSET=$CHARSET
     if [[ "${key}" == "postgres-password" ]]; then
-      local POSTGRES_VALUE = secrets.token_urlsafe(40)
-      key_vault::add_secret "${VAULT_NAME}" "${key}" "${POSTGRES_VALUE}"
-    else
-      key_vault::add_secret "${VAULT_NAME}" "${key}" "${SECRET_VALUE}"
+      echo "Using url safe charset"
+      USECHARSET=$URL_SAFE
     fi 
+    local SECRET_VALUE="$(head /dev/urandom \
+    | LC_CTYPE=ALL tr -dc "${USECHARSET}" \
+    | LC_CTYPE=ALL cut -c -40)"
+    echo "Setting secret: ${key}"
+    key_vault::add_secret "${VAULT_NAME}" "${key}" "${SECRET_VALUE}"
   done
 }
 
