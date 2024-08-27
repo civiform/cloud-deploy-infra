@@ -96,10 +96,10 @@ function key_vault::add_generated_secrets() {
     if [[ "${key}" == "postgres-password" ]]; then
       echo "Using url safe charset"
       USECHARSET=$URL_SAFE
-    fi 
+    fi
     local SECRET_VALUE="$(head /dev/urandom \
-    | LC_CTYPE=ALL tr -dc "${USECHARSET}" \
-    | LC_CTYPE=ALL cut -c -40)"
+      | LC_CTYPE=ALL tr -dc "${USECHARSET}" \
+      | LC_CTYPE=ALL cut -c -40)"
     echo "Setting secret: ${key}"
     key_vault::add_secret "${VAULT_NAME}" "${key}" "${SECRET_VALUE}"
   done
