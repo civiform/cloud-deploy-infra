@@ -97,7 +97,8 @@ function key_vault::add_generated_secrets() {
       | LC_CTYPE=ALL cut -c -40)"
     echo "Setting secret: ${key}"
     if [[ "${key}" == "postgres-password" ]]; then
-      key_vault::add_secret "${VAULT_NAME}" "${key}" "password1!"
+      local POSTGRES_VALUE = secrets.token_urlsafe(40)
+      key_vault::add_secret "${VAULT_NAME}" "${key}" "${POSTGRES_VALUE}"
     else
       key_vault::add_secret "${VAULT_NAME}" "${key}" "${SECRET_VALUE}"
     fi 
