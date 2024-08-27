@@ -165,7 +165,7 @@ resource "azurerm_private_endpoint" "endpoint" {
     name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
     private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
     subresource_names              = ["postgresqlServer"]
-    is_manual_connection           = false
+    is_manual_connection           = true
   }
 }
 
