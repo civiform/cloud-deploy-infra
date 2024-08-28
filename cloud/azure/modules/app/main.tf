@@ -38,7 +38,6 @@ resource "azurerm_data_protection_backup_vault" "backup_vault" {
   }
 }
 
-
 resource "azurerm_subnet" "server_subnet" {
   name                 = "server-subnet"
   resource_group_name  = data.azurerm_resource_group.rg.name
