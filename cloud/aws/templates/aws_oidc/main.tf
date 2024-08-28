@@ -166,7 +166,7 @@ module "pgadmin" {
   cidr_allowlist  = var.pgadmin_cidr_allowlist
 
   ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
-  subnet_ids      = local.vpc_private_subnets
+  subnet_ids      = local.vpc_private_subnet_ids
 
   db_sg_id               = aws_security_group.rds.id
   db_address             = data.aws_db_instance.civiform.address
