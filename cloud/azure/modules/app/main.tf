@@ -38,7 +38,6 @@ resource "azurerm_data_protection_backup_vault" "backup_vault" {
   }
 }
 
-
 resource "azurerm_subnet" "server_subnet" {
   name                 = "server-subnet"
   resource_group_name  = data.azurerm_resource_group.rg.name
@@ -120,11 +119,12 @@ resource "azurerm_linux_web_app" "civiform_app" {
 
 # Configure private link
 resource "azurerm_subnet" "postgres_subnet" {
-  name                 = "postgres_subnet"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes     = var.postgres_subnet_address_prefixes
-  service_endpoints    = ["Microsoft.Storage"]
+  name                                          = "postgres_subnet"
+  resource_group_name                           = data.azurerm_resource_group.rg.name
+  virtual_network_name                          = azurerm_virtual_network.civiform_vnet.name
+  address_prefixes                              = var.postgres_subnet_address_prefixes
+  service_endpoints                             = ["Microsoft.Storage"]
+  private_link_service_network_policies_enabled = false
   # delegation {
   #   name = "delegation"
   #   service_delegation {
