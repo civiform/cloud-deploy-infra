@@ -25,7 +25,7 @@ def run(config: ConfigLoader):
     os.environ["TF_VAR_pgadmin"] = "true"
     _run_terraform(config)
 
-    url = f"{config.get_base_url()}:4433"
+    url = f"{config.get_base_url()}:443"
     print(
         "\npgadmin terraform deployment finished. Waiting for pgadmin to be available (some request failures are expected). Press ctlr-c to shortcut this wait and print connection information."
     )
