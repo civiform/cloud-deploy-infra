@@ -1,8 +1,8 @@
 name: e2e-test
 on:
-  # Runs every day at 3:12 UTC.
+  # Runs every day at 3:11 UTC.
   schedule:
-    - cron: "12 3 * * *"
+    - cron: "11 3 * * *"
   # Allow manually triggered runs.
   workflow_dispatch:
 
