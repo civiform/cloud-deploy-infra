@@ -15,7 +15,7 @@ resource "azurerm_role_assignment" "key_vault_secrets_principal_user" {
 resource "azurerm_role_assignment" "key_vault_secrets_staging_user" {
   scope                = data.azurerm_key_vault.civiform_key_vault.id
   role_definition_name = "Key Vault Administrator"
-  principal_id         = azurerm_linux_web_app.civiform_app.identity.0.key_vault_reference_identity_id
+  principal_id         = azurerm_linux_web_app.civiform_app.key_vault_reference_identity_id
 }
 
 resource "azurerm_role_assignment" "storage_blob_data_contributor" {
