@@ -8,13 +8,13 @@ resource "azurerm_role_assignment" "storage_blob_delegator" {
 
 resource "azurerm_role_assignment" "key_vault_secrets_principal_user" {
   scope                = data.azurerm_key_vault.civiform_key_vault.id
-  role_definition_name = "Key Vault Secrets User"
+  role_definition_name = "Key Vault Secrets Administrator"
   principal_id         = azurerm_linux_web_app.civiform_app.identity.0.principal_id
 }
 
 resource "azurerm_role_assignment" "key_vault_secrets_staging_user" {
   scope                = data.azurerm_key_vault.civiform_key_vault.id
-  role_definition_name = "Key Vault Secrets User for staging deployment "
+  role_definition_name = "Key Vault Secrets Administrator"
   principal_id         = "f552a386-fd60-40bf-93a7-57c441bb0c99"
 }
 
