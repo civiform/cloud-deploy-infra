@@ -553,19 +553,19 @@ variable "extra_inbound_rule_cidr" {
 variable "healthcheck_interval" {
   type        = number
   description = "Health check interval. Note this value is used by both ECS/ALB health check."
-  default     = 15
+  default     = 10
 }
 
 variable "healthcheck_timeout" {
   type        = number
   description = "Health check timeout. Note this value is used by both ECS/ALB health  check."
-  default     = 10 
+  default     = 30
 }
 
 variable "healthcheck_retries" {
   type        = number
   description = "# of health check retries before marking it unhealthy. Note this is the `retries` for ECS (https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html#API_HealthCheck_Contents) and `unhealthy_threshold` for ALB (https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#unhealthy_thresholdhttps://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#unhealthy_threshold)"
-  default     = 10
+  default     = 5
 }
 
 variable "healthcheck_startperiod" {

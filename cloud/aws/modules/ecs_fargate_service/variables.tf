@@ -153,8 +153,8 @@ variable "extra_inbound_rule_cidr" {
 variable "healthcheck" {
   description = "The healthcheck parameters for the ALB. See also https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#health_check"
   type = object({
-    interval            = optional(number, 10)
-    timeout             = optional(number, 30)
+    interval            = optional(number, 20)
+    timeout             = optional(number, 15)
     unhealthy_threshold = optional(number, 10)
   })
 }
