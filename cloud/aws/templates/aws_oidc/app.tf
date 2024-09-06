@@ -110,10 +110,10 @@ module "civiform_server_container_def" {
 
   healthcheck = {
     command     = ["CMD-SHELL", "wget --quiet http://127.0.0.1:${var.port}/playIndex --output-document - > /dev/null 2>&1"]
-    interval    = 10
-    timeout     = 30
-    retries     = 5
-    startPeriod = 10
+    interval    = var.healthcheck_interval
+    timeout     = var.healthcheck_timeout
+    retries     = var.healthcheck_retries
+    startPeriod = var.healthcheck_startperiod
   }
 
   log_configuration = {
@@ -336,6 +336,12 @@ module "ecs_fargate_service" {
   lb_internal               = local.enable_managed_vpc ? false : true
   lb_logging_enabled        = var.lb_logging_enabled
   extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
+
+  healthcheck = {
+    interval            = var.healthcheck_interval
+    timeout             = var.healthcheck_timeout
+    unhealthy_threshold = var.healthcheck_retries
+  }
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"

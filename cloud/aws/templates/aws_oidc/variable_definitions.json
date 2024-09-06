@@ -442,5 +442,29 @@
     "secret": false,
     "tfvar": true,
     "type": "string"
+  },
+  "HEALTHCHECK_INTERVAL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "HEALTHCHECK_TIMEOUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "HEALTHCHECK_RETRIES": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "HEALTHCHECK_STARTPERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
   }
 }
