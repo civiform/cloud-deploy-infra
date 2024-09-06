@@ -443,25 +443,43 @@
     "tfvar": true,
     "type": "string"
   },
-  "HEALTHCHECK_INTERVAL": {
+  "CONTAINER_HEALTHCHECK_INTERVAL": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "number"
   },
-  "HEALTHCHECK_TIMEOUT": {
+  "CONTAINER_HEALTHCHECK_TIMEOUT": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "number"
   },
-  "HEALTHCHECK_RETRIES": {
+  "CONTAINER_HEALTHCHECK_RETRIES": {
     "required": false,
     "secret": false,
     "tfvar": true,
     "type": "number"
   },
-  "HEALTHCHECK_STARTPERIOD": {
+  "CONTAINER_HEALTHCHECK_STARTPERIOD": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "LB_HEALTHCHECK_INTERVAL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "LB_HEALTHCHECK_TIMEOUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "number"
+  },
+  "LB_HEALTHCHECK_UNHEALTHY_THRESHOLD": {
     "required": false,
     "secret": false,
     "tfvar": true,

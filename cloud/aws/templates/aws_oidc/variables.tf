@@ -550,26 +550,44 @@ variable "extra_inbound_rule_cidr" {
   default     = null
 }
 
-variable "healthcheck_interval" {
+variable "container_healthcheck_interval" {
   type        = number
-  description = "Health check interval. Note this value is used by both ECS/ALB health check."
+  description = "ECS container health check interval."
   default     = 10
 }
 
-variable "healthcheck_timeout" {
+variable "container_healthcheck_timeout" {
   type        = number
-  description = "Health check timeout. Note this value is used by both ECS/ALB health  check."
+  description = "ECS container health check timeout."
   default     = 30
 }
 
-variable "healthcheck_retries" {
+variable "container_healthcheck_retries" {
   type        = number
-  description = "# of health check retries before marking it unhealthy. Note this is the `retries` for ECS (https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html#API_HealthCheck_Contents) and `unhealthy_threshold` for ALB (https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#unhealthy_thresholdhttps://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#unhealthy_threshold)"
+  description = "# of health check retries before marking it unhealthy. https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html#API_HealthCheck_Contents"
   default     = 5
 }
 
-variable "healthcheck_startperiod" {
+variable "container_healthcheck_startperiod" {
   type        = number
   description = "The grace period before considering the ECS container as healthy."
+  default     = 10
+}
+
+variable "lb_healthcheck_interval" {
+  type        = number
+  description = "ECS container health check interval."
+  default     = 20
+}
+
+variable "lb_healthcheck_timeout" {
+  type        = number
+  description = "ECS container health check timeout."
+  default     = 15
+}
+
+variable "lb_healthcheck_unhealthy_threshold" {
+  type        = number
+  description = "# of health check retries before marking it unhealthy. https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#health_check"
   default     = 10
 }
