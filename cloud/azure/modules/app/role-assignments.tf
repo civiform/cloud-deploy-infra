@@ -6,9 +6,9 @@ resource "azurerm_role_assignment" "storage_blob_delegator" {
   principal_id         = azurerm_linux_web_app.civiform_app.identity.0.principal_id
 }
 
-resource "azurerm_role_assignment" "key_vault_secrets_user" {
+resource "azurerm_role_assignment" "key_vault_secrets_principal_user" {
   scope                = data.azurerm_key_vault.civiform_key_vault.id
-  role_definition_name = "Key Vault Secrets User"
+  role_definition_name = "Key Vault Administrator"
   principal_id         = azurerm_linux_web_app.civiform_app.identity.0.principal_id
 }
 
