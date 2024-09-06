@@ -553,13 +553,13 @@ variable "extra_inbound_rule_cidr" {
 variable "healthcheck_interval" {
   type        = number
   description = "Health check interval. Note this value is used by both ECS/ALB health check."
-  default     = 10
+  default     = 15
 }
 
 variable "healthcheck_timeout" {
   type        = number
   description = "Health check timeout. Note this value is used by both ECS/ALB health  check."
-  default     = 30
+  default     = 10 
 }
 
 variable "healthcheck_retries" {
