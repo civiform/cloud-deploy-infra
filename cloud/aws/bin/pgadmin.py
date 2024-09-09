@@ -112,7 +112,7 @@ def _print_connection_info(config, url):
         'To use the pgAdmin instance, you will need the pgadmin username, pgadmin password, and the PostgreSQL database password. Because these are sensitive values, you can either choose to print them here, or look them up yourself. To look them up, find the secret in AWS Secrets Manager, or run the "aws secretsmanager get-secret-value --secret-id=<secret name>" command. If you choose not to print them here, the name of the secret will be printed instead.\n'
     )
     answer = input(
-        'Would you like to print the pgadmin username and password? [y/N]> ')
+        'Would you like to print the pgadmin username and password? [y/N] > ')
     if answer.lower() in ['y', 'yes']:
         print(
             f"  pgAdmin login username: {cyan(aws.get_secret_value(pgadmin_username_secret))}\n"
@@ -123,7 +123,7 @@ def _print_connection_info(config, url):
             f"The name of the pgAdmin username secret is '{cyan(pgadmin_username_secret)}' and the pgAdmin password secret is '{cyan(pgadmin_password_secret)}'."
         )
 
-    answer = input('Would you like to print the database password? [y/N]> ')
+    answer = input('Would you like to print the database password? [y/N] > ')
     if answer.lower() in ['y', 'yes']:
         print(
             f"  PostgreSQL database password: {cyan(aws.get_secret_value(database_password_secret))}"

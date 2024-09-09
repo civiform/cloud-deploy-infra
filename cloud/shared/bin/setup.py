@@ -89,7 +89,7 @@ def run(config: ConfigLoader, params: List[str]):
                 are in use by another deployment. You should verify that no other deployments 
                 are using these resources before proceeding.
 
-                Would you like to destroy the backend resources and recreate them? [y/N] >
+                Would you like to destroy the backend resources and recreate them? [y/N] > 
                 """)
             answer = input(msg)
             if answer in ['y', 'Y', 'yes']:
@@ -102,7 +102,7 @@ def run(config: ConfigLoader, params: List[str]):
                         and running `bin/run destroy_backend_state_resources`. If the script continues to fail,
                         you may need to manually delete the resources in your cloud provider's console.
                         
-                        Would you like to continue anyway? [y/N] >
+                        Would you like to continue anyway? [y/N] > 
                         """)
                     answer = input(msg)
                     if answer not in ['y', 'Y', 'yes']:

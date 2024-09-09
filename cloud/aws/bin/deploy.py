@@ -16,6 +16,16 @@ def run(config: ConfigLoader):
         _check_application_secret_length(config, aws)
         _check_for_postgres_upgrade(config, aws)
 
+    # Even though the code supports it, for now, we are disallowing doing bin/deploy
+    # with a snapshot identified in order to prevent accidental data loss. When we move to
+    # a more imperative process for restoring from a snapshot, we can remove this block.
+    # Restoring from a snapshot via bin/setup is still allowed.
+    if config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
+        print(
+            red(
+                '!!! WARNING !!!: You are attempting to deploy with a snapshot restore identifier set. This is currently not allowed. Please remove the POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER from your config file and try again.'
+            ))
+        return
     if not terraform.perform_apply(config):
         print('Terraform deployment failed.')
         # TODO(#2606): write and upload logs.
@@ -24,6 +34,15 @@ def run(config: ConfigLoader):
     if config.is_test():
         print('Test completed')
         return
+
+    # If we've restored from a snapshot, the database will have a password
+    # from the Terraform manifest that doesn't match the password stored in
+    # the secret.
+    if config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
+        print(
+            'Setting database password from secret after restoring from a snapshot.'
+        )
+        aws.sync_database_password_with_secret(config)
 
     aws.wait_for_ecs_service_healthy()
     lb_dns = aws.get_load_balancer_dns(f'{config.app_prefix}-civiform-lb')

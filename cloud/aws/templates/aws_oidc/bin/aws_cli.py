@@ -4,7 +4,7 @@ import json
 import time
 import inspect
 import re
-from typing import Dict
+from typing import Dict, Optional
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.shared.bin.lib.config_loader import ConfigLoader
@@ -43,6 +43,43 @@ class AwsCli:
         self._call_cli(
             f"rds modify-db-instance --db-instance-identifier={db_name} --master-user-password={password} "
         )
+
+    def sync_database_password_with_secret(self, config: ConfigLoader):
+        """
+        Updates the database password to match the value stored in the
+        secrets manager.
+        """
+        db_password = self.get_secret_value(
+            f'{config.app_prefix}-{resources.POSTGRES_PASSWORD}')
+        self.update_master_password_in_database(
+            f'{config.app_prefix}-{resources.DATABASE}', db_password)
+        print('Database password has been set.')
+
+    def set_database_credentials(
+            self,
+            config: ConfigLoader,
+            username: Optional[str] = None,
+            password: Optional[str] = None):
+        """
+        Updates the database to use the given password, and update the secret value,
+        restarting ECS so it can pick it up.
+        """
+        if username is None and password is None:
+            raise ValueError(
+                "Invalid arguments. You must provide a value for 'username', 'password', or both."
+            )
+        if password is not None:
+            self.update_master_password_in_database(
+                f'{config.app_prefix}-{resources.DATABASE}', password)
+            print('Database password has been set.')
+            self.set_secret_value(
+                f'{config.app_prefix}-{resources.POSTGRES_PASSWORD}', password)
+        if username is not None:
+            self.set_secret_value(
+                f'{config.app_prefix}-{resources.POSTGRES_USERNAME}', username)
+        print('Secrets updated.')
+        self.restart_ecs_service()
+        print('ECS service has been restarted to pick up the new password.')
 
     def restart_ecs_service(self):
         """
