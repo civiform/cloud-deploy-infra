@@ -40,9 +40,9 @@ jobs:
       - id: get-nuke
         name: Get aws-nuke
         run: |
-          wget https://github.com/rebuy-de/aws-nuke/releases/download/v2.25.0/aws-nuke-v2.25.0-linux-amd64.tar.gz -O aws-nuke-v2.25.0-linux-amd64.tar.gz
-          tar -xzf aws-nuke-v2.25.0-linux-amd64.tar.gz
-          sudo mv aws-nuke-v2.25.0-linux-amd64 /aws-nuke
+          wget https://github.com/ekristen/aws-nuke/releases/download/v3.17.3/aws-nuke-v3.17.3-linux-amd64.tar.gz -O aws-nuke-v3.17.3-linux-amd64.tar.gz
+          tar -xzf aws-nuke-v3.17.3-linux-amd64.tar.gz
+          sudo mv aws-nuke-v3.17.3-linux-amd64 /aws-nuke
           sudo chmod u+x /aws-nuke
 
       - id: get-aws-creds
@@ -54,7 +54,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Pre nuke
-        run: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
+        run: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
 
       - name: Run bin/setup
         run: |
@@ -73,7 +73,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: /aws-nuke --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
+          command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
         uses: slackapi/slack-github-action@v1

@@ -2,13 +2,39 @@ regions:
   - us-east-1
   - global
 
-account-blocklist:
+blocklist:
   - "664198874744"
   - "305584670637" 
   - "496466114051"
   - "559421412203"
   - "859704899281"
   - "098472360576"
+
+# A lot of these are ones that aws-nuke can't read anyway, either because
+# the service is no longer supported or isn't enabled for our accounts.
+# Excluding them saves time when aws-nuke is doing its initial query and
+# prevents errors that are not really errors from showing up.
+resource-types:
+  excludes:
+    - AppStreamImage
+    - CloudSearchDomain
+    - CodeStarProject
+    - ElasticacheCacheParameterGroup
+    - FMSNotificationChannel
+    - FMSPolicy
+    - MachineLearningBranchPrediction
+    - MachineLearningDataSource
+    - MachineLearningEvaluation
+    - MachineLearningMLModel
+    - OpsWorksApp
+    - OpsWorksCMBackup
+    - OpsWorksCMServer
+    - OpsWorksCMServerState
+    - OpsWorksInstance
+    - OpsWorksLayer
+    - OpsWorksUserProfile
+    - OSPackage
+    - ResourceExplorer2Index
 
 accounts:
   "296877675213": # civiform-deploy-e2e-tests AWS account.
@@ -24,8 +50,6 @@ accounts:
         - "OrganizationAccountAccessRole"
         - "e2e-test-runner"
         - property: "Name"
-          regex: "^AWSReservedSSO_.+$"
-        - property: "Name"
           type: glob
           value: "*-deploy-action"
       IAMRolePolicy:
@@ -35,20 +59,11 @@ accounts:
         - "OrganizationAccountAccessRole -> AdministratorAccess"
         - "e2e-test-runner -> AdministratorAccess"
         - property: "RoleName"
-          regex: "^AWSReservedSSO_.+$"
-        - property: "RoleName"
           type: glob
           value: "*-deploy-action"
       IAMSAMLProvider:
         - type: glob
           value: "arn:aws:iam::*:saml-provider/AWSSSO_*"
-      OpsWorksUserProfile:
-        - type: glob
-          value: "arn:aws:sts::*:assumed-role/OrganizationAccountAccessRole/*"
-      OSPackage:
-        - property: "PackageName"
-          type: regex
-          value: "^(analysis-\\w+|amazon-personalized-ranking)*"
       IAMUser:
         - 'e2e-test-runner'
       IAMUserAccessKey:
