@@ -42,7 +42,7 @@ jobs:
         run: |
           wget https://github.com/ekristen/aws-nuke/releases/download/v3.17.3/aws-nuke-v3.17.3-linux-amd64.tar.gz -O aws-nuke-v3.17.3-linux-amd64.tar.gz
           tar -xzf aws-nuke-v3.17.3-linux-amd64.tar.gz
-          sudo mv aws-nuke-v3.17.3-linux-amd64 /aws-nuke
+          sudo mv aws-nuke /aws-nuke
           sudo chmod u+x /aws-nuke
 
       - id: get-aws-creds
