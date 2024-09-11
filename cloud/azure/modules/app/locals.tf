@@ -19,7 +19,7 @@ locals {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     PORT                                = 9000
 
-    DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
+    // DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
 
     DB_USERNAME          = "${azurerm_postgresql_flexible_server.civiform.administrator_login}@${azurerm_postgresql_flexible_server.civiform.name}"
     DB_PASSWORD          = data.azurerm_key_vault_secret.postgres_password.value
