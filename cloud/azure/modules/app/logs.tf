@@ -29,24 +29,4 @@ resource "azurerm_monitor_diagnostic_setting" "app_service_log_analytics" {
   metric {
     category = "AllMetrics"
   }
-
-  # due to a bug in terraform include these even though they are not enabled
-  # enabled_log {
-  #   category = "AppServiceIPSecAuditLogs"
-  #   enabled  = false
-
-  #   retention_policy {
-  #     days    = 0
-  #     enabled = false
-  #   }
-  # }
-  # enabled_log {
-  #   category = "AppServicePlatformLogs"
-  #   enabled  = false
-
-  #   retention_policy {
-  #     days    = 0
-  #     enabled = false
-  #   }
-  # }
 }
