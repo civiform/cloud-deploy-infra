@@ -1,10 +1,9 @@
 resource "azurerm_subnet" "storage_subnet" {
-  name                                           = "storage-subnet"
-  resource_group_name                            = data.azurerm_resource_group.rg.name
-  virtual_network_name                           = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes                               = ["10.0.8.0/24"]
-  service_endpoints                              = ["Microsoft.Storage"]
-  enforce_private_link_endpoint_network_policies = true
+  name                 = "storage-subnet"
+  resource_group_name  = data.azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.civiform_vnet.name
+  address_prefixes     = ["10.0.8.0/24"]
+  service_endpoints    = ["Microsoft.Storage"]
 }
 
 resource "azurerm_storage_account" "files_storage_account" {
@@ -26,9 +25,9 @@ resource "azurerm_storage_container" "files_container" {
 }
 
 resource "azurerm_data_protection_backup_policy_blob_storage" "blob_storage_backup_policy" {
-  name               = "storage-backup-policy"
-  vault_id           = azurerm_data_protection_backup_vault.backup_vault.id
-  retention_duration = "P30D"
+  name                                   = "storage-backup-policy"
+  vault_id                               = azurerm_data_protection_backup_vault.backup_vault.id
+  operational_default_retention_duration = "P30D"
 }
 
 resource "azurerm_data_protection_backup_instance_blob_storage" "blob_storage_backup_instance" {
