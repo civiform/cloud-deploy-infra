@@ -19,8 +19,6 @@ locals {
   app_settings = merge({
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     PORT                                = 9000
-    
-    DOCKER_REGISTRY_SERVER_URL = "https://index.docker.io"
 
     DB_USERNAME = "psqladmin"
     DB_PASSWORD = data.azurerm_key_vault_secret.postgres_password.value
