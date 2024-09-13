@@ -40,7 +40,7 @@ jobs:
           PLATFORM: 'linux/amd64'
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/metrics/')
+        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/deployment/')
         run: |
-          cd $GITHUB_WORKSPACE/cloud/aws/metrics
-          ./build-scraper
+          cd $GITHUB_WORKSPACE/cloud/aws/deployment
+          ./build-deployment
