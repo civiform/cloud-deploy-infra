@@ -9,6 +9,11 @@ variable "azure_resource_group" {
   description = "Name of the resource group where key vault is already created."
 }
 
+variable "azure_subscription" {
+ type        = string
+ description = "Azure subscription id for where the resources should be created."
+}
+
 variable "civiform_time_zone_id" {
   type        = string
   description = "Time zone for Civiform server to use when displaying dates."
