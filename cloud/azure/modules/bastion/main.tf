@@ -39,7 +39,8 @@ resource "azurerm_public_ip" "public_ip" {
   name                = "${var.resource_group_name}-ip"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Dynamic"
+  # Standard SKUs (like what staging uses) requires Static allocation
+  allocation_method   = "Static"
 }
 # prevent all access to the bastion's public IP address, but then in script 
 # set it up so that the current machine can access the public ip 
