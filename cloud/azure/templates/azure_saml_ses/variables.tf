@@ -10,8 +10,9 @@ variable "azure_resource_group" {
 }
 
 variable "azure_subscription" {
- type        = string
- description = "Azure subscription id for where the resources should be created."
+  type        = string
+  description = "Azure subscription id for where the resources should be created."
+  default     = "4ef4ae1b-c966-4ac4-9b7c-a837ea410821"
 }
 
 variable "civiform_time_zone_id" {
