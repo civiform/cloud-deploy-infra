@@ -138,18 +138,13 @@ resource "azurerm_linux_web_app" "civiform_app" {
 #   # }
 # }
 
-resource "azurerm_private_dns_zone" "privatelink" {
-  name                = "privatelink.postgres.database.azure.com"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "virtual" {
-  name                  = "civiformvnetzone.com"
-  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
-  virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
-  resource_group_name   = data.azurerm_resource_group.rg.name
-  depends_on            = [azurerm_subnet.server_subnet]
-}
+# resource "azurerm_private_dns_zone_virtual_network_link" "virtual" {
+#   name                  = "civiformvnetzone.com"
+#   private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
+#   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
+#   resource_group_name   = data.azurerm_resource_group.rg.name
+#   depends_on            = [azurerm_subnet.server_subnet]
+# }
 
 resource "azurerm_private_endpoint" "endpoint" {
   name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
@@ -157,10 +152,10 @@ resource "azurerm_private_endpoint" "endpoint" {
   resource_group_name = data.azurerm_resource_group.rg.name
   subnet_id           = azurerm_subnet.server_subnet.id
 
-  private_dns_zone_group {
-    name                 = "private-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
-  }
+  # private_dns_zone_group {
+  #   name                 = "private-dns-zone-group"
+  #   private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
+  # }
   private_service_connection {
     name                           = "${azurerm_postgresql_flexible_server.civiform.name}-privateserviceconnection"
     private_connection_resource_id = azurerm_postgresql_flexible_server.civiform.id
@@ -178,7 +173,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   sku_name               = var.postgres_sku_name
   version                = "15"
   storage_mb             = var.postgres_storage_mb
-  depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
+  # depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
   public_network_access_enabled = false
   lifecycle {
     ignore_changes = [
