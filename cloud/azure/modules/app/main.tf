@@ -118,25 +118,25 @@ resource "azurerm_linux_web_app" "civiform_app" {
 }
 
 # Configure private link
-resource "azurerm_subnet" "postgres_subnet" {
-  name                                          = "postgres_subnet"
-  resource_group_name                           = data.azurerm_resource_group.rg.name
-  virtual_network_name                          = azurerm_virtual_network.civiform_vnet.name
-  address_prefixes                              = var.postgres_subnet_address_prefixes
-  service_endpoints                             = ["Microsoft.Storage"]
-  private_link_service_network_policies_enabled = false
-  # delegation {
-  #   name = "delegation"
-  #   service_delegation {
-  #     name = "Microsoft.DBforPostgreSQL/flexibleServers"
-  #     actions = [
-  #       "Microsoft.Network/publicIPAddresses/read",
-  #       "Microsoft.Network/networkinterfaces/*",
-  #       "Microsoft.Network/virtualNetworks/subnets/action",
-  #     "Microsoft.Network/virtualNetworks/subnets/join/action"]
-  #   }
-  # }
-}
+# resource "azurerm_subnet" "postgres_subnet" {
+#   name                                          = "postgres_subnet"
+#   resource_group_name                           = data.azurerm_resource_group.rg.name
+#   virtual_network_name                          = azurerm_virtual_network.civiform_vnet.name
+#   address_prefixes                              = var.postgres_subnet_address_prefixes
+#   service_endpoints                             = ["Microsoft.Storage"]
+#   private_link_service_network_policies_enabled = false
+#   # delegation {
+#   #   name = "delegation"
+#   #   service_delegation {
+#   #     name = "Microsoft.DBforPostgreSQL/flexibleServers"
+#   #     actions = [
+#   #       "Microsoft.Network/publicIPAddresses/read",
+#   #       "Microsoft.Network/networkinterfaces/*",
+#   #       "Microsoft.Network/virtualNetworks/subnets/action",
+#   #     "Microsoft.Network/virtualNetworks/subnets/join/action"]
+#   #   }
+#   # }
+# }
 
 resource "azurerm_private_dns_zone" "privatelink" {
   name                = "privatelink.postgres.database.azure.com"
@@ -148,14 +148,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "virtual" {
   private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
   virtual_network_id    = azurerm_virtual_network.civiform_vnet.id
   resource_group_name   = data.azurerm_resource_group.rg.name
-  depends_on            = [azurerm_subnet.postgres_subnet]
+  depends_on            = [azurerm_subnet.server_subnet]
 }
 
 resource "azurerm_private_endpoint" "endpoint" {
   name                = "${azurerm_postgresql_flexible_server.civiform.name}-endpoint"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.postgres_subnet.id
+  subnet_id           = azurerm_subnet.server_subnet.id
 
   private_dns_zone_group {
     name                 = "private-dns-zone-group"
@@ -179,7 +179,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   version                = "15"
   storage_mb             = var.postgres_storage_mb
   depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   lifecycle {
     ignore_changes = [
       zone
