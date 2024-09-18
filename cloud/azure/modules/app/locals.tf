@@ -8,7 +8,7 @@ locals {
 
 
 
-  postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
+  # postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
   generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
   postgres_password_keyvault_id   = "postgres-password"
