@@ -68,12 +68,12 @@ resource "azurerm_app_service_virtual_network_swift_connection" "app_vn" {
 }
 
 resource "azurerm_linux_web_app" "civiform_app" {
-  name                = "${var.application_name}-${random_pet.server.id}"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_service_plan.plan.id
-  app_settings        = local.app_settings
-  virtual_network_subnet_id  = azurerm_subnet.server_subnet.id
+  name                      = "${var.application_name}-${random_pet.server.id}"
+  location                  = data.azurerm_resource_group.rg.location
+  resource_group_name       = data.azurerm_resource_group.rg.name
+  service_plan_id           = azurerm_service_plan.plan.id
+  app_settings              = local.app_settings
+  virtual_network_subnet_id = azurerm_subnet.server_subnet.id
 
   site_config {
     application_stack {
@@ -123,7 +123,6 @@ resource "azurerm_linux_web_app" "civiform_app" {
   }
 }
 
-# Configure private link
 resource "azurerm_subnet" "postgres_subnet" {
   name                                          = "postgres_subnet"
   resource_group_name                           = data.azurerm_resource_group.rg.name
@@ -131,17 +130,6 @@ resource "azurerm_subnet" "postgres_subnet" {
   address_prefixes                              = var.postgres_subnet_address_prefixes
   service_endpoints                             = ["Microsoft.Storage"]
   private_link_service_network_policies_enabled = true
-  # delegation {
-  #   name = "delegation"
-  #   service_delegation {
-  #     name = "Microsoft.DBforPostgreSQL/flexibleServers"
-  #     actions = [
-  #       "Microsoft.Network/publicIPAddresses/read",
-  #       "Microsoft.Network/networkinterfaces/*",
-  #       "Microsoft.Network/virtualNetworks/subnets/action",
-  #     "Microsoft.Network/virtualNetworks/subnets/join/action"]
-  #   }
-  # }
 }
 
 resource "azurerm_private_dns_zone" "privatelink" {
@@ -176,15 +164,15 @@ resource "azurerm_private_endpoint" "endpoint" {
 }
 
 resource "azurerm_postgresql_flexible_server" "civiform" {
-  name                   = "${random_pet.server.id}-civiform"
-  location               = data.azurerm_resource_group.rg.location
-  resource_group_name    = data.azurerm_resource_group.rg.name
-  administrator_login    = var.postgres_admin_login
-  administrator_password = data.azurerm_key_vault_secret.postgres_password.value
-  sku_name               = var.postgres_sku_name
-  version                = "15"
-  storage_mb             = var.postgres_storage_mb
-  depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
+  name                          = "${random_pet.server.id}-civiform"
+  location                      = data.azurerm_resource_group.rg.location
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  administrator_login           = var.postgres_admin_login
+  administrator_password        = data.azurerm_key_vault_secret.postgres_password.value
+  sku_name                      = var.postgres_sku_name
+  version                       = "15"
+  storage_mb                    = var.postgres_storage_mb
+  depends_on                    = [azurerm_private_dns_zone_virtual_network_link.virtual]
   public_network_access_enabled = false
   lifecycle {
     ignore_changes = [
