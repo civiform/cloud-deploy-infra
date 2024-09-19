@@ -73,6 +73,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
   resource_group_name = data.azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.plan.id
   app_settings        = local.app_settings
+  virtual_network_subnet_id  = azurerm_subnet.server_subnet.id
 
   site_config {
     application_stack {
