@@ -337,7 +337,7 @@ moved {
 
 module "ecs-autoscaling" {
   source  = "cn-terraform/ecs-service-autoscaling/aws"
-  version = "1.0.9"
+  version = "1.0.10"
 
   name_prefix               = local.name_prefix
   ecs_cluster_name          = var.ecs_cluster_name
