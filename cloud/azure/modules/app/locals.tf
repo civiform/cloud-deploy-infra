@@ -5,8 +5,8 @@ locals {
   # TODO(https://github.com/civiform/civiform/issues/8364): commenting postgres_private_link out for now as I
   # set up the private link network right now postgres server is protected by password, subnet, and firewall, 
   # which is enough for staging purposes.
-  # postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
-  generated_hostname = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
+  postgres_private_link = azurerm_private_endpoint.endpoint.private_dns_zone_configs[0].record_sets[0].fqdn
+  generated_hostname    = "${var.application_name}-${random_pet.server.id}.azurewebsites.net"
 
   postgres_password_keyvault_id   = "postgres-password"
   app_secret_key_keyvault_id      = "app-secret-key"

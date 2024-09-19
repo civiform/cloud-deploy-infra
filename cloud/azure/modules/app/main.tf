@@ -67,6 +67,11 @@ resource "azurerm_service_plan" "plan" {
   sku_name            = var.app_sku
 }
 
+resource "azurerm_app_service_virtual_network_swift_connection" "app_vn" {
+  app_service_id = azurerm_linux_web_app.civiform_app.id
+  subnet_id      = azurerm_subnet.server_subnet.id
+}
+
 resource "azurerm_linux_web_app" "civiform_app" {
   name                      = "${var.application_name}-${random_pet.server.id}"
   location                  = data.azurerm_resource_group.rg.location
