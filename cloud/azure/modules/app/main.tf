@@ -186,7 +186,7 @@ resource "azurerm_postgresql_flexible_server" "civiform" {
   depends_on             = [azurerm_private_dns_zone_virtual_network_link.virtual]
   public_network_access_enabled = false
   lifecycle {
-    ignore_changes = [s
+    ignore_changes = [
       zone
     ]
   }
