@@ -44,14 +44,14 @@ resource "azurerm_subnet" "server_subnet" {
   virtual_network_name = azurerm_virtual_network.civiform_vnet.name
   address_prefixes     = var.subnet_address_prefixes
 
-  # delegation {
-  #   name = "app-service-delegation"
+  delegation {
+    name = "app-service-delegation"
 
-  #   service_delegation {
-  #     name    = "Microsoft.Web/serverFarms"
-  #     actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-  #   }
-  # }
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
 }
 
 resource "azurerm_service_plan" "plan" {
