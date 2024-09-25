@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     curl \
     unzip \
+    docker.io \
+    python3.10-venv \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/lib/apt/lists.d/* \
     && apt-get autoremove \
