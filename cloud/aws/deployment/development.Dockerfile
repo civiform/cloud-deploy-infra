@@ -25,4 +25,4 @@ RUN unzip awscliv2.zip && ./aws/install
 # Install Azure CLI
 RUN	curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-RUN docker service start
+RUN /bin/systemctl enable docker.service
