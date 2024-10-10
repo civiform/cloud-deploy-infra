@@ -45,7 +45,7 @@ data "aws_db_snapshot" "snapshot" {
 
 resource "aws_db_snapshot_copy" "copied_snapshot" {
   count                         = var.postgres_restore_snapshot_identifier == null ? 0 : 1
-  target_db_snapshot_identifier = "${var.app_prefix}-${var.postgres_restore_snapshot_identifier}-copied-snapshot"
+  target_db_snapshot_identifier = "${var.app_prefix}-${replace(var.postgres_restore_snapshot_identifier, ":", "-")}-copied-snapshot"
   source_db_snapshot_identifier = var.postgres_restore_snapshot_identifier
   kms_key_id                    = aws_kms_key.civiform_kms_key.arn
 }
