@@ -17,7 +17,7 @@ set -o pipefail
 source cloud/shared/bin/python_env_setup
 
 # Get the arguments that we want to pass to run.py
-while getopts s:c:t:u:d: flag; do
+while getopts s:c:t:u:d:p: flag; do
   case "${flag}" in
     # The civiform_config file that contains the values to configure the deployment
     s) source_config=${OPTARG} ;;
@@ -25,6 +25,8 @@ while getopts s:c:t:u:d: flag; do
     c) command=${OPTARG} ;;
     # The tag of the image that should be used for this deployment (e.g. "latest")
     t) tag=${OPTARG} ;;
+    # A custom trusted root CA file to set pip global config
+    p) cert_file_path=${OPTARG} ;;
   esac
 done
 
@@ -111,7 +113,7 @@ dependencies_file_path="cloud/shared/bin/env-var-docs-python-dependencies.txt"
 echo "env-var-docs @ git+https://github.com/civiform/civiform.git@${commit_sha}\
 #subdirectory=env-var-docs/parser-package" >>$dependencies_file_path
 
-initialize_python_env $dependencies_file_path
+initialize_python_env $dependencies_file_path "$cert_file_path"
 
 args=("--command" "${command}" "--tag" "${tag}" "--config" "${source_config}")
 
