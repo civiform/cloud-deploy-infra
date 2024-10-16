@@ -14,6 +14,7 @@ function initialize_python_env() {
   echo "initializing python env from script"
 
   local requirements_file_path=$1
+  local cert_file_path=$2
 
   # Check if there are any requirements to install
   if [[ ! -f "$requirements_file_path" ]]; then
@@ -25,6 +26,12 @@ function initialize_python_env() {
   if [[ ! -d .venv ]]; then
     echo ".venv directory not found, creating and installing dependencies..."
     python3 -m venv .venv
+  fi
+
+  # If a certificate file is specified, configure pip to use it
+  if [[ -n "$cert_file_path" ]]; then
+    echo "Setting pip global.cert to $cert_file_path"
+    pip config set global.cert "$cert_file_path"
   fi
 
   # source the activate script (. is more portable between shells than source)
