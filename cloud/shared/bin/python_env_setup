@@ -28,14 +28,14 @@ function initialize_python_env() {
     python3 -m venv .venv
   fi
 
+  # source the activate script (. is more portable between shells than source)
+  . .venv/bin/activate
+
   # If a certificate file is specified, configure pip to use it
   if [[ -n "$cert_file_path" ]]; then
     echo "Setting pip global.cert to $cert_file_path"
     pip config set global.cert "$cert_file_path"
   fi
-
-  # source the activate script (. is more portable between shells than source)
-  . .venv/bin/activate
 
   #Check if the requirement file is already met.
   if [[ ! $(pip3 freeze | diff "$requirements_file_path" -) ]]; then
