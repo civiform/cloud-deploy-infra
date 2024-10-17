@@ -34,7 +34,7 @@ function initialize_python_env() {
   # If a certificate file is specified, configure pip to use it
   if [[ -n "$cert_file_path" ]]; then
     echo "Setting pip global.cert to $cert_file_path"
-    pip3 config set global.cert "$cert_file_path"
+    pip config set global.cert "$cert_file_path"
   fi
 
   #Check if the requirement file is already met.
