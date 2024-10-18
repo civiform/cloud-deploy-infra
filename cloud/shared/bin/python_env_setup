@@ -40,7 +40,7 @@ function initialize_python_env() {
     fi
 
     # Check the file format is PEM
-    if ! file "$cert_file_path" | grep -q "PEM certificate"; then 
+    if ! file "$cert_file_path" | grep -q "PEM certificate"; then
       echo "Error: Certificate file '$cert_file_path' is not in the correct format (expected PEM)."
       return 1
     fi
