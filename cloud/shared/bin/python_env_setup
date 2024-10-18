@@ -31,8 +31,20 @@ function initialize_python_env() {
   # source the activate script (. is more portable between shells than source)
   . .venv/bin/activate
 
-  # If a certificate file is specified, configure pip to use it
+  # If a certificate file is specified, perform checks then configure pip to use it
   if [[ -n "$cert_file_path" ]]; then
+    # Check if the file exists and is readable
+    if [[ ! -r "$cert_file_path" ]]; then
+      echo "Error: Certificate file '$cert_file_path' does not exist or is not readable."
+      return 1
+    fi
+
+    # Check the file format is PEM
+    if ! file "$cert_file_path" | grep -q "PEM certificate"; then 
+      echo "Error: Certificate file '$cert_file_path' is not in the correct format (expected PEM)."
+      return 1
+    fi
+
     echo "Setting pip global.cert to $cert_file_path"
     pip config set global.cert "$cert_file_path"
   fi
