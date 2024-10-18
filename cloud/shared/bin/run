@@ -40,10 +40,11 @@ if [[ -n "$cert_file_path" ]]; then
     exit 1
   fi
 
-  # Check if it's a PEM file
-  file "$cert_file_path" | grep -q "PEM certificate"
-  if [[ $? -ne 0 ]]; then
-    echo "Certificate file '$cert_file_path' is not a PEM file."
+  # Check if it's a valid certificate
+  if file "$cert_file_path" | grep -q -E "PEM certificate|certificate"; then 
+    echo "Certificate file '$cert_file_path' is a valid certificate."
+  else
+    echo "Certificate file '$cert_file_path' is not a valid certificate."
     exit 1
   fi
 fi
