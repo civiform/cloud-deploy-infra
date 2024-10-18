@@ -34,7 +34,7 @@ function initialize_python_env() {
   # If a certificate file is specified, perform checks then configure pip to use it
   if [[ -n "$cert_file_path" ]]; then
     # Check if the file exists and is readable
-    if [[ ! -r "$cert_file_path" ]]; then
+    if [[ ! -f "$cert_file_path" || ! -r "$cert_file_path" ]]; then
       echo "Error: Certificate file '$cert_file_path' does not exist or is not readable."
       return 1
     fi
