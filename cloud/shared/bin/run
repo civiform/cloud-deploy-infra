@@ -30,6 +30,24 @@ while getopts s:c:t:u:d:p: flag; do
   esac
 done
 
+# Validate the cert file, if provided
+if [[ -n "$cert_file_path" ]]; then
+  # Check if the cert file exists and is readable
+  if [[ -f "$cert_file_path" && -r "$cert_file_path" ]]; then
+    echo "Certificate file '$cert_file_path' exists and is readable."
+  else
+    echo "Certificate file '$cert_file_path' does not exist or is not readable."
+    exit 1
+  fi
+
+  # Check if it's a PEM file
+  file "$cert_file_path" | grep -q "PEM certificate"
+  if [[ $? -ne 0 ]]; then
+    echo "Certificate file '$cert_file_path' is not a PEM file."
+    exit 1
+  fi
+fi
+
 # if the tag is "latest", resolve it to the specific snapshot tag from Docker
 # Go templating is used to parse the snapshot tag from the json returned by docker inspect
 # https://docs.docker.com/engine/reference/commandline/inspect/#options
