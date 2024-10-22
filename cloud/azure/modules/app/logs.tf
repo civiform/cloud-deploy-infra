@@ -8,70 +8,25 @@ resource "azurerm_log_analytics_workspace" "civiform_logs" {
 
 resource "azurerm_monitor_diagnostic_setting" "app_service_log_analytics" {
   name                       = "${var.application_name}_log_analytics"
-  target_resource_id         = azurerm_app_service.civiform_app.id
+  target_resource_id         = azurerm_linux_web_app.civiform_app.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.civiform_logs.id
 
-  log {
+  enabled_log {
     category = "AppServiceAppLogs"
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 
-  log {
+  enabled_log {
     category = "AppServiceConsoleLogs"
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 
-  log {
+  enabled_log {
     category = "AppServiceHTTPLogs"
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 
-  log {
+  enabled_log {
     category = "AppServiceAuditLogs"
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
   metric {
     category = "AllMetrics"
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-
-  # due to a bug in terraform include these even though they are not enabled
-  log {
-    category = "AppServiceIPSecAuditLogs"
-    enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServicePlatformLogs"
-    enabled  = false
-
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 }

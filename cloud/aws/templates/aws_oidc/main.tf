@@ -27,6 +27,29 @@ resource "aws_db_parameter_group" "civiform" {
   }
 }
 
+# When a snapshot is provided, if that snapshot came from a different CiviForm instance,
+# (e.g. we are doing bin/setup with a provided snapshot), it will be encrypted with a 
+# different KMS key. We need to copy the snapshot, re-encrypting it with the key used
+# for this instance, before aws_db_instance can then go ahead and deploy the database
+# from that snapshot.
+#
+# When we are restoring the database via bin/deploy into the same CiviForm instance,
+# this step ends up being redundant. But we can't check that the keys match in a 
+# bin/setup situation where the key does not yet exist. So we always copy the snapshot,
+# even if we don't need to.
+
+data "aws_db_snapshot" "snapshot" {
+  count                  = var.postgres_restore_snapshot_identifier == null ? 0 : 1
+  db_snapshot_identifier = var.postgres_restore_snapshot_identifier
+}
+
+resource "aws_db_snapshot_copy" "copied_snapshot" {
+  count                         = var.postgres_restore_snapshot_identifier == null ? 0 : 1
+  target_db_snapshot_identifier = "${var.app_prefix}-${replace(var.postgres_restore_snapshot_identifier, ":", "-")}-copied-snapshot"
+  source_db_snapshot_identifier = var.postgres_restore_snapshot_identifier
+  kms_key_id                    = aws_kms_key.civiform_kms_key.arn
+}
+
 resource "aws_db_instance" "civiform" {
   identifier = "${var.app_prefix}-${var.postgress_name}-db"
   tags = {
@@ -37,7 +60,7 @@ resource "aws_db_instance" "civiform" {
   apply_immediately = var.apply_database_changes_immediately
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
-  snapshot_identifier             = var.postgres_restore_snapshot_identifier
+  snapshot_identifier             = var.postgres_restore_snapshot_identifier == null ? null : aws_db_snapshot_copy.copied_snapshot[0].target_db_snapshot_identifier
   deletion_protection             = local.deletion_protection
   instance_class                  = var.postgres_instance_class
   allocated_storage               = var.postgres_storage_gb
@@ -63,6 +86,13 @@ resource "aws_db_instance" "civiform" {
   performance_insights_enabled    = var.rds_performance_insights_enabled
   monitoring_role_arn             = var.rds_enhanced_monitoring_enabled ? aws_iam_role.civiform_enhanced_monitoring_role[0].arn : null
   monitoring_interval             = var.rds_enhanced_monitoring_enabled ? var.rds_enhanced_monitoring_interval : null
+
+  lifecycle {
+    ignore_changes = [
+      username,
+      password,
+    ]
+  }
 }
 
 # Provide database information for other resources (pgadmin, for example).
@@ -166,7 +196,7 @@ module "pgadmin" {
   cidr_allowlist  = var.pgadmin_cidr_allowlist
 
   ecs_cluster_arn = module.ecs_cluster.aws_ecs_cluster_cluster_arn
-  subnet_ids      = local.vpc_private_subnets
+  subnet_ids      = local.vpc_private_subnet_ids
 
   db_sg_id               = aws_security_group.rds.id
   db_address             = data.aws_db_instance.civiform.address

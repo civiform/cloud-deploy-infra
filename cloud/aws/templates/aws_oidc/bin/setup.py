@@ -98,7 +98,28 @@ class Setup(AwsSetupTemplate):
         for name, doc in SECRETS.items():
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
-        self._maybe_change_default_db_password()
+        if self.config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
+            fetch = input(
+                "\nPOSTGRES_RESTORE_SNAPSHOT_IDENTIFIER was set. In order for the restored database to be useable, we need to find the username and password secrets stored with the app prefix where the database was originally snapshotted. If these secrets no longer exists in AWS and you say no here, you can enter the username and password manually. Fetch from previous app prefix? [Y/n] > "
+            ).strip()
+            if fetch.lower() in ('y', 'yes', ''):
+                prefix = input(
+                    'Enter the app prefix where the database was originally snapshotted. > '
+                ).strip()
+                username = self._aws_cli.get_secret_value(
+                    f'{prefix}-{resources.POSTGRES_USERNAME}')
+                password = self._aws_cli.get_secret_value(
+                    f'{prefix}-{resources.POSTGRES_PASSWORD}')
+            else:
+                username = input(
+                    "Enter the snapshotted database's username > ").strip()
+                password = input(
+                    "Enter the snapshotted database's password > ").strip()
+            self._aws_cli.set_database_credentials(
+                username=username, password=password, config=self.config)
+        else:
+            self._maybe_change_default_db_password()
+
         self._aws_cli.wait_for_ecs_service_healthy()
         self._print_final_message()
 
@@ -146,12 +167,8 @@ class Setup(AwsSetupTemplate):
             print(
                 'Default database password is used. Generating new password ' +
                 'and updating deployment.')
-            self._aws_cli.update_master_password_in_database(
-                f'{app_prefix}-{resources.DATABASE}', new_password)
-            print('Database password has been changed.')
-            self._aws_cli.set_secret_value(secret_name, new_password)
-            self._aws_cli.restart_ecs_service()
-            print(f'ECS service has been restarted to pickup the new password.')
+            self._aws_cli.set_database_credentials(
+                password=new_password, config=self.config)
         else:
             print('Password has already been changed. Not touching it.')
         print(

@@ -7,6 +7,7 @@ from typing import Dict
 from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.setup_template import SetupTemplate
+from cloud.shared.bin.lib.config_loader import ConfigLoader
 
 
 class Setup(SetupTemplate):
@@ -42,6 +43,8 @@ class Setup(SetupTemplate):
         self._setup_saml_keystore()
         print(" - Setting up SES")
         self._setup_ses()
+        print(" - Finish Pre-Terraform setup.")
+        return True
 
     def get_current_user(self):
         current_user_process = subprocess.run(
@@ -65,7 +68,7 @@ class Setup(SetupTemplate):
         self._get_adfs_user_inputs()
         self._configure_slot_settings()
         # Run terraform again as get_adfs_user_inputs updated secret variables.
-        terraform.perform_apply(self.config_loader)
+        terraform.perform_apply(self.config)
 
     def cleanup(self):
         self._upload_log_file()
@@ -153,9 +156,10 @@ class Setup(SetupTemplate):
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
         aws_username = self.config.get_config_var("AWS_USERNAME")
+        # fails silently for now. AWS setup not required for azure deployment.
         subprocess.run(
             [
                 "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
                 "-u", aws_username
             ],
-            check=True)
+            check=False)
