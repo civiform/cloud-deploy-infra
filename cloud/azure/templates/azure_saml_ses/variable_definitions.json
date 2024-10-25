@@ -113,7 +113,7 @@
     "type": "string"
   },
   "AZURE_SKIP_PROVIDER_REGISTRATION": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": true,
     "type": "bool"
