@@ -1,4 +1,4 @@
-name: build_push_metrics_scraper_image
+name: build_push_development_env_image
 
 on:
   push:
@@ -10,15 +10,15 @@ on:
 
 permissions: read-all
 
-# Build and push the monitoring image.
+# Build and push the deployment env image.
 jobs:
-  build_monitoring:
+  build_deployment_env:
     runs-on: ubuntu-latest
 
     concurrency:
       group: build-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    name: Build monitoring
+    name: Build deployment env
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,13 +34,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Run build
-        id: build_and_push_monitoring
+        id: build_and_push_deployment_env
         env:
           DOCKER_BUILDKIT: 1
           PLATFORM: 'linux/amd64'
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/metrics/')
+        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/deployment/')
         run: |
-          cd $GITHUB_WORKSPACE/cloud/aws/metrics
-          ./build-scraper
+          cd $GITHUB_WORKSPACE/cloud/aws/deployment
+          ./build-deployment
