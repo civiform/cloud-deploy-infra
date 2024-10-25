@@ -13,4 +13,6 @@ terraform {
 
 provider "azurerm" {
   features {}
+
+  skip_provider_registration = var.azure_skip_provider_registration
 }

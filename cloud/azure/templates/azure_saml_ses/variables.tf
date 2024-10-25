@@ -9,6 +9,12 @@ variable "azure_resource_group" {
   description = "Name of the resource group where key vault is already created."
 }
 
+variable "azure_skip_provider_registration" {
+  type        = bool
+  description = "Whether to skip provider registrations on azure, useful when using a principal with limited permissions."
+  default     = false
+}
+
 variable "civiform_time_zone_id" {
   type        = string
   description = "Time zone for Civiform server to use when displaying dates."
