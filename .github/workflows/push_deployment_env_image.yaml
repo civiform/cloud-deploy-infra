@@ -1,4 +1,4 @@
-name: build_push_development_env_image
+name: build_push_deployment_env_image
 
 on:
   push:
