@@ -112,6 +112,12 @@
     "tfvar": false,
     "type": "string"
   },
+  "AZURE_SKIP_PROVIDER_REGISTRATION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "KEY_VAULT_NAME": {
     "required": true,
     "secret": false,
