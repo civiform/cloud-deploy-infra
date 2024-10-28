@@ -22,4 +22,4 @@ docker buildx build --push \
   "${PLATFORM_ARG[@]}" \
   -t "docker.io/civiform/${IMAGE}:latest" \
   -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
-  -f development.Dockerfile .
+  -f deployment-env.Dockerfile .
