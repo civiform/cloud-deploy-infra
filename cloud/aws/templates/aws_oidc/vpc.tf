@@ -24,7 +24,7 @@ locals {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.14.0"
+  version = "5.15.0"
 
   count = local.enable_managed_vpc ? 1 : 0
 
