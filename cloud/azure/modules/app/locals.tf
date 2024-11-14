@@ -25,8 +25,8 @@ locals {
 
     STORAGE_SERVICE_NAME = "azure-blob"
 
-    AZURE_STORAGE_ACCOUNT_NAME      = azurerm_storage_account.files_storage_account.name
-    AZURE_STORAGE_ACCOUNT_CONTAINER = azurerm_storage_container.files_container.name
+    AZURE_STORAGE_ACCOUNT_NAME           = azurerm_storage_account.files_storage_account.name
+    AZURE_STORAGE_ACCOUNT_CONTAINER_NAME = azurerm_storage_container.files_container.name
 
     AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
     AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
