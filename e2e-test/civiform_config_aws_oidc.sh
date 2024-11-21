@@ -67,7 +67,7 @@ export WHITELABEL_CIVIC_ENTITY_FULL_NAME="E2E Test City"
 
 # REQUIRED
 # The email address to contact for support with using Civiform. Ex. "Civiform@CityOfRochester.gov
-export SUPPORT_EMAIL_ADDRESS="civiform-deploy-e2e-tests@exygy.com"
+export SUPPORT_EMAIL_ADDRESS="civiform-instances+e2e@googlegroups.com"
 
 # REQUIRED
 # A link to an image of the civic entity logo that includes the entity name, to be used in the header for the "Get Benefits" page
@@ -84,25 +84,25 @@ export FAVICON_URL="https://civiform.us/favicon.png"
 
 # REQUIRED
 # The email address to use for the "from" field in emails sent from CiviForm.
-export SENDER_EMAIL_ADDRESS="civiform-deploy-e2e-tests@exygy.com"
+export SENDER_EMAIL_ADDRESS="civiform-instances+e2e@googlegroups.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the program administrator's email, as would happen in prod.
-export STAGING_PROGRAM_ADMIN_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
+export STAGING_PROGRAM_ADMIN_NOTIFICATION_MAILING_LIST="civiform-instances+e2e@googlegroups.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the trusted intermediary's email, as would happen in prod.
-export STAGING_TI_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
+export STAGING_TI_NOTIFICATION_MAILING_LIST="civiform-instances+e2e@googlegroups.com"
 
 # REQUIRED
 # The email address that receives a notifications email each time an applicant
 # submits an application to a program in the staging environments, instead of
 # sending it to the applicant's email, as would happen in prod.
-export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-deploy-e2e-tests@exygy.com"
+export STAGING_APPLICANT_NOTIFICATION_MAILING_LIST="civiform-instances+e2e@googlegroups.com"
 
 # REQUIRED
 # The domain name for this CiviForm deployment, including the protocol.
