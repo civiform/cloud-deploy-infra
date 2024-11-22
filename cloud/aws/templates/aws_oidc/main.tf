@@ -129,6 +129,8 @@ resource "aws_iam_role" "civiform_enhanced_monitoring_role" {
 }
 
 module "email_service" {
+  # Only create the aws_ses module if that is the email_provider
+  count = var.email_provider != "aws_ses" ? 0 : 1
   for_each = toset([
     var.sender_email_address,
     var.staging_applicant_notification_mailing_list,
