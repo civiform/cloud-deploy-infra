@@ -105,6 +105,12 @@ variable "log_retention" {
   default     = 30
 }
 
+variable "email_provider" {
+  type        = string
+  description = "The provider to use for sending emails"
+  default     = "aws-ses"
+}
+
 variable "sender_email_address" {
   type        = string
   description = "Email address of who is sending the email, passed to the app"

@@ -1,9 +1,5 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.77.0"
-    }
     azurerm = {
       source  = "azurerm"
       version = "4.11.0"
@@ -12,6 +8,12 @@ terraform {
   }
   backend "azurerm" {}
   required_version = ">= 0.14.9"
+}
+
+provider "aws" {
+  skip_credentials_validation = true
+  skip_metadata_api_check = true
+  skip_requesting_account_id = true
 }
 
 module "app" {
@@ -64,25 +66,44 @@ module "saml_keystore" {
 }
 
 locals {
-  create_email_service = var.email_provider == "aws_ses"
+  create_email_service = false
 }
 
-provider "aws" {
-  source  = "hashicorp/aws"
-  version = "5.75.0"
+module "email_service_sender" {
+  # Only create the aws_ses module if that is the email_provider
+  count = local.create_email_service ? 1 : 0
+  source              =  "../../../aws/modules/ses"
+  sender_email_address = var.sender_email_address
+  providers = {
+    aws = aws
+  }
+}
+
+module "email_service_applicant_notification" {
+  # Only create the aws_ses module if that is the email_provider
+  count = local.create_email_service ? 1 : 0
+  source              =  "../../../aws/modules/ses"
+  sender_email_address = var.staging_applicant_notification_mailing_list
+  providers = {
+    aws = aws
+  }
+}
+
+module "email_service_ti_notification" {
+  # Only create the aws_ses module if that is the email_provider
+  count = local.create_email_service ? 1 : 0
+  source              =  "../../../aws/modules/ses"
+  sender_email_address = var.staging_ti_notification_mailing_list
+  providers = {
+    aws = aws
+  }
 }
 
 module "email_service" {
   # Only create the aws_ses module if that is the email_provider
-  for_each = var.email_provider == "aws_ses" ? toset([
-    var.sender_email_address,
-    var.staging_applicant_notification_mailing_list,
-    var.staging_ti_notification_mailing_list,
-    var.staging_program_admin_notification_mailing_list
-  ]) : []
-  source               = "../../../aws/modules/ses"
-  sender_email_address = each.key
-
+  count = local.create_email_service ? 1 : 0
+  source              =  "../../../aws/modules/ses"
+  sender_email_address = var.staging_program_admin_notification_mailing_list
   providers = {
     aws = aws
   }
