@@ -135,7 +135,7 @@ module "email_service" {
     var.staging_applicant_notification_mailing_list,
     var.staging_ti_notification_mailing_list,
     var.staging_program_admin_notification_mailing_list
-  ]) : toset([])
+  ]) : []
   source               = "../../modules/ses"
   sender_email_address = each.key
 }
