@@ -9,11 +9,6 @@ terraform {
       version = "4.11.0"
     }
     random = {}
-    // Only require AWS if using AWS SES
-    aws = var.email_provider == "aws_ses" ? {
-      source  = "hashicorp/aws"
-      version = "5.75.0"
-    } : {} 
   }
   backend "azurerm" {}
   required_version = ">= 0.14.9"
@@ -68,6 +63,15 @@ module "saml_keystore" {
   resource_group_name          = var.azure_resource_group
 }
 
+locals {
+  create_email_service = var.email_provider == "aws_ses"
+}
+
+provider "aws" {
+  source  = "hashicorp/aws"
+  version = "5.75.0"
+}
+
 module "email_service" {
   # Only create the aws_ses module if that is the email_provider
   for_each = var.email_provider == "aws_ses" ? toset([
@@ -78,4 +82,8 @@ module "email_service" {
   ]) : []
   source               = "../../../aws/modules/ses"
   sender_email_address = each.key
+
+  providers = {
+    aws = aws
+  }
 }
