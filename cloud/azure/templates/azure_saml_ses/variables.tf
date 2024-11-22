@@ -60,6 +60,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "email_provider" {
+  type        = string
+  description = "The provider to use for sending emails"
+  default     = "aws_ses"
+}
+
 variable "sender_email_address" {
   type        = string
   description = "Email address that emails will be sent from"
