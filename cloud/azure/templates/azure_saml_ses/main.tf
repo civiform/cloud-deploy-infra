@@ -9,6 +9,11 @@ terraform {
       version = "4.11.0"
     }
     random = {}
+    // Only require AWS if using AWS SES
+    aws = var.email_provider == "aws_ses" ? {
+      source  = "hashicorp/aws"
+      version = "5.75.0"
+    } : {} 
   }
   backend "azurerm" {}
   required_version = ">= 0.14.9"
