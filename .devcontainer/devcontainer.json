@@ -10,10 +10,12 @@
         "ghcr.io/devcontainers/features/sshd:1": {},
         "ghcr.io/devcontainers/features/github-cli:1": {},
         "ghcr.io/devcontainers/features/common-utils:2": {},
+        "ghcr.io/devcontainers/features/node:1": {},
         "ghcr.io/devcontainers/features/python:1": {},
         "ghcr.io/devcontainers-contrib/features/shfmt:1": {},
         "ghcr.io/devcontainers/features/terraform:1": {}
     },
+    "postCreateCommand": "npm install -g @withgraphite/graphite-cli@stable",
     "customizations": {
         "vscode": {
             "extensions": [
