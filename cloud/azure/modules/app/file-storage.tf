@@ -15,13 +15,19 @@ resource "azurerm_storage_account" "files_storage_account" {
   # https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy
   account_replication_type = "LRS"
 
-  allow_nested_items_to_be_public = false
+  allow_nested_items_to_be_public = true
 }
 
 resource "azurerm_storage_container" "files_container" {
   name                  = "files"
-  storage_account_name  = azurerm_storage_account.files_storage_account.name
+  storage_account_id    = azurerm_storage_account.files_storage_account.id
   container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "public_files_container" {
+  name                  = "public-files"
+  storage_account_id    = azurerm_storage_account.files_storage_account.id
+  container_access_type = "blob"
 }
 
 resource "azurerm_data_protection_backup_policy_blob_storage" "blob_storage_backup_policy" {
