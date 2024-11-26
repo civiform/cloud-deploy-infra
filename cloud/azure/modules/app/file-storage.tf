@@ -15,7 +15,7 @@ resource "azurerm_storage_account" "files_storage_account" {
   # https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy
   account_replication_type = "LRS"
 
-  allow_nested_items_to_be_public = false
+  allow_nested_items_to_be_public = true
 }
 
 resource "azurerm_storage_container" "files_container" {
