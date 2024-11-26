@@ -20,8 +20,14 @@ resource "azurerm_storage_account" "files_storage_account" {
 
 resource "azurerm_storage_container" "files_container" {
   name                  = "files"
-  storage_account_name  = azurerm_storage_account.files_storage_account.name
+  storage_account_id    = azurerm_storage_account.files_storage_account.id
   container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "public_files_container" {
+  name                  = "public-files"
+  storage_account_id    = azurerm_storage_account.files_storage_account.id
+  container_access_type = "blob"
 }
 
 resource "azurerm_data_protection_backup_policy_blob_storage" "blob_storage_backup_policy" {
