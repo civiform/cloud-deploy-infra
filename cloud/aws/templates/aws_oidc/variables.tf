@@ -274,6 +274,12 @@ variable "staging_ti_notification_mailing_list" {
   default     = null
 }
 
+variable "email_provider" {
+  type        = string
+  description = "The provider to use for sending emails"
+  default     = "aws-ses"
+}
+
 variable "sender_email_address" {
   type        = string
   description = "Email address that emails will be sent from"

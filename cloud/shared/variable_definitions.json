@@ -38,6 +38,12 @@
     "tfvar": true,
     "type": "string"
   },
+  "EMAIL_PROVIDER": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "SENDER_EMAIL_ADDRESS": {
     "required": true,
     "secret": false,
