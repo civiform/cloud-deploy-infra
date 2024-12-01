@@ -10,25 +10,19 @@ variable "region" {
 }
 
 variable "cluster_name" {
-  type    = string
+  type        = string
   description = "Name of the GKE cluster to create"
-  default = "civiform-cluster"
+  default     = "civiform-cluster"
 }
 
 variable "network_name" {
-  type    = string
+  type        = string
   description = "Name of the network used for the GKE cluster"
-  default = "civiform-vpc-network"
+  default     = "civiform-vpc-network"
 }
 
 variable "subnetwork_name" {
-  type    = string
+  type        = string
   description = "Name of the subnetwork used for the GKE cluster"
-  default = "civiform-server-subnetwork"
-}
-
-variable "cluster_service_account_name" {
-  type = string
-  description = "Name of the GKE cluster's service account"
-  default = "civiform-cluster-sa"
+  default     = "civiform-server-subnetwork"
 }

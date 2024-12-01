@@ -1,36 +1,11 @@
-# google_client_config and kubernetes provider must be explicitly specified like the following.
-data "google_client_config" "default" {}
-
 provider "google" {
   project = var.project_id
   region  = var.region
 }
 
-provider "google-beta" {
-  project = var.project_id
-  region  = var.region
-}
-
 locals {
-  gcp_services = [
-    "cloudkms.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "iam.googleapis.com",
-    "iamcredentials.googleapis.com",
-    "sql-component.googleapis.com",
-    "storage-component.googleapis.com",
-  ]
-
   services_ip_range_name = "services-range"
   pods_ip_range_name     = "pods-range"
-}
-
-resource "google_project_service" "gcp_services" {
-  for_each = toset(local.gcp_services)
-  project  = var.project_id
-  service  = each.key
 }
 
 resource "google_compute_network" "civiform" {
@@ -61,23 +36,27 @@ resource "google_compute_subnetwork" "civiform" {
   }
 }
 
-module "gke" {
-  source                          = "terraform-google-modules/kubernetes-engine/google//modules/beta-autopilot-public-cluster"
-  version                         = "34.0.0"
-  project_id                      = var.project_id
-  name                            = var.cluster_name
-  service_account_name            = var.cluster_service_account_name
-  region                          = var.region
-  network                         = var.network_name
-  subnetwork                      = var.subnetwork_name
-  ip_range_pods                   = local.services_ip_range_name
-  ip_range_services               = local.pods_ip_range_name
-  release_channel                 = "STABLE"
-  security_posture_mode           = "BASIC"
-  http_load_balancing             = true
-  enable_vertical_pod_autoscaling = true
-  horizontal_pod_autoscaling      = true
-  deletion_protection             = false
+resource "google_container_cluster" "civiform" {
+  name = var.cluster_name
 
-  depends_on = [google_project_service.gcp_services]
+  location                 = var.region
+  enable_autopilot         = true
+  enable_l4_ilb_subsetting = true
+  deletion_protection      = false
+  network                  = google_compute_network.civiform.id
+  subnetwork               = google_compute_subnetwork.civiform.id
+
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
+
+  release_channel {
+    channel = "STABLE"
+  }
+
+  ip_allocation_policy {
+    stack_type                    = "IPV4_IPV6"
+    services_secondary_range_name = google_compute_subnetwork.civiform.secondary_ip_range[0].range_name
+    cluster_secondary_range_name  = google_compute_subnetwork.civiform.secondary_ip_range[1].range_name
+  }
 }
