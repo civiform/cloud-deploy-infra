@@ -37,6 +37,11 @@ jobs:
           repository: civiform/civiform-deploy
           path: civiform-deploy
 
+      - name: Install terraform cli
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
       - id: get-nuke
         name: Get aws-nuke
         run: |
