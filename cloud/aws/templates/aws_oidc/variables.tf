@@ -555,3 +555,45 @@ variable "extra_inbound_rule_cidr" {
   type        = string
   default     = null
 }
+
+variable "container_healthcheck_interval" {
+  type        = number
+  description = "ECS container health check interval."
+  default     = 10
+}
+
+variable "container_healthcheck_timeout" {
+  type        = number
+  description = "ECS container health check timeout."
+  default     = 30
+}
+
+variable "container_healthcheck_retries" {
+  type        = number
+  description = "# of health check retries before marking it unhealthy. https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html#API_HealthCheck_Contents"
+  default     = 5
+}
+
+variable "container_healthcheck_startperiod" {
+  type        = number
+  description = "The grace period before considering the ECS container as healthy."
+  default     = 10
+}
+
+variable "lb_healthcheck_interval" {
+  type        = number
+  description = "ECS container health check interval."
+  default     = 20
+}
+
+variable "lb_healthcheck_timeout" {
+  type        = number
+  description = "ECS container health check timeout."
+  default     = 15
+}
+
+variable "lb_healthcheck_unhealthy_threshold" {
+  type        = number
+  description = "# of health check retries before marking it unhealthy. https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#health_check"
+  default     = 10
+}
