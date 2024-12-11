@@ -6,7 +6,7 @@ resource "google_kms_key_ring" "keyring" {
 resource "google_kms_crypto_key" "storage_key" {
   name            = "gcs-key"
   key_ring        = google_kms_key_ring.keyring.id
-  rotation_period = "604800s" //7 days
+  rotation_period = "604800s" // 7 days
 
   lifecycle {
     prevent_destroy = false
@@ -24,9 +24,8 @@ resource "google_kms_crypto_key_iam_binding" "kms_binding" {
   members       = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
 }
 
-
-resource "google_storage_bucket" "object_storage" {
-  name          = "cloud-objectstore-${var.application_name_postfix}"
+resource "google_storage_bucket" "file_storage" {
+  name          = "civiform-file-storage"
   location      = var.region
   force_destroy = true
 
@@ -45,18 +44,17 @@ resource "google_storage_bucket" "object_storage" {
   ]
 }
 
-## TODO(ktoor@google.com) : Remove user and add service accounts for GKE.
 data "google_iam_policy" "storage_viewer" {
   binding {
     role = "roles/storage.legacyBucketReader"
     members = [
-      "user:ktoor@google.com",
+      "serviceAccount:${var.service_account}",
     ]
   }
 }
 
 resource "google_storage_bucket_iam_policy" "viewer_policy" {
-  bucket      = google_storage_bucket.object_storage.name
+  bucket      = google_storage_bucket.file_storage.name
   policy_data = data.google_iam_policy.storage_viewer.policy_data
 }
 
@@ -64,7 +62,7 @@ data "google_iam_policy" "storage_owner" {
   binding {
     role = "roles/storage.legacyBucketOwner"
     members = [
-      "serviceAccount:civform-terraform@civiform-demo.iam.gserviceaccount.com",
+      "serviceAccount:${var.service_account}",
     ]
   }
 }
