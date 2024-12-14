@@ -1,0 +1,68 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: bec-tenant-{{ .Values.tenantId }}
+  namespace: ns-tenant-{{ .Values.tenantId }}
+spec:
+  timeoutSec: 40
+  # https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-configuration#direct_health
+  healthCheck:
+    checkIntervalSec: 10
+    timeoutSec: 10
+    type: HTTP
+    requestPath: /playIndex
+    port: 9000
+  connectionDraining:
+    drainingTimeoutSec: 60
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: civiform-server-tenant-{{ .Values.tenantId }}
+  namespace: ns-tenant-{{ .Values.tenantId }}
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"80":"bec-tenant-{{ .Values.tenantId }}"}}'
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http-server
+---
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: fec-tenant-{{ .Values.tenantId }}
+  namespace: ns-tenant-{{ .Values.tenantId }}
+# spec:
+#   redirectToHttps:
+#     enabled: true
+#     responseCodeName: MOVED_PERMANENTLY_DEFAULT
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: civiform-server-ingress-{{ .Values.tenantId }}
+  namespace: ns-tenant-{{ .Values.tenantId }}
+  annotations:
+    # create an L7 load balancer
+    kubernetes.io/ingress.class: gce
+    networking.gke.io/v1beta1.FrontendConfig: fec-tenant-{{ .Values.tenantId }}
+spec:
+  # tls:
+  # - secretName: SECRET_NAME
+  rules:
+    # ExternalDNS automatically creates a DNS record based on the host value here
+    # https://kubernetes-sigs.github.io/external-dns/latest/docs/faq/#how-do-i-specify-a-dns-name-for-my-kubernetes-objects
+  - host: {{ .Values.publicFQDN }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: civiform-server-tenant-{{ .Values.tenantId }}
+            port:
+              number: 80

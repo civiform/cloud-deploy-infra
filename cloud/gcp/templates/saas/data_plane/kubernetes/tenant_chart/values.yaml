@@ -1,0 +1,12 @@
+civiformImage:
+  image: docker.io/civiform/civiform
+  tag: latest
+
+gsaEmail: civiform-tenant-sa-bham@bion-sandbox.iam.gserviceaccount.com
+tenantId: bham
+nodePoolName: np-tenant-bham
+db:
+  connectionName: bion-sandbox:us-central1:civiform-db
+  username: civiform-tenant-sa-bham@bion-sandbox.iam
+
+publicFQDN: bham.tenant.civiform.dev

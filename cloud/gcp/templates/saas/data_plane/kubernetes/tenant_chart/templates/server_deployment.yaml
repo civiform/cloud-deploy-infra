@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: civiform-server-tenant-{{ .Values.tenantId }}
+  namespace: ns-tenant-{{ .Values.tenantId }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: civiform-server
+      app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
+      app.kubernetes.io/version: {{ .Values.civiformImage.tag  }}
+      app.kubernetes.io/component: application-server
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: civiform-server
+        app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
+        app.kubernetes.io/version: {{ .Values.civiformImage.tag  }}
+        app.kubernetes.io/component: application-server
+
+    spec:
+      serviceAccountName: sa-tenant-{{ .Values.tenantId }}
+      nodeSelector:
+        cloud.google.com/gke-nodepool: {{ .Values.nodePoolName }}
+
+      containers:
+      - name: civiform-server
+        image: {{ .Values.civiformImage.image }}:{{ .Values.civiformImage.tag }}
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 9000
+          name: http-server
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+
+          seccompProfile:
+            type: RuntimeDefault
+
+          capabilities:
+            drop:
+              - NET_RAW
+
+        livenessProbe:
+          periodSeconds: 10
+          failureThreshold: 6
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        readinessProbe:
+          periodSeconds: 10
+          failureThreshold: 6
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        startupProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 30
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        env:
+          - name: PORT
+            value: http-server
+          - name: CIVIFORM_APPLICANT_IDP
+            value: disabled
+          - name: CIVIFORM_MODE
+            value: dev
+          - name: APPLICANT_OIDC_CLIENT_ID
+            value: client
+          - name: APPLICANT_OIDC_CLIENT_SECRET
+            value: notarealsecret
+          - name: APPLICANT_OIDC_DISCOVERY_URI
+            value: https://civiform-staging.us.auth0.com/.well-known/openid-configuration
+          - name: CIVIFORM_APPLICANT_IDP
+            value: auth0
+          - name: WHITELABEL_CIVIC_ENTITY_SHORT_NAME
+            value: CF on GCP
+          - name: WHITELABEL_CIVIC_ENTITY_FULL_NAME
+            value: CiviForm on GCP
+          - name: SECRET_KEY
+            value: fake-fake-fake-fake-fake-fake-fake-fake-fake-fake-fake
+          - name: DB_JDBC_STRING
+            value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.db.connectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.db.username }}&sslmode=disable"
+          - name: DB_USERNAME
+            value: "{{ .Values.db.username }}"
+            # A non-empty DB password is required to pass pg driver validation,
+            # but the cloud IAM connector ignores it and uses IAM which is more secure
+            # https://github.com/GoogleCloudPlatform/cloud-sql-jdbc-socket-factory/blob/main/docs/jdbc.md#iam-authentication
+          - name: DB_PASSWORD
+            value: fake-fake-fake-fake-fake-fake-fake-fake-fake-fake-fake
