@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "properties": {
+    "civiformImage": {
+      "description": "CiviForm container image",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": ["image", "tag"]
+    },
+    "db": {
+      "description": "Database connection",
+      "properties": {
+        "connectionName": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": ["connectionName", "username"]
+    },
+    "tenantId": {
+      "description": "CiviForm SaaS tenant ID",
+      "type": "string"
+    },
+    "gsaEmail": {
+      "description": "Tenant's GCP service account email",
+      "type": "string"
+    },
+    "publicSubdomain": {
+      "description": "The public subdomain generated for this tenant",
+      "type": "string"
+    }
+  },
+  "required": [
+    "db",
+    "civiformImage",
+    "tenantId",
+    "gsaEmail"
+  ],
+  "title": "Values",
+  "type": "object"
+}
