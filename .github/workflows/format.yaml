@@ -49,6 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: run YAPF to test if python code is correctly formatted
-        uses: AlexanderMelde/yapf-action@v1.0
+        uses: AlexanderMelde/yapf-action@v2.0
         with:
           args: "--verbose --style='{based_on_style: google, SPLIT_BEFORE_FIRST_ARGUMENT:true}'"

@@ -37,6 +37,11 @@ jobs:
           repository: civiform/civiform-deploy
           path: civiform-deploy
 
+      - name: Install terraform cli
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
       - id: get-nuke
         name: Get aws-nuke
         run: |
@@ -76,7 +81,7 @@ jobs:
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           channel-id:  'C03UXPUEXU4'
           slack-message: "${{ env.STATUS_ICON }} AWS e2e test: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"

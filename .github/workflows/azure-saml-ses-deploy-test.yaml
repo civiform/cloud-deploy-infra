@@ -27,6 +27,11 @@ jobs:
       - name: Check out branch
         uses: actions/checkout@v4
 
+      - name: Install terraform cli
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
       - name: Login to Azure
         run: cloud/azure/bin/cli-login
 
