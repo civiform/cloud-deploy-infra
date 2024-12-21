@@ -11,7 +11,8 @@ This is a proof of concept with a lot of things missing before it's ready for pr
   - `gcloud` CLI: https://cloud.google.com/sdk/docs/install
   - `tofu` CLI: https://opentofu.org/docs/intro/install/
   - `kubectl` CLI: https://kubernetes.io/docs/tasks/tools/
-  - `gcloud components install gke-gcloud-auth-plugin` - gcloud plugin for authorizing kubectl access to GKE
+  - `helm` CLI: https://helm.sh/docs/intro/install/
+  - `gcloud components install gke-gcloud-auth-plugin` - gcloud plugin for authorizing `kubectl` access to GKE
 3. Authenticate: `gcloud auth application-default login`
 4. `cd control_plane`
   - Run `./enable_apis.sh`, this will enable the GCP APIs tofu needs
@@ -20,7 +21,9 @@ This is a proof of concept with a lot of things missing before it's ready for pr
     - a GKE cluster
     - a node pool called `np-control-plane` with one node for running external-dns
     - a service account for `np-control-plane`
-6. `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
+6. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster <REGION>`
+  - Make sure the creds work by fetching k8s info: `kubectl get namespaces`
+7. Install external-dns in the cluster: `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
 
 ### Install a tenant
 
@@ -39,6 +42,7 @@ This is a proof of concept with a lot of things missing before it's ready for pr
     - Run `GRANT ALL PRIVILEGES ON DATABASE postgres TO "<CF PG UNAME>";`
     - Run `GRANT ALL PRIVILEGES ON SCHEMA public TO "<CF PG UNAME>";`
     - Run `tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=false" -target="google_sql_database_instance.civiform_db"` to disable the DB public IP address
+    - Alternative to the above: you can use Cloud SQL Studio in the GCP console to set the `postgres` user's password and execute the SQL statements using a browser UI.
 2. Next, deploy the tenant's k8s resources. `cd ../kubernetes/tenant_chart`
   - Update `values.yaml` with the output values from `tofu apply` and the vars file in step (1)
   - `helm install <TENANT RELEASE NAME> .` to create the tenant's:

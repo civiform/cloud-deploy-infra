@@ -75,7 +75,7 @@ variable "db_enable_public_ip4" {
 variable "db_tier_type" {
   type        = string
   description = "vm tier type to run db instance"
-  default     = "db-f1-micro"
+  default     = "db-f1-micro" # $8/mo in us-central1, https://cloud.google.com/sql/pricing
 }
 
 variable "db_deletion_protection" {
