@@ -7,7 +7,7 @@ output "db_username" {
 }
 
 output "gsa_email" {
-  value = google_service_account.civiform_gsa.email
+  value = google_service_account.tenant.email
 }
 
 output "node_pool_name" {

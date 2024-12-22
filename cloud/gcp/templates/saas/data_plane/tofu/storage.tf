@@ -50,7 +50,7 @@ resource "google_storage_bucket" "applicant_files" {
 resource "google_storage_bucket_iam_binding" "object_user_binding" {
   bucket  = google_storage_bucket.applicant_files.name
   role    = "roles/storage.objectUser"
-  members = ["serviceAccount:${google_service_account.civiform_gsa.email}"]
+  members = ["serviceAccount:${google_service_account.tenant.email}"]
 
   condition {
     title       = "Tenant-scoped access"
@@ -69,10 +69,10 @@ EOT
 # the service account must have this role to impersonate itself and you must modify commands to
 # impersonate the service account used to sign the URL."
 resource "google_service_account_iam_binding" "token_creator_binding" {
-  service_account_id = google_service_account.civiform_gsa.name
+  service_account_id = google_service_account.tenant.name
   role               = "roles/iam.serviceAccountTokenCreator"
 
-  members = ["serviceAccount:${google_service_account.civiform_gsa.email}"]
+  members = ["serviceAccount:${google_service_account.tenant.email}"]
 
   condition {
     title       = "Tenant-scoped access"

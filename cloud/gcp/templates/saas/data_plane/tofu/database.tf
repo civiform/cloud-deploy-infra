@@ -53,7 +53,7 @@ resource "time_sleep" "wait_after_db_create" {
 # Allows the service account to login as a Postgres user
 # See https://cloud.google.com/sql/docs/postgres/iam-roles
 resource "google_sql_user" "civiform_user" {
-  name     = trimsuffix(google_service_account.civiform_gsa.email, ".gserviceaccount.com")
+  name     = trimsuffix(google_service_account.tenant.email, ".gserviceaccount.com")
   instance = google_sql_database_instance.civiform_db.name
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
 
@@ -68,7 +68,7 @@ resource "google_project_iam_binding" "db_client" {
   role    = "roles/cloudsql.client"
 
   members = [
-    "serviceAccount:${google_service_account.civiform_gsa.email}",
+    "serviceAccount:${google_service_account.tenant.email}",
   ]
 
   condition {
@@ -88,7 +88,7 @@ resource "google_project_iam_binding" "db_user" {
   role    = "roles/cloudsql.instanceUser"
 
   members = [
-    "serviceAccount:${google_service_account.civiform_gsa.email}",
+    "serviceAccount:${google_service_account.tenant.email}",
   ]
 
   condition {
