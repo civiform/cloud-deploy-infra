@@ -12,6 +12,7 @@ This is a proof of concept with a lot of things missing before it's ready for pr
   - `tofu` CLI: https://opentofu.org/docs/intro/install/
   - `kubectl` CLI: https://kubernetes.io/docs/tasks/tools/
   - `helm` CLI: https://helm.sh/docs/intro/install/
+  - `cloud-sql-proxy` CLI: https://cloud.google.com/sql/docs/mysql/sql-proxy#install - after downloading, ensure it is available on your shell PATH
   - `gcloud components install gke-gcloud-auth-plugin` - gcloud plugin for authorizing `kubectl` access to GKE
 3. Authenticate: `gcloud auth application-default login`
 4. `cd control_plane`
@@ -35,15 +36,11 @@ This is a proof of concept with a lot of things missing before it's ready for pr
     - tenant GCP service account
     - tenant Cloud SQL postgresql database
     - tenant nodepool for the server
-  - Next we need to do some toil on the pg CLI because while the civiform service account has permission from GCP to connect to the DB, the PG database user it connects with has no internal permissions in PG, so we need to grant them. An alternative to the steps below that does not expose the DB to the internet for any period of time is to use Cloud SQL Studio in the GCP web console to execute the `GRANT` statements.
-    - Inspect the tofu output and find the value for `db_username`, it will look like `civiform-cluster-sa@<YOUR PROJECT ID>.iam` unless you passed a variable for `cluster_service_account_name`. This is your `<CF PG UNAME>` value for the next commands.
-    - Run `gcloud sql users set-password postgres --instance=civiform-tenant-<TENANT ID> --password="<CHOOSE A PASSWORD>"`
-    - Run `gcloud sql connect civiform-db-<TENANT ID> --database=postgres --user=postgres`, login using the password you just set. Note: it is critical that you login as the `postgres` user, the following commands if run using your IAM user account will appear to succeed but fail silently. ASK ME HOW I KNOW.
-    - Run `GRANT ALL PRIVILEGES ON DATABASE postgres TO "<CF PG UNAME>";`
-    - Run `GRANT ALL PRIVILEGES ON SCHEMA public TO "<CF PG UNAME>";`
-    - Run `tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=false" -target="google_sql_database_instance.civiform_db"` to disable the DB public IP address
-    - Alternative to the above: you can use Cloud SQL Studio in the GCP console to set the `postgres` user's password and execute the SQL statements using a browser UI.
-2. Next, deploy the tenant's k8s resources. `cd ../kubernetes/tenant_chart`
+  - Next we need to do some toil because while the tenant service account has permission from GCP to connect to the DB instance, the PG database user it connects with has no internal permissions in PG, so we need to grant all database and public schema privileges for the `postgres` internal database to the service account user. Nota bene it's critical that the `postgres` user account performs these grants, otherwise they will appear to succeed but fail silently (the DB logs in the GCP console will reveal "no permissions changed" when this happens). Alternative to running the script in the steps below: you can use Cloud SQL Studio in the GCP console to set the `postgres` user's password and execute the SQL statements using a browser UI.
+    1. Inspect the tofu output and find the values for `db_username` (it will look like `civiform-cluster-sa@<YOUR PROJECT ID>.iam` -- it's the service account name **without** `gserviceaccount.com` suffix) and `db_connection_name`. These are your `<DB UNAME>` and `<DB CONN>` values for the next command.
+    2. `cd ..` then run `./service_account_db_grants <DB CONN> <DB UNAME>`
+    3. Run `tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=false" -target="google_sql_database_instance.civiform_db"` to disable the DB public IP address
+2. Next, deploy the tenant's k8s resources. `cd kubernetes/tenant_chart`
   - Update `values.yaml` with the output values from `tofu apply` and the vars file in step (1)
   - `helm install <TENANT RELEASE NAME> .` to create the tenant's:
     - namespace

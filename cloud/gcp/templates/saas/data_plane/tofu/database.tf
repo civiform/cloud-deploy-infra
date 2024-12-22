@@ -27,7 +27,13 @@ resource "google_sql_database_instance" "civiform_db" {
     edition = "ENTERPRISE"
 
     ip_configuration {
-      # "ipv4" here means a *public* IP address
+      # While "ipv4" here does mean a *public* IP address, which is more than a little unsettling,
+      # GCP blocks connections to it that don't come from authorized networks or IAM-authenticated
+      # principals. Still though, the only need for a public ipv4 is during setup when we connect
+      # to grant DB privileges to the service account PG user. Once that task is taken care of
+      # some other way -- probably via a k8s job that runs as part of setup and connects via GCP
+      # private networking just like the server does -- then at no point will it be necessary for
+      # the DB to have a public IP address.
       ipv4_enabled = var.db_enable_public_ip4
       # The server connects to the database via private networking so that traffic is not
       # exposed to the public internet.
