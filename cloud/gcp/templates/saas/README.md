@@ -17,20 +17,25 @@ This is a proof of concept with a lot of things missing before it's ready for pr
 3. Authenticate: `gcloud auth application-default login`
 4. `cd control_plane`
   - Run `./enable_apis.sh`, this will enable the GCP APIs tofu needs
-5. `cd tofu`
-  - Run `tofu init && tofu apply -var="project_id=<YOUR PROJECT ID>"`, this will create
+5. Create a bucket to store tf state in
+  - Read the basics about bucket naming: https://cloud.google.com/storage/docs/buckets#naming
+  - In particular: BUCKET NAMES ARE PUBLICLY VISIBLE AND MUST BE GLOBALLY UNIQUE
+  - `gcloud storage buckets create gs://<BUCKET NAME> --project=<PROJECT ID> --location=<LOCATION>`
+  - Save the bucket name
+6. `cd tofu`
+  - Run `tofu init -var="tf_state_bucket_name=<BUCKET>" && tofu apply -var="tf_state_bucket_name=<BUCKET>" -var="project_id=<YOUR PROJECT ID>"`, this will create
     - a GKE cluster
     - a node pool called `np-control-plane` with one node for running external-dns
     - a service account for `np-control-plane`
-6. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster <REGION>`
+7. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster <REGION>`
   - Make sure the creds work by fetching k8s info: `kubectl get namespaces`
-7. Install external-dns in the cluster: `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
+8. Install external-dns in the cluster: `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
 
 ### Install a tenant
 
 1. First, create the tenant's GCP resources. From the saas directory, `cd data_plane/tofu`
-  - edit `demo.tfvars` with your project ID, make sure the region and cluster_location match what you used in setup 
-  - `tofu init && tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=true"`.
+  - edit `demo.tfvars` with your project ID and bucket name, make sure the region and cluster_location match what you used in setup 
+  - `tofu init -var-file="demo.tfvars" && tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=true"`.
   - Save the output values somewhere
   - This will create tenant-specific:
     - tenant GCP service account

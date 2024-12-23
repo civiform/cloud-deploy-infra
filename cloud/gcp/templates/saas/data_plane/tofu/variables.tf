@@ -1,3 +1,13 @@
+variable "tf_state_bucket_name" {
+  type        = string
+  description = "Bucket name for storing the TF state file"
+}
+
+variable "tf_state_tenant_prefix" {
+  type        = string
+  description = "Prefix for the GCS object storing the TF state file"
+}
+
 variable "project_id" {
   type        = string
   description = "GCP project ID"

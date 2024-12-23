@@ -1,3 +1,17 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "6.14.1"
+    }
+  }
+
+  backend "gcs" {
+    bucket = var.tf_state_bucket_name
+    prefix = var.tf_state_tenant_prefix
+  }
+}
+
 provider "google" {
   project = var.project_id
   region  = var.region
