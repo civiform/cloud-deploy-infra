@@ -6,10 +6,8 @@ terraform {
     }
   }
 
-  backend "gcs" {
-    bucket = var.tf_state_bucket_name
-    prefix = var.tf_state_tenant_prefix
-  }
+  # config values passed with -backend-config CLI args
+  backend "gcs" {}
 }
 
 provider "google" {

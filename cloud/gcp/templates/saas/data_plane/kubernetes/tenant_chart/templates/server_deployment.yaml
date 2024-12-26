@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: civiform-server
       app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
-      app.kubernetes.io/version: {{ .Values.civiformImage.tag  }}
+      app.kubernetes.io/version: {{ .Values.imageTag  }}
       app.kubernetes.io/component: application-server
 
   template:
@@ -17,17 +17,17 @@ spec:
       labels:
         app.kubernetes.io/name: civiform-server
         app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
-        app.kubernetes.io/version: {{ .Values.civiformImage.tag  }}
+        app.kubernetes.io/version: {{ .Values.imageTag  }}
         app.kubernetes.io/component: application-server
 
     spec:
-      serviceAccountName: sa-tenant-{{ .Values.tenantId }}
+      serviceAccountName: {{ .Values.ksaName }}
       nodeSelector:
         cloud.google.com/gke-nodepool: {{ .Values.nodePoolName }}
 
       containers:
       - name: civiform-server
-        image: {{ .Values.civiformImage.image }}:{{ .Values.civiformImage.tag }}
+        image: {{ .Values.image }}:{{ .Values.imageTag }}
         imagePullPolicy: IfNotPresent
 
         ports:
@@ -92,9 +92,9 @@ spec:
           - name: SECRET_KEY
             value: fake-fake-fake-fake-fake-fake-fake-fake-fake-fake-fake
           - name: DB_JDBC_STRING
-            value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.db.connectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.db.username }}&sslmode=disable"
+            value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.dbConnectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.dbUsername }}&sslmode=disable"
           - name: DB_USERNAME
-            value: "{{ .Values.db.username }}"
+            value: "{{ .Values.dbUsername }}"
             # A non-empty DB password is required to pass pg driver validation,
             # but the cloud IAM connector ignores it and uses IAM which is more secure
             # https://github.com/GoogleCloudPlatform/cloud-sql-jdbc-socket-factory/blob/main/docs/jdbc.md#iam-authentication

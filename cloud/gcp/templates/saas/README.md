@@ -27,11 +27,18 @@ This is a proof of concept with a lot of things missing before it's ready for pr
     - a GKE cluster
     - a node pool called `np-control-plane` with one node for running external-dns
     - a service account for `np-control-plane`
-7. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster <REGION>`
+7. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster --location <CLUSTER LOCATION>`
   - Make sure the creds work by fetching k8s info: `kubectl get namespaces`
 8. Install external-dns in the cluster: `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
 
-### Install a tenant
+### Turnup a tenant
+
+#### Using automation
+
+1. Write a tenant config file, see `demo_tenant_config.yaml` for an example
+2. Run the turnup script from the root `saas` directory `./civ turnup-tenant --tenant_config=tenant_config.yaml`
+
+#### Manually
 
 1. First, create the tenant's GCP resources. From the saas directory, `cd data_plane/tofu`
   - edit `demo.tfvars` with your project ID and bucket name, make sure the region and cluster_location match what you used in setup 

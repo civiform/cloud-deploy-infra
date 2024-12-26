@@ -1,0 +1,9 @@
+project_id: bion-sandbox
+cluster_location: us-central1-c
+cluster_name: civiform-cluster
+image: docker.io/civiform/civiform
+image_tag: latest
+region: us-central1
+tenant_id: frih
+tf_state_tenant_prefix: frih
+tf_state_bucket_name: bion-sandbox-cp-tf-state

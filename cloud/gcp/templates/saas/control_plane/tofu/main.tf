@@ -71,6 +71,10 @@ resource "google_container_cluster" "civiform" {
   ip_allocation_policy {
     stack_type = "IPV4_IPV6"
   }
+
+  timeouts {
+    create = "60m"
+  }
 }
 
 resource "google_service_account" "control_plane" {

@@ -48,6 +48,10 @@ resource "google_sql_database_instance" "civiform_db" {
   }
 
   depends_on = [google_service_networking_connection.db_network_connection]
+
+  timeouts {
+    create = "30m"
+  }
 }
 
 # https://github.com/hashicorp/terraform-provider-google/issues/14233

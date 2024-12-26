@@ -1,13 +1,3 @@
-variable "tf_state_bucket_name" {
-  type        = string
-  description = "Bucket name for storing the TF state file"
-}
-
-variable "tf_state_tenant_prefix" {
-  type        = string
-  description = "Prefix for the GCS object storing the TF state file"
-}
-
 variable "project_id" {
   type        = string
   description = "GCP project ID"
@@ -64,12 +54,6 @@ variable "network_name" {
   default     = "civiform-vpc-network"
 }
 
-variable "server_image" {
-  type        = string
-  description = "Fully qualified CiviForm server Docker image tag to deploy"
-  default     = "docker.io/civiform/civiform:latest"
-}
-
 variable "min_node_count" {
   type        = number
   description = "Minimum number of nodes in the tenant's nodepool, may scale higher"
@@ -92,12 +76,6 @@ variable "db_deletion_protection" {
   type        = bool
   description = "The database cannot be deleted while deletion protection is enabled"
   default     = true
-}
-
-variable "port" {
-  type        = string
-  description = "Port the app is running on"
-  default     = "9000"
 }
 
 variable "postgres_version" {

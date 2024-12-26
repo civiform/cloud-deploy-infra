@@ -1,0 +1,130 @@
+#! /usr/bin/env python3
+
+import argparse
+import os
+import json
+import shlex
+import subprocess
+import sys
+import tempfile
+import yaml
+
+
+def shell(cmd):
+    popen = subprocess.Popen(
+        shlex.split(cmd),
+        stderr=subprocess.PIPE,
+        bufsize=1,
+        universal_newlines=True)
+    try:
+        exit_code = popen.wait()
+        _, stderr = popen.communicate()
+        if exit_code > 0:
+            print(stderr)
+            raise RuntimeError(f'subcommand failed: {cmd}')
+    except KeyboardInterrupt:
+        # Allow terraform to gracefully exit if a user Ctrl+C's out of the command
+        popen.terminate()
+
+
+class Tenant():
+    tenant_config = None
+    tenant_config_filename = None
+    props = ["cluster_location",
+             "cluster_name",
+             "image",
+             "image_tag",
+             "project_id",
+             "region",
+             "tenant_id",
+             "tf_state_bucket_name",
+             "tf_state_tenant_prefix"]
+
+
+    def __init__(self, tenant_config_filename):
+        self.tenant_config_filename = tenant_config_filename
+
+
+    def turnup(self):
+        self._load_tenant_config()
+
+        # TODO: use canonical var definitions similar to the AWS deployment for filtering vars
+        tf_vars = {k: self.tenant_config[k] for k in self.props if k not in ["image", "image_tag", "tf_state_bucket_name", "tf_state_tenant_prefix"]}
+        tf_vars['tenant_ksa_name'] = self.ksa_name
+        tf_vars['tenant_k8s_namespace'] = f"ns-tenant-{self.tenant_id}"
+        tf_vars['db_deletion_protection'] = self.tenant_config['db_deletion_protection'] if 'db_deletion_protection' in self.tenant_config else False
+
+        with tempfile.NamedTemporaryFile(mode="w+", suffix=".tfvars.json", delete=False) as temp_vars:
+            temp_vars.write(json.dumps(tf_vars, sort_keys=True, indent=2))
+            temp_vars.write("\n")
+            temp_vars.close()
+
+            tofu_path = os.path.abspath("data_plane/tofu")
+            backend_config = f"-backend-config='bucket={self.tenant_config['tf_state_bucket_name']}' -backend-config='prefix={self.tenant_config['tf_state_tenant_prefix']}'"
+            shell(f"tofu -chdir={tofu_path} init -reconfigure -input=false {backend_config}")
+            shell(f"tofu -chdir={tofu_path} apply -input=false -var-file={temp_vars.name} -var='db_enable_public_ip4=true'")
+
+        # TODO: this only needs to happen on initial turnup
+        shell(f"./data_plane/service_account_db_grants {self.db_conn} {self.db_username}")
+
+        with tempfile.NamedTemporaryFile("w+", suffix=".yaml", delete=False) as temp_values:
+            temp_values.write(yaml.dump({
+                'dbConnectionName': self.db_conn,
+                'dbUsername': self.db_username,
+                'gsaEmail': self.gsa_email,
+                'ksaName': self.ksa_name,
+                'image': self.tenant_config['image'],
+                'imageTag': self.tenant_config['image_tag'],
+                'nodePoolName': f"np-tenant-{self.tenant_id}",
+                'publicFQDN': f"{self.tenant_id}.tenant.civiform.dev",
+                'tenantId': self.tenant_id
+            }))
+            temp_values.write("\n")
+            temp_values.close()
+
+            shell(f"helm install -f {temp_values.name} tenant-{self.tenant_id} ./data_plane/kubernetes/tenant_chart")
+
+
+    def _load_tenant_config(self):
+        try:
+            with open(self.tenant_config_filename, 'r') as file:
+                self.tenant_config = yaml.safe_load(file)
+
+        except FileNotFoundError:
+            print(f"Error: tenant_config file not found: {self.tenant_config_filename}")
+            exit(1)
+        except yaml.YAMLError as e:
+            print(f"Error: Invalid YAML format: {e}")
+            exit(1)
+
+        # TODO: do a hell of a lot more validation than this
+        errors = []
+        for item in self.props:
+            if item not in self.tenant_config:
+                errors.append(f"Error: missing {item}")
+
+        if errors:
+            for error in errors:
+                print(error)
+                exit(1)
+
+        self.project_id = self.tenant_config["project_id"]
+        self.tenant_id = self.tenant_config["tenant_id"]
+        self.gsa_email = f"civiform-tenant-sa-{self.tenant_id}@{self.project_id}.iam.gserviceaccount.com"
+        self.ksa_name = f"sa-tenant-{self.tenant_id}"
+        self.db_conn = f"{self.project_id}:{self.tenant_config["region"]}:civiform-tenant-{self.tenant_id}"
+        self.db_username = self.gsa_email.replace(".gserviceaccount.com", "")
+
+
+if __name__ == "__main__":
+    # TODO: use click instead of argparse: https://click.palletsprojects.com/en/stable/
+    parser = argparse.ArgumentParser(prog="civ", description="CLI for CiviForm SaaS.")
+    parser.add_argument("command", help="Currently only `turnup-tenant` is supported")
+    parser.add_argument("--tenant_config", help="Path to a tenant config YAML file")
+    args = parser.parse_args()
+
+    if args.command == "turnup-tenant":
+        if not args.tenant_config:
+            print("--tenant_config required")
+            exit(1)
+        Tenant(args.tenant_config).turnup()
