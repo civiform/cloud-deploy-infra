@@ -30,13 +30,21 @@ This is a proof of concept with a lot of things missing before it's ready for pr
 7. Get cluster creds for `kubectl`: `gcloud container clusters get-credentials civiform-cluster --location <CLUSTER LOCATION>`
   - Make sure the creds work by fetching k8s info: `kubectl get namespaces`
 8. Install external-dns in the cluster: `cd ../kubernetes && CLOUDFLARE_API_TOKEN=<TOKEN> ./install_external_dns.sh`
+9. Prepare SSL
+  - Create a DNS authorization for GCP: `gcloud certificate-manager dns-authorizations create <AUTH NAME> --domain=tenant.civiform.dev` where `<AUTH NAME>` is a unique name for the authorization given to GCP to create TLS certs for the domain.
+  - Call `gcloud certificate-manager dns-authorizations describe <AUTH NAME>` and use the `data`, `name`, and `type` properties to create a record in CloudFlare to authorize GCP SSL certs. Disable CloudFlare DNS proxying so it's a DNS-only record. Note this step can take O(hours), you can do the next step while you wait and it'll block on this one.
+  - Go to [certificate manager](https://console.cloud.google.com/security/ccm/list/certificates) and create a `*.tenant.civiform.dev ` cert, give it a unique name (you'll use this name in the next step and when turning up tenants).
 
 ### Turnup a tenant
+
+Note that it can take awhile for managed SSL certs to become available O(hours) after initial turnup -- I don't know if that is only an issue after initial cert provisioning or if it'll be a delay experienced on every new domain turnup. There are alternative ways of managed SSL certs, the current approach is to provision a single wildcard cert that is shared among all domains/tenants.
+
+After turning up a tenant, check the SSL cert status first by finding it's name `kubectl get managedcertificate --namespace <TENANT NAMESPACE>` and then describing it `kubectl describe managedcertificate <SSL CERT NAME> --namespace <TENANT NAMESPACE>`. If `Certificate Status` is not `Active` then the domain name won't work.
 
 #### Using automation
 
 1. Write a tenant config file, see `demo_tenant_config.yaml` for an example
-2. Run the turnup script from the root `saas` directory `./civ turnup-tenant --tenant_config=tenant_config.yaml`
+2. From the root `saas` directory, run the turnup command passing your config file: `./civ tenant-turnup --tenant_config=tenant_config.yaml`
 
 #### Manually
 
@@ -60,3 +68,4 @@ This is a proof of concept with a lot of things missing before it's ready for pr
     - deployment running the CiviForm server
     - service referencing the server deployment
     - ingress with an l7 load balancer pointing to the service
+

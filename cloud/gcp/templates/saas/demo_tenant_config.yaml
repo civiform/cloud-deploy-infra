@@ -7,3 +7,4 @@ region: us-central1
 tenant_id: frih
 tf_state_tenant_prefix: frih
 tf_state_bucket_name: bion-sandbox-cp-tf-state
+ssl_cert_name: tenant-civiform-dev

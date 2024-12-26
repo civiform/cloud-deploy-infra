@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ns-tenant-{{ .Values.tenantId }}
+  name: {{ .Values.namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: sa-tenant-{{ .Values.tenantId }}
-  namespace: ns-tenant-{{ .Values.tenantId }}
+  namespace: {{ .Values.namespace }}
   annotations:
     iam.gke.io/gcp-service-account: {{ .Values.gsaEmail }}

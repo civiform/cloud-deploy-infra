@@ -1,5 +1,6 @@
 image: docker.io/civiform/civiform
 imageTag: latest
+namespace: tenant-bham
 nodePoolName: np-tenant-bham
 tenantId: bham
 ksaName: sa-tenant-bham
@@ -7,3 +8,4 @@ gsaEmail: civiform-tenant-sa-bham@bion-sandbox.iam.gserviceaccount.com
 dbUsername: civiform-tenant-sa-bham@bion-sandbox.iam
 dbConnectionName: bion-sandbox:us-central1:civiform-tenant-bham
 publicFQDN: bham.tenant.civiform.dev
+sslCertName: tenant-civiform-dev

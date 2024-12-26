@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: civiform-server-tenant-{{ .Values.tenantId }}
-  namespace: ns-tenant-{{ .Values.tenantId }}
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:

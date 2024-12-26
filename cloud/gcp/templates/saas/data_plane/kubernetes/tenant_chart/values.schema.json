@@ -28,6 +28,14 @@
     "publicSubdomain": {
       "description": "The public subdomain generated for this tenant",
       "type": "string"
+    },
+    "sslCertName": {
+      "description": "Name of the managed SSL cert",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "Name of the namespace to create for this tenant",
+      "type": "string"
     }
   },
   "required": [
@@ -37,7 +45,9 @@
     "imageTag",
     "tenantId",
     "gsaEmail",
-    "ksaName"
+    "ksaName",
+    "sslCertName",
+    "namespace"
   ],
   "title": "Values",
   "type": "object"
