@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app.kubernetes.io/name: civiform-server
@@ -70,6 +71,12 @@ spec:
             port: http-server
             path: /playIndex
 
+        envFrom:
+          - secretRef:
+              name: server-secret-key
+          - secretRef:
+              name: server-api-secret-salt
+
         env:
           - name: PORT
             value: http-server
@@ -89,8 +96,6 @@ spec:
             value: CF on GCP
           - name: WHITELABEL_CIVIC_ENTITY_FULL_NAME
             value: CiviForm on GCP
-          - name: SECRET_KEY
-            value: fake-fake-fake-fake-fake-fake-fake-fake-fake-fake-fake
           - name: DB_JDBC_STRING
             value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.dbConnectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.dbUsername }}&sslmode=disable"
           - name: DB_USERNAME

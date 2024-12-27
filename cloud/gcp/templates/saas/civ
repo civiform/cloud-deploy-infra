@@ -1,14 +1,15 @@
 #! /usr/bin/env python3
 
 import argparse
-import os
 import json
+import os
+import random
 import shlex
+import string
 import subprocess
 import sys
 import tempfile
 import yaml
-
 
 def shell(cmd):
     popen = subprocess.Popen(
@@ -27,11 +28,17 @@ def shell(cmd):
         popen.terminate()
 
 
+def generate_random_string(length: int):
+  allowed_chars = string.ascii_letters + string.digits + '!#$&*+-=?^~|`'
+  return ''.join(random.choice(allowed_chars) for _ in range(length))
+
+
 class Tenant():
     tenant_config: dict = None
     tenant_config_filename: str = None
     project_id: str = None
     tenant_id: str = None
+    tenant_namespace: str = None
     gsa_email: str = None
     ksa_name: str = None
     db_conn: str = None
@@ -51,13 +58,17 @@ class Tenant():
     def __init__(self, tenant_config_filename):
         self.tenant_config_filename = tenant_config_filename
 
-    def turnup(self):
+    def turnup(self, k8s_only):
         self._load_tenant_config()
 
-        tf_vars_file = self._tf_write_vars()
-        self._tf_init_and_apply(tf_vars_file)
+        if not k8s_only:
+            tf_vars_file = self._tf_write_vars()
+            self._tf_init_and_apply(tf_vars_file)
+            self._db_do_service_account_grants()
 
-        self._db_do_service_account_grants()
+        shell(f"kubectl create namespace {self.tenant_namespace}")
+        shell(f"kubectl create secret generic server-secret-key --from-literal='SECRET_KEY={generate_random_string(64)}' --namespace {self.tenant_namespace}")
+        shell(f"kubectl create secret generic server-api-secret-salt --from-literal='CIVIFORM_API_SECRET_SALT={generate_random_string(16)}' --namespace {self.tenant_namespace}")
 
         helm_vals_file = self._helm_write_values()
         self._helm_install(helm_vals_file)
@@ -114,10 +125,11 @@ class Tenant():
                 'publicFQDN': f"{self.tenant_id}.tenant.civiform.dev",
                 'sslCertName': self.tenant_config['ssl_cert_name'],
                 'tenantId': self.tenant_id,
-                'namespace': f"ns-tenant-{self.tenant_id}"
+                'namespace': self.tenant_namespace
             }))
             temp_values.write("\n")
             temp_values.close()
+            return temp_values
 
     def _helm_install(self, helm_values_file):
         shell(
@@ -153,6 +165,7 @@ class Tenant():
 
         self.project_id = self.tenant_config["project_id"]
         self.tenant_id = self.tenant_config["tenant_id"]
+        self.tenant_namespace = f"ns-tenant-{self.tenant_id}"
         self.gsa_email = f"civiform-tenant-sa-{self.tenant_id}@{self.project_id}.iam.gserviceaccount.com"
         self.ksa_name = f"sa-tenant-{self.tenant_id}"
         self.db_conn = f"{self.project_id}:{self.tenant_config["region"]}:civiform-tenant-{self.tenant_id}"
@@ -168,11 +181,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--tenant_config", help="Path to a tenant config YAML file", required=True)
     parser.add_argument(
-        "--k8s_only", help="Skip tofu apply on update, ignored for turnup", action="store_true")
+        "--k8s_only", help="Skip GCP resources", action="store_true")
     args = parser.parse_args()
 
     if args.command == "tenant-turnup":
-        Tenant(args.tenant_config).turnup()
+        Tenant(args.tenant_config).turnup(args.k8s_only)
         exit(0)
 
     if args.command == "tenant-update":
