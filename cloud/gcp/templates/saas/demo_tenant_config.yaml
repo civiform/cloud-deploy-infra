@@ -9,9 +9,13 @@ tf_state_tenant_prefix: frih
 tf_state_bucket_name: bion-sandbox-cp-tf-state
 ssl_cert_name: tenant-civiform-dev
 
+# The contents of server_secret_env_vars are stored in a k8s Secret and added passed directly
+# into the server environment variables.
 server_secret_env_vars:
   APPLICANT_OIDC_CLIENT_SECRET: notarealsecret
 
+# The contents of server_env_vars are stored in a k8s ConfigMap and added passed directly
+# into the server environment variables.
 server_env_vars:
   BASE_URL: https://frih.tenant.civiform.dev
   CIVIFORM_APPLICANT_IDP: disabled
