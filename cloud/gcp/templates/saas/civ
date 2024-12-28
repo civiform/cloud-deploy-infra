@@ -93,9 +93,45 @@ class Tenant():
         helm_vals_file = self._helm_write_values()
         self._helm_upgrade(helm_vals_file)
 
+    def turndown(self, k8s_only: bool):
+        self._load_tenant_config()
+
+        print("Helm delete")
+        # self._helm_delete()
+
+        print(
+            f"Deleting remaining namespace {self.tenant_namespace} resources, if any")
+        # shell(f"kubectl delete all -n {self.tenant_namespace} --all")
+        print(f"Deleting namespace {self.tenant_namespace}")
+        # shell(f"kubectl delete namespace {self.tenant_namespace}")
+
+        if not k8s_only:
+            print("Deleting static IP")
+
+            # self._delete_static_ip()
+            tf_vars_file = self._tf_write_vars()
+
+            print("tofu destroy")
+            self._tf_destroy(tf_vars_file)
+
     def _create_static_ip(self):
         shell(
-            f"gcloud compute addresses create {self.static_ip_name} --global ")
+            f"gcloud compute addresses create {self.static_ip_name} --global --quiet")
+
+    def _delete_static_ip(self):
+        shell(
+            f"gcloud compute addresses delete {self.static_ip_name} --global --quiet")
+
+    def _tf_destroy(self, tf_vars_file):
+        tofu_path = os.path.abspath("data_plane/tofu")
+
+        # Cloud SQL won't allow deleting the DB user while it still has permissions
+        # in postgres. We're deleting the whole DB instance right after this which
+        # will also destroy the DB user. Removing the user from TF state is easier
+        # than altering the internal DB permissions.
+        # shell(f"tofu -chdir={tofu_path} state rm google_sql_user.civiform_user")
+        shell(
+            f"tofu -chdir={tofu_path} destroy -input=false -var-file={tf_vars_file.name}")
 
     def _tf_init_and_apply(self, tf_vars_file):
         tofu_path = os.path.abspath("data_plane/tofu")
@@ -189,6 +225,10 @@ class Tenant():
         shell(
             f"helm upgrade -f {helm_values_file.name} tenant-{self.tenant_id} ./data_plane/kubernetes/tenant_chart")
 
+    def _helm_delete(self):
+        shell(
+            f"helm delete tenant-{self.tenant_id} ./data_plane/kubernetes/tenant_chart")
+
     def _load_tenant_config(self):
         try:
             with open(self.tenant_config_filename, 'r') as file:
@@ -227,14 +267,15 @@ class Tenant():
 
 if __name__ == "__main__":
     # TODO: use click instead of argparse: https://click.palletsprojects.com/en/stable/
+    #       change command structure to `tenant <subcommand>`
     parser = argparse.ArgumentParser(
         prog="civ", description="CLI for CiviForm SaaS.")
     parser.add_argument(
-        "command", help="Currently only `turnup-tenant` is supported")
+        "command", help="tenant-turnup, tenant-update, or tenant-turndown")
     parser.add_argument(
         "--tenant_config", help="Path to a tenant config YAML file", required=True)
     parser.add_argument(
-        "--k8s_only", help="Skip GCP resources", action="store_true")
+        "--k8s_only", help="Skip GCP resources (DB, networking, etc)", action="store_true")
     args = parser.parse_args()
 
     if args.command == "tenant-turnup":
@@ -243,6 +284,10 @@ if __name__ == "__main__":
 
     if args.command == "tenant-update":
         Tenant(args.tenant_config).update(args.k8s_only)
+        exit(0)
+
+    if args.command == "tenant-turndown":
+        Tenant(args.tenant_config).turndown(args.k8s_only)
         exit(0)
 
     print(f"Unrecognized command: {args.command}")

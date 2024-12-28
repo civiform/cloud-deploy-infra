@@ -1,17 +1,17 @@
-# The server connects to the database via private networking so that traffic is
-# not exposed to the public internet.
-resource "google_service_networking_connection" "db_network_connection" {
-  network                 = data.google_compute_network.civiform_network.id
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.db_private_ip.name]
-}
-
 resource "google_compute_global_address" "db_private_ip" {
   name          = "db-private-ip-address"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = data.google_compute_network.civiform_network.id
+}
+
+# The server connects to the database via private networking so that traffic is
+# not exposed to the public internet.
+resource "google_service_networking_connection" "db_network_connection" {
+  network                 = data.google_compute_network.civiform_network.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.db_private_ip.name]
 }
 
 # The instance automatically creates an internal postgresql DB called
@@ -51,6 +51,7 @@ resource "google_sql_database_instance" "civiform_db" {
 
   timeouts {
     create = "30m"
+    delete = "1h"
   }
 }
 
