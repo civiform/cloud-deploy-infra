@@ -76,26 +76,14 @@ spec:
               name: server-secret-key
           - secretRef:
               name: server-api-secret-salt
+          - secretRef:
+              name: {{ .Values.envVarSecretName }}
+          - configMapRef:
+              name: {{ .Values.envVarConfigMapName }}
 
         env:
           - name: PORT
             value: http-server
-          - name: CIVIFORM_APPLICANT_IDP
-            value: disabled
-          - name: CIVIFORM_MODE
-            value: dev
-          - name: APPLICANT_OIDC_CLIENT_ID
-            value: client
-          - name: APPLICANT_OIDC_CLIENT_SECRET
-            value: notarealsecret
-          - name: APPLICANT_OIDC_DISCOVERY_URI
-            value: https://civiform-staging.us.auth0.com/.well-known/openid-configuration
-          - name: CIVIFORM_APPLICANT_IDP
-            value: auth0
-          - name: WHITELABEL_CIVIC_ENTITY_SHORT_NAME
-            value: CF on GCP
-          - name: WHITELABEL_CIVIC_ENTITY_FULL_NAME
-            value: CiviForm on GCP
           - name: DB_JDBC_STRING
             value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.dbConnectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.dbUsername }}&sslmode=disable"
           - name: DB_USERNAME

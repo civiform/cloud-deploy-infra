@@ -11,6 +11,7 @@ import sys
 import tempfile
 import yaml
 
+
 def shell(cmd):
     popen = subprocess.Popen(
         shlex.split(cmd),
@@ -29,8 +30,8 @@ def shell(cmd):
 
 
 def generate_random_string(length: int):
-  allowed_chars = string.ascii_letters + string.digits + '!#$&*+-=?^~|`'
-  return ''.join(random.choice(allowed_chars) for _ in range(length))
+    allowed_chars = string.ascii_letters + string.digits + '!#$&*+-=?^~|`'
+    return ''.join(random.choice(allowed_chars) for _ in range(length))
 
 
 class Tenant():
@@ -43,6 +44,8 @@ class Tenant():
     ksa_name: str = None
     db_conn: str = None
     db_username: str = None
+    env_var_config_map_name: str = None
+    env_var_secrets_name: str = None
 
     props = ["cluster_location",
              "cluster_name",
@@ -67,8 +70,10 @@ class Tenant():
             self._db_do_service_account_grants()
 
         shell(f"kubectl create namespace {self.tenant_namespace}")
-        shell(f"kubectl create secret generic server-secret-key --from-literal='SECRET_KEY={generate_random_string(64)}' --namespace {self.tenant_namespace}")
-        shell(f"kubectl create secret generic server-api-secret-salt --from-literal='CIVIFORM_API_SECRET_SALT={generate_random_string(16)}' --namespace {self.tenant_namespace}")
+
+        self._kubectl_create_random_secrets()
+        self._kubectl_apply_server_secret_env_vars()
+        self._kubectl_apply_server_env_vars()
 
         helm_vals_file = self._helm_write_values()
         self._helm_install(helm_vals_file)
@@ -79,6 +84,9 @@ class Tenant():
         if not k8s_only:
             tf_vars_file = self._tf_write_vars()
             self._tf_init_and_apply(tf_vars_file)
+
+        self._kubectl_apply_server_secret_env_vars()
+        self._kubectl_apply_server_env_vars()
 
         helm_vals_file = self._helm_write_values()
         self._helm_upgrade(helm_vals_file)
@@ -93,7 +101,7 @@ class Tenant():
             f"tofu -chdir={tofu_path} apply -input=false -var-file={tf_vars_file.name} -var='db_enable_public_ip4=true'")
 
     def _tf_write_vars(self):
-        # TODO: use canonical var definitions similar to the AWS deployment for filtering vars
+        # TODO: use canonical var definitions similar to the AWS deployment for filtering and validating vars
         tf_vars = {k: self.tenant_config[k] for k in self.props if k not in [
             "image", "image_tag", "tf_state_bucket_name", "tf_state_tenant_prefix"]}
         tf_vars['tenant_ksa_name'] = self.ksa_name
@@ -112,24 +120,59 @@ class Tenant():
         shell(
             f"./data_plane/service_account_db_grants {self.db_conn} {self.db_username}")
 
+    def _kubectl_create_random_secrets(self):
+        shell(
+            f"kubectl create secret generic server-secret-key --from-literal='SECRET_KEY={generate_random_string(64)}' --namespace {self.tenant_namespace}")
+        shell(
+            f"kubectl create secret generic server-api-secret-salt --from-literal='CIVIFORM_API_SECRET_SALT={generate_random_string(16)}' --namespace {self.tenant_namespace}")
+
+    def _kubectl_apply_server_env_vars(self):
+        temp = self._write_tempfile(".yaml", yaml.dump({
+            'apiVersion': 'v1',
+            'kind': 'ConfigMap',
+            'metadata': {'namespace': self.tenant_namespace, 'name': self.env_var_config_map_name},
+            'data': self.tenant_config['server_env_vars']
+        }))
+
+        shell(f"kubectl apply -f {temp.name}")
+
+    def _kubectl_apply_server_secret_env_vars(self):
+        temp = self._write_tempfile(".yaml", yaml.dump({
+            'apiVersion': 'v1',
+            'kind': 'Secret',
+            'metadata': {'namespace': self.tenant_namespace, 'name': self.env_var_secrets_name},
+            'stringData': self.tenant_config['server_secret_env_vars']
+        }))
+
+        shell(f"kubectl apply -f {temp.name}")
+        # don't leave secrets sitting around on the filesystem
+        os.remove(temp.name)
+
     def _helm_write_values(self):
-        with tempfile.NamedTemporaryFile("w+", suffix=".yaml", delete=False) as temp_values:
-            temp_values.write(yaml.dump({
-                'dbConnectionName': self.db_conn,
-                'dbUsername': self.db_username,
-                'gsaEmail': self.gsa_email,
-                'ksaName': self.ksa_name,
-                'image': self.tenant_config['image'],
-                'imageTag': self.tenant_config['image_tag'],
-                'nodePoolName': f"np-tenant-{self.tenant_id}",
-                'publicFQDN': f"{self.tenant_id}.tenant.civiform.dev",
-                'sslCertName': self.tenant_config['ssl_cert_name'],
-                'tenantId': self.tenant_id,
-                'namespace': self.tenant_namespace
-            }))
-            temp_values.write("\n")
-            temp_values.close()
-            return temp_values
+        return self._write_tempfile(".yaml", yaml.dump({
+            'dbConnectionName': self.db_conn,
+            'dbUsername': self.db_username,
+            'gsaEmail': self.gsa_email,
+            'ksaName': self.ksa_name,
+            'image': self.tenant_config['image'],
+            'imageTag': self.tenant_config['image_tag'],
+            'nodePoolName': f"np-tenant-{self.tenant_id}",
+            'publicFQDN': f"{self.tenant_id}.tenant.civiform.dev",
+            'sslCertName': self.tenant_config['ssl_cert_name'],
+            'tenantId': self.tenant_id,
+            'namespace': self.tenant_namespace,
+            'envVarConfigMapName': self.env_var_config_map_name,
+            'envVarSecretName': self.env_var_secrets_name
+        }))
+
+    def _write_tempfile(self, suffix, contents):
+        temp = tempfile.NamedTemporaryFile("w+", suffix=suffix, delete=False)
+
+        temp.write(contents)
+        temp.write("\n")
+        temp.close()
+
+        return temp
 
     def _helm_install(self, helm_values_file):
         shell(
@@ -170,6 +213,8 @@ class Tenant():
         self.ksa_name = f"sa-tenant-{self.tenant_id}"
         self.db_conn = f"{self.project_id}:{self.tenant_config["region"]}:civiform-tenant-{self.tenant_id}"
         self.db_username = self.gsa_email.replace(".gserviceaccount.com", "")
+        self.env_var_config_map_name = f"tenant-{self.tenant_id}-server-env-vars"
+        self.env_var_secrets_name = f"tenant-{self.tenant_id}-server-secrets"
 
 
 if __name__ == "__main__":

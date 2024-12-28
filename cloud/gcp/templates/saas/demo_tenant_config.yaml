@@ -1,10 +1,24 @@
+tenant_id: frih
 project_id: bion-sandbox
 cluster_location: us-central1-c
 cluster_name: civiform-cluster
 image: docker.io/civiform/civiform
 image_tag: latest
 region: us-central1
-tenant_id: frih
 tf_state_tenant_prefix: frih
 tf_state_bucket_name: bion-sandbox-cp-tf-state
 ssl_cert_name: tenant-civiform-dev
+
+server_secret_env_vars:
+  APPLICANT_OIDC_CLIENT_SECRET: notarealsecret
+
+server_env_vars:
+  BASE_URL: https://frih.tenant.civiform.dev
+  CIVIFORM_APPLICANT_IDP: disabled
+  CIVIFORM_MODE: dev
+  APPLICANT_OIDC_CLIENT_ID: client
+  APPLICANT_OIDC_DISCOVERY_URI: https://civiform-staging.us.auth0.com/.well-known/openid-configuration
+  CIVIFORM_APPLICANT_IDP: auth0
+  WHITELABEL_CIVIC_ENTITY_SHORT_NAME: CF on GCP
+  WHITELABEL_CIVIC_ENTITY_FULL_NAME: CiviForm on GCP
+  SUPPORT_EMAIL_ADDRESS: civiform-dev@exygy.com

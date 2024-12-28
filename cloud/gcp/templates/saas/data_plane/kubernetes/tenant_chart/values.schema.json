@@ -36,6 +36,14 @@
     "namespace": {
       "description": "Name of the namespace to create for this tenant",
       "type": "string"
+    },
+    "envVarConfigMapName": {
+      "description": "Name of the config map containing env vars for the server",
+      "type": "string"
+    },
+    "envVarSecretName": {
+      "description": "Name of the secret containing secret env vars for the server",
+      "type": "string"
     }
   },
   "required": [
@@ -47,7 +55,9 @@
     "gsaEmail",
     "ksaName",
     "sslCertName",
-    "namespace"
+    "namespace",
+    "envVarConfigMapName",
+    "envVarSecretName"
   ],
   "title": "Values",
   "type": "object"
