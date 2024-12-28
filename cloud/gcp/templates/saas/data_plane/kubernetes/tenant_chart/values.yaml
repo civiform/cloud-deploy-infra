@@ -11,3 +11,4 @@ publicFQDN: bham.tenant.civiform.dev
 sslCertName: tenant-civiform-dev
 envVarConfigMapName: tenant-bham-server-env-vars
 envVarSecretName: tenant-bham-server-secrets
+staticIPName: tenant-bham-static-ip

@@ -44,6 +44,10 @@
     "envVarSecretName": {
       "description": "Name of the secret containing secret env vars for the server",
       "type": "string"
+    },
+    "staticIPName": {
+      "description": "Name of the GCE static IP address for this tenant",
+      "type": "string"
     }
   },
   "required": [
@@ -57,7 +61,8 @@
     "sslCertName",
     "namespace",
     "envVarConfigMapName",
-    "envVarSecretName"
+    "envVarSecretName",
+    "staticIPName"
   ],
   "title": "Values",
   "type": "object"
