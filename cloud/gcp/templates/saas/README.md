@@ -2,6 +2,10 @@
 
 This is a proof of concept with a lot of things missing before it's ready for prod.
 
+Code for managing resources is divided into `control_plane` and `data_plane` subdirs, see design doc for explanation of those terms. Both have their own subdirs for `tofu` and `kubernetes`, the former is for managing GCP resources (e.g. networks, GCP service accounts, storage buckets, databases, GKE node pools, etc) and the latter is for managing in-cluster kubernetes resources.
+
+The `civ` executable and supporting `cli` subdir contain automation for tenant management. At the moment `civ` must be run manually by a privileged human user, which is a security concern because it requires operator laptops to have highly privileged API accesss along with tenant secrets on the hard drive. Building `civ.Dockerfile` with `cloudbuild.yaml` will build an image that can run `civ` in a container with the necessary dependencies. Still missing is a service account with necessary permissions to run it and a secure way to provide tenant config (including secrets) to it.
+
 ## How to run the proof-of-concept
 
 ### Set up the control plane
@@ -39,33 +43,9 @@ This is a proof of concept with a lot of things missing before it's ready for pr
 
 Note that it can take awhile for managed SSL certs to become available O(hours) after initial turnup -- I don't know if that is only an issue after initial cert provisioning or if it'll be a delay experienced on every new domain turnup. There are alternative ways of managed SSL certs, the current approach is to provision a single wildcard cert that is shared among all domains/tenants.
 
-After turning up a tenant, check the SSL cert status first by finding it's name `kubectl get managedcertificate --namespace <TENANT NAMESPACE>` and then describing it `kubectl describe managedcertificate <SSL CERT NAME> --namespace <TENANT NAMESPACE>`. If `Certificate Status` is not `Active` then the domain name won't work.
-
-#### Using automation
+Turnup steps:
 
 1. Write a tenant config file, see `demo_tenant_config.yaml` for an example
 2. From the root `saas` directory, run the turnup command passing your config file: `./civ tenant-turnup --tenant_config=tenant_config.yaml`
 
-#### Manually
-
-1. First, create the tenant's GCP resources. From the saas directory, `cd data_plane/tofu`
-  - edit `demo.tfvars` with your project ID and bucket name, make sure the region and cluster_location match what you used in setup 
-  - `tofu init -var-file="demo.tfvars" && tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=true"`.
-  - Save the output values somewhere
-  - This will create tenant-specific:
-    - tenant GCP service account
-    - tenant Cloud SQL postgresql database
-    - tenant nodepool for the server
-  - Next we need to do some toil because while the tenant service account has permission from GCP to connect to the DB instance, the PG database user it connects with has no internal permissions in PG, so we need to grant all database and public schema privileges for the `postgres` internal database to the service account user. Nota bene it's critical that the `postgres` user account performs these grants, otherwise they will appear to succeed but fail silently (the DB logs in the GCP console will reveal "no permissions changed" when this happens). Alternative to running the script in the steps below: you can use Cloud SQL Studio in the GCP console to set the `postgres` user's password and execute the SQL statements using a browser UI.
-    1. Inspect the tofu output and find the values for `db_username` (it will look like `civiform-cluster-sa@<YOUR PROJECT ID>.iam` -- it's the service account name **without** `gserviceaccount.com` suffix) and `db_connection_name`. These are your `<DB UNAME>` and `<DB CONN>` values for the next command.
-    2. `cd ..` then run `./service_account_db_grants <DB CONN> <DB UNAME>`
-    3. Run `tofu apply -var-file="demo.tfvars" -var="db_enable_public_ip4=false" -target="google_sql_database_instance.civiform_db"` to disable the DB public IP address
-2. Next, deploy the tenant's k8s resources. `cd kubernetes/tenant_chart`
-  - Update `values.yaml` with the output values from `tofu apply` and the vars file in step (1)
-  - `helm install <TENANT RELEASE NAME> .` to create the tenant's:
-    - namespace
-    - k8s Service account bound to the tenant's GCP service account
-    - deployment running the CiviForm server
-    - service referencing the server deployment
-    - ingress with an l7 load balancer pointing to the service
-
+After turning up a tenant, check the SSL cert status first by finding it's name `kubectl get managedcertificate --namespace <TENANT NAMESPACE>` and then describing it `kubectl describe managedcertificate <SSL CERT NAME> --namespace <TENANT NAMESPACE>`. If `Certificate Status` is not `Active` then the domain name won't work.

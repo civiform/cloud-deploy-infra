@@ -129,9 +129,17 @@ class Tenant():
 
             return temp_vars_file
 
+    # While the tenant service account has permission from GCP to connect to the DB instance,
+    # the PG database user it connects with has no internal permissions in PG, so we need to
+    # grant all database and public schema privileges for the `postgres` internal database to
+    # the service account user. Nota bene it's critical that the `postgres` user account
+    # performs these grants, otherwise they will appear to succeed but fail silently (the DB logs
+    # in the GCP console will reveal "no permissions changed" when this happens). Alternative to
+    # running this script: you can use Cloud SQL Studio in the GCP console to set the `postgres`
+    # user's password and execute the SQL statements using a browser UI.
+    # TODO: rewrite this in Python https://github.com/GoogleCloudPlatform/cloud-sql-python-connector
+    #       and remove cloud-sql-proxy from civ.Dockerfile
     def _db_do_service_account_grants(self):
-        # TODO: rewrite in Python https://github.com/GoogleCloudPlatform/cloud-sql-python-connector
-        #       and remove cloud-sql-proxy from civ.Dockerfile
         shell(
             f"./data_plane/service_account_db_grants {self.db_conn} {self.db_username}")
 
@@ -235,4 +243,4 @@ class Tenant():
         self.db_username = self.gsa_email.replace(".gserviceaccount.com", "")
         self.env_var_config_map_name = f"tenant-{self.tenant_id}-server-env-vars"
         self.env_var_secrets_name = f"tenant-{self.tenant_id}-server-secrets"
-        self.static_ip_name = f"tenant-{self.tenant_id}-static-ip"
+        self.static_ip_name = f"tenant-ingress-{self.tenant_id}"
