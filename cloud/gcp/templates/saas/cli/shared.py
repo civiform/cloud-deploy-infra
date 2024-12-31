@@ -3,6 +3,7 @@ import shlex
 import string
 import subprocess
 
+
 def shell(cmd):
     popen = subprocess.Popen(
         shlex.split(cmd),
@@ -18,6 +19,7 @@ def shell(cmd):
     except KeyboardInterrupt:
         # Allow terraform to gracefully exit if a user Ctrl+C's out of the command
         popen.terminate()
+
 
 def generate_random_string(length: int):
     allowed_chars = string.ascii_letters + string.digits + '!#$&*+-=?^~|`'

@@ -130,7 +130,8 @@ class Tenant():
             return temp_vars_file
 
     def _db_do_service_account_grants(self):
-        # TODO: rewrite in python
+        # TODO: rewrite in Python https://github.com/GoogleCloudPlatform/cloud-sql-python-connector
+        #       and remove cloud-sql-proxy from civ.Dockerfile
         shell(
             f"./data_plane/service_account_db_grants {self.db_conn} {self.db_username}")
 

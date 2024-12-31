@@ -5,6 +5,9 @@ from cli.tenant import Tenant
 from cli.shared import shell
 import os
 
+# Preferrable to this would be to use GKE workload identity federation
+# https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+# That would remove the need for any auth logic to exist in these scripts or its image
 if "GCP_SERVICE_ACCOUNT" in os.environ:
     if not "GCP_PROJECT_ID" in os.environ:
         print("GCP_SERVICE_ACCOUNT detected but GCP_PROJECT_ID is unset, project ID required for service account use.")
