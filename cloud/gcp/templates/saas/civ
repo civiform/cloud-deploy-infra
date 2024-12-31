@@ -10,14 +10,20 @@ import os
 # That would remove the need for any auth logic to exist in these scripts or its image
 if "GCP_SERVICE_ACCOUNT" in os.environ:
     if not "GCP_PROJECT_ID" in os.environ:
-        print("GCP_SERVICE_ACCOUNT detected but GCP_PROJECT_ID is unset, project ID required for service account use.")
+        print(
+            "GCP_SERVICE_ACCOUNT detected but GCP_PROJECT_ID is unset, project ID required for service account use."
+        )
         exit(1)
 
     if not "GCP_KEY_FILE" in os.environ:
-        print("GCP_SERVICE_ACCOUNT detected but GCP_KEY_FILE is unset, key file is required for service account use.")
+        print(
+            "GCP_SERVICE_ACCOUNT detected but GCP_KEY_FILE is unset, key file is required for service account use."
+        )
         exit(1)
 
-    shell(f'gcloud auth activate-service-account {os.environ["GCP_SERVICE_ACCOUNT"]} --project={os.environ["GCP_PROJECT_ID"]} --key-file={os.environ["GCP_KEY_FILE"]}')
+    shell(
+        f'gcloud auth activate-service-account {os.environ["GCP_SERVICE_ACCOUNT"]} --project={os.environ["GCP_PROJECT_ID"]} --key-file={os.environ["GCP_KEY_FILE"]}'
+    )
 
 if __name__ == "__main__":
     # TODO: use click instead of argparse: https://click.palletsprojects.com/en/stable/
@@ -27,9 +33,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "command", help="tenant-turnup, tenant-update, or tenant-turndown")
     parser.add_argument(
-        "--tenant_config", help="Path to a tenant config YAML file", required=True)
+        "--tenant_config",
+        help="Path to a tenant config YAML file",
+        required=True)
     parser.add_argument(
-        "--k8s_only", help="Skip GCP resources (DB, networking, etc)", action="store_true")
+        "--k8s_only",
+        help="Skip GCP resources (DB, networking, etc)",
+        action="store_true")
     args = parser.parse_args()
 
     if args.command == "tenant-turnup":
