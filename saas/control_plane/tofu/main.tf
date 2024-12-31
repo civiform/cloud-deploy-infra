@@ -16,11 +16,6 @@ provider "google" {
   region  = var.region
 }
 
-locals {
-  services_ip_range_name = "services-range"
-  pods_ip_range_name     = "pods-range"
-}
-
 resource "google_compute_network" "civiform" {
   name                     = var.network_name
   description              = "VPC network for the application."
