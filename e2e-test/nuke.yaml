@@ -17,11 +17,17 @@ blocklist:
 resource-types:
   excludes:
     - AppStreamImage
+    - Cloud9Environment
     - CloudSearchDomain
     - CodeStarProject
+    - CodeStarConnection
+    - CodeStarNotification
     - ElasticacheCacheParameterGroup
+    - ElasticTranscoderPipeline
+    - ElasticTranscoderPreset
     - FMSNotificationChannel
     - FMSPolicy
+    - GuardDutyDetector
     - MachineLearningBranchPrediction
     - MachineLearningDataSource
     - MachineLearningEvaluation
@@ -34,7 +40,18 @@ resource-types:
     - OpsWorksLayer
     - OpsWorksUserProfile
     - OSPackage
+    - RedshiftServerlessSnapshot
+    - RedshiftServerlessNamespace
+    - RedshiftServerlessWorkgroup
     - ResourceExplorer2Index
+    - RoboMakerDeploymentJob
+    - RoboMakerFleet
+    - RoboMakerRobot
+    - RoboMakerSimulationJob
+    - RoboMakerSimulationApplication
+    - RoboMakerRobotApplication
+    - ServiceCatalogTagOption
+    - ServiceCatalogTagOptionPortfolioAttachment
 
 accounts:
   "296877675213": # civiform-deploy-e2e-tests AWS account.
