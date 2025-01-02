@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: civiform-server-tenant-{{ .Values.tenantId }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: civiform-server
+      app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
+      app.kubernetes.io/version: {{ .Values.imageTag  }}
+      app.kubernetes.io/component: application-server
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: civiform-server
+        app.kubernetes.io/instance: civiform-server-{{ .Values.tenantId }}
+        app.kubernetes.io/version: {{ .Values.imageTag  }}
+        app.kubernetes.io/component: application-server
+
+    spec:
+      serviceAccountName: {{ .Values.ksaName }}
+      nodeSelector:
+        cloud.google.com/gke-nodepool: {{ .Values.nodePoolName }}
+
+      containers:
+      - name: civiform-server
+        image: {{ .Values.image }}:{{ .Values.imageTag }}
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 9000
+          name: http-server
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+
+          seccompProfile:
+            type: RuntimeDefault
+
+          capabilities:
+            drop:
+              - NET_RAW
+
+        livenessProbe:
+          periodSeconds: 10
+          failureThreshold: 6
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        readinessProbe:
+          periodSeconds: 10
+          failureThreshold: 6
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        startupProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 30
+
+          httpGet:
+            port: http-server
+            path: /playIndex
+
+        envFrom:
+          - secretRef:
+              name: server-secret-key
+          - secretRef:
+              name: server-api-secret-salt
+          - secretRef:
+              name: {{ .Values.envVarSecretName }}
+          - configMapRef:
+              name: {{ .Values.envVarConfigMapName }}
+
+        env:
+          - name: PORT
+            value: http-server
+          - name: DB_JDBC_STRING
+            value: "jdbc:postgresql:///postgres?cloudSqlInstance={{ .Values.dbConnectionName }}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&ipTypes=PRIVATE&enableIamAuth=true&user={{ .Values.dbUsername }}&sslmode=disable"
+          - name: DB_USERNAME
+            value: "{{ .Values.dbUsername }}"
+            # A non-empty DB password is required to pass pg driver validation,
+            # but the cloud IAM connector ignores it and uses IAM which is more secure
+            # https://github.com/GoogleCloudPlatform/cloud-sql-jdbc-socket-factory/blob/main/docs/jdbc.md#iam-authentication
+          - name: DB_PASSWORD
+            value: fake-fake-fake-fake-fake-fake-fake-fake-fake-fake-fake

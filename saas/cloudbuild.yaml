@@ -1,0 +1,9 @@
+# https://cloud.google.com/build/docs/building/build-containers
+# https://cloud.google.com/artifact-registry/docs/configure-cloud-build
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+# replace tag and image values
+    args: [ 'build', '-t', 'us-west1-docker.pkg.dev/bion-sandbox/civiform/civ', '-f', 'cli/civ.Dockerfile', '.']
+images:
+  - 'us-west1-docker.pkg.dev/bion-sandbox/civiform/civ'

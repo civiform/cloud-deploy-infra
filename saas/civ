@@ -1,0 +1,58 @@
+#! /usr/bin/env python3
+
+import argparse
+from cli.tenant import Tenant
+from cli.shared import shell
+import os
+
+# Preferrable to this would be to use GKE workload identity federation
+# https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+# That would remove the need for any auth logic to exist in these scripts or its image
+if "GCP_SERVICE_ACCOUNT" in os.environ:
+    if not "GCP_PROJECT_ID" in os.environ:
+        print(
+            "GCP_SERVICE_ACCOUNT detected but GCP_PROJECT_ID is unset, project ID required for service account use."
+        )
+        exit(1)
+
+    if not "GCP_KEY_FILE" in os.environ:
+        print(
+            "GCP_SERVICE_ACCOUNT detected but GCP_KEY_FILE is unset, key file is required for service account use."
+        )
+        exit(1)
+
+    shell(
+        f'gcloud auth activate-service-account {os.environ["GCP_SERVICE_ACCOUNT"]} --project={os.environ["GCP_PROJECT_ID"]} --key-file={os.environ["GCP_KEY_FILE"]}'
+    )
+
+if __name__ == "__main__":
+    # TODO: use click instead of argparse: https://click.palletsprojects.com/en/stable/
+    #       change command structure to `tenant <subcommand>`
+    parser = argparse.ArgumentParser(
+        prog="civ", description="CLI for CiviForm SaaS.")
+    parser.add_argument(
+        "command", help="tenant-turnup, tenant-update, or tenant-turndown")
+    parser.add_argument(
+        "--tenant_config",
+        help="Path to a tenant config YAML file",
+        required=True)
+    parser.add_argument(
+        "--k8s_only",
+        help="Skip GCP resources (DB, networking, etc)",
+        action="store_true")
+    args = parser.parse_args()
+
+    if args.command == "tenant-turnup":
+        Tenant(args.tenant_config).turnup(args.k8s_only)
+        exit(0)
+
+    if args.command == "tenant-update":
+        Tenant(args.tenant_config).update(args.k8s_only)
+        exit(0)
+
+    if args.command == "tenant-turndown":
+        Tenant(args.tenant_config).turndown(args.k8s_only)
+        exit(0)
+
+    print(f"Unrecognized command: {args.command}")
+    exit(1)

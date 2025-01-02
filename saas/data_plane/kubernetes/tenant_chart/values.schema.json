@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "properties": {
+    "image": {
+      "type": "string"
+    },
+    "imageTag": {
+      "type": "string"
+    },
+    "dbConnectionName": {
+      "type": "string"
+    },
+    "dbUsername": {
+      "type": "string"
+    },
+    "tenantId": {
+      "description": "CiviForm SaaS tenant ID",
+      "type": "string"
+    },
+    "ksaEmail": {
+      "description": "Kubernetes service account name",
+      "type": "string"
+    },
+    "gsaEmail": {
+      "description": "Tenant's GCP service account email",
+      "type": "string"
+    },
+    "publicSubdomain": {
+      "description": "The public subdomain generated for this tenant",
+      "type": "string"
+    },
+    "sslCertName": {
+      "description": "Name of the managed SSL cert",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "Name of the namespace to create for this tenant",
+      "type": "string"
+    },
+    "envVarConfigMapName": {
+      "description": "Name of the config map containing env vars for the server",
+      "type": "string"
+    },
+    "envVarSecretName": {
+      "description": "Name of the secret containing secret env vars for the server",
+      "type": "string"
+    },
+    "staticIPName": {
+      "description": "Name of the GCE static IP address for this tenant",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dbConnectionName",
+    "dbUsername",
+    "image",
+    "imageTag",
+    "tenantId",
+    "gsaEmail",
+    "ksaName",
+    "sslCertName",
+    "namespace",
+    "envVarConfigMapName",
+    "envVarSecretName",
+    "staticIPName"
+  ],
+  "title": "Values",
+  "type": "object"
+}
