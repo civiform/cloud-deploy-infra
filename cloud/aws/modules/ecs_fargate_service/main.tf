@@ -160,12 +160,12 @@ resource "aws_lb_target_group" "lb_https_tgs" {
 
   health_check {
     enabled             = true
-    interval            = 20
+    interval            = var.healthcheck.interval
     path                = "/playIndex"
     protocol            = "HTTP"
-    timeout             = 15
+    timeout             = var.healthcheck.timeout
     healthy_threshold   = 2
-    unhealthy_threshold = 10
+    unhealthy_threshold = var.healthcheck.unhealthy_threshold
     matcher             = "200"
   }
 
