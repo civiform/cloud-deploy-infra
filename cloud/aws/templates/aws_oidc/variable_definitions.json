@@ -448,5 +448,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "COOKIE_STICKINESS_TYPE": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
   }  
 }

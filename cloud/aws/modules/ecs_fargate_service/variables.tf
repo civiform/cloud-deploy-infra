@@ -155,3 +155,9 @@ variable "enable_port_80_listener" {
   type        = bool
   default     = true
 }
+
+variable "cookie_stickiness_type" {
+  description = "The stickiness type of the cookie for the load balancer. Defaults to lb_cookie. The possible values are lb_cookie, app_cookie for ALBs, source_ip for NLBs, and source_ip_dest_ip, source_ip_dest_ip_proto for GWLBs."
+  type        = string
+  default     = "lb_cookie"
+}
