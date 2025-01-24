@@ -149,3 +149,9 @@ variable "extra_inbound_rule_cidr" {
   type        = string
   default     = null
 }
+
+variable "enable_port_80_listener" {
+  description = "Whether the load balancer listener on port 80 should be enabled. Defaulted to true"
+  type        = bool
+  default     = true
+}
