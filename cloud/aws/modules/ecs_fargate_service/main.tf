@@ -192,7 +192,7 @@ moved {
 # AWS LOAD BALANCER - Listeners
 #------------------------------------------------------------------------------
 resource "aws_lb_listener" "lb_http_listeners" {
-  count             = var.enable_port_80_listener ? true : false
+  count             = var.enable_port_80_listener ? 1 : 0
   load_balancer_arn = aws_lb.civiform_lb.arn
   port              = 80
   protocol          = "HTTP"
