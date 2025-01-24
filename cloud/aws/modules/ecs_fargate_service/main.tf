@@ -214,7 +214,7 @@ resource "aws_lb_listener" "lb_http_listeners" {
 
 moved {
   from = module.ecs-alb[0].aws_lb_listener.lb_http_listeners["default_http"]
-  to   = aws_lb_listener.lb_http_listeners[0]
+  to   = aws_lb_listener.lb_http_listeners
 }
 
 resource "aws_lb_listener" "lb_https_listeners" {
