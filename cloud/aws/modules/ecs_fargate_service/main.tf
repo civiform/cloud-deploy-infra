@@ -154,7 +154,8 @@ resource "aws_lb_target_group" "lb_https_tgs" {
   target_type                   = "ip"
 
   stickiness {
-    type            = "lb_cookie"
+    cookie_name     = var.cookie_stickiness_type == "app_cookie" ? "test-cookie" : null
+    type            = var.cookie_stickiness_type
     cookie_duration = 86400
     enabled         = true
   }
