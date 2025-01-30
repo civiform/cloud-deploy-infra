@@ -443,7 +443,7 @@
     "tfvar": true,
     "type": "string"
   },
-  "ENABLE_PORT_80_LISTENER": {
+  "ENABLE_HTTP_LISTENER": {
     "required": false,
     "secret": false,
     "tfvar": true,
