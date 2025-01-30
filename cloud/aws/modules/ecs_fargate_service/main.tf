@@ -110,6 +110,7 @@ moved {
 }
 
 resource "aws_security_group_rule" "ingress_through_http" {
+  count             = var.enable_http_listener ? 1 : 0
   security_group_id = aws_security_group.lb_access_sg.id
   type              = "ingress"
   from_port         = 80
@@ -192,6 +193,7 @@ moved {
 # AWS LOAD BALANCER - Listeners
 #------------------------------------------------------------------------------
 resource "aws_lb_listener" "lb_http_listeners" {
+  count             = var.enable_http_listener ? 1 : 0
   load_balancer_arn = aws_lb.civiform_lb.arn
   port              = 80
   protocol          = "HTTP"
