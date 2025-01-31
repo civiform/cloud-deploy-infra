@@ -122,7 +122,7 @@ resource "aws_security_group_rule" "ingress_through_http" {
 
 moved {
   from = module.ecs-alb[0].aws_security_group_rule.ingress_through_http["default_http"]
-  to   = aws_security_group_rule.ingress_through_http
+  to   = aws_security_group_rule.ingress_through_http[0]
 }
 
 resource "aws_security_group_rule" "ingress_through_https" {
@@ -215,7 +215,7 @@ resource "aws_lb_listener" "lb_http_listeners" {
 
 moved {
   from = module.ecs-alb[0].aws_lb_listener.lb_http_listeners["default_http"]
-  to   = aws_lb_listener.lb_http_listeners
+  to   = aws_lb_listener.lb_http_listeners[0]
 }
 
 resource "aws_lb_listener" "lb_https_listeners" {
