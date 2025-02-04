@@ -211,6 +211,10 @@ resource "aws_lb_listener" "lb_http_listeners" {
   }
 
   tags = var.tags
+
+  depends_on = [
+    aws_security_group_rule.ingress_through_http[0]
+  ]
 }
 
 moved {
