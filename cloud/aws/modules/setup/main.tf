@@ -1,11 +1,11 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.78.0"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = "5.78.0"
+#     }
+#   }
+# }
 
 provider "aws" {
   region = var.aws_region
@@ -16,4 +16,8 @@ provider "aws" {
       Service     = "Civiform Setup"
     }
   }
+
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
 }
