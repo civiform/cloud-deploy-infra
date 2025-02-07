@@ -129,13 +129,12 @@ resource "aws_iam_role" "civiform_enhanced_monitoring_role" {
 }
 
 module "email_service" {
-  # Only create the aws_ses module if that is the email_provider
-  for_each = var.email_provider == "aws-ses" ? toset([
+  for_each = toset([
     var.sender_email_address,
     var.staging_applicant_notification_mailing_list,
     var.staging_ti_notification_mailing_list,
     var.staging_program_admin_notification_mailing_list
-  ]) : []
+  ])
   source               = "../../modules/ses"
   sender_email_address = each.key
 }
