@@ -16,8 +16,8 @@ terraform {
 
 provider "aws" {
   skip_credentials_validation = true
-  skip_metadata_api_check = true
-  skip_requesting_account_id = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
 }
 
 module "app" {
@@ -75,8 +75,8 @@ locals {
 
 module "email_service_sender" {
   # Only create the aws_ses module if that is the email_provider
-  count = local.create_email_service ? 1 : 0
-  source              =  "../../../aws/modules/ses"
+  count                = local.create_email_service ? 1 : 0
+  source               = "../../../aws/modules/ses"
   sender_email_address = var.sender_email_address
   providers = {
     aws = aws
@@ -85,8 +85,8 @@ module "email_service_sender" {
 
 module "email_service_applicant_notification" {
   # Only create the aws_ses module if that is the email_provider
-  count = local.create_email_service ? 1 : 0
-  source              =  "../../../aws/modules/ses"
+  count                = local.create_email_service ? 1 : 0
+  source               = "../../../aws/modules/ses"
   sender_email_address = var.staging_applicant_notification_mailing_list
   providers = {
     aws = aws
@@ -95,8 +95,8 @@ module "email_service_applicant_notification" {
 
 module "email_service_ti_notification" {
   # Only create the aws_ses module if that is the email_provider
-  count = local.create_email_service ? 1 : 0
-  source              =  "../../../aws/modules/ses"
+  count                = local.create_email_service ? 1 : 0
+  source               = "../../../aws/modules/ses"
   sender_email_address = var.staging_ti_notification_mailing_list
   providers = {
     aws = aws
@@ -105,8 +105,8 @@ module "email_service_ti_notification" {
 
 module "email_service" {
   # Only create the aws_ses module if that is the email_provider
-  count = local.create_email_service ? 1 : 0
-  source              =  "../../../aws/modules/ses"
+  count                = local.create_email_service ? 1 : 0
+  source               = "../../../aws/modules/ses"
   sender_email_address = var.staging_program_admin_notification_mailing_list
   providers = {
     aws = aws

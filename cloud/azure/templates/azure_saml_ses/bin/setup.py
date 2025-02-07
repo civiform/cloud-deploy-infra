@@ -155,7 +155,9 @@ class Setup(SetupTemplate):
     def _setup_ses(self):
         email_provider = self.config.get_config_var("EMAIL_PROVIDER")
         if email_provider != "aws-ses":
-            print("Email provider is not set to aws_ses, so we will skip setting up ses resources")
+            print(
+                "Email provider is not set to aws_ses, so we will skip setting up ses resources"
+            )
             return
         if not self.key_vault_name:
             raise RuntimeError("Key Vault Setup Required")
