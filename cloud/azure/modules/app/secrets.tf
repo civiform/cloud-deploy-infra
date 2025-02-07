@@ -9,11 +9,13 @@ data "azurerm_key_vault_secret" "postgres_password" {
 }
 
 data "azurerm_key_vault_secret" "aws_secret_access_token" {
+  count        = var.email_provider == "aws-ses" ? 1 : 0
   name         = local.aws_secret_access_token
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }
 
 data "azurerm_key_vault_secret" "aws_access_key_id" {
+  count        = var.email_provider == "aws-ses" ? 1 : 0
   name         = local.aws_access_key_id
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }

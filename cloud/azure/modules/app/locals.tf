@@ -29,8 +29,8 @@ locals {
     AZURE_STORAGE_ACCOUNT_CONTAINER_NAME        = azurerm_storage_container.files_container.name
     AZURE_STORAGE_ACCOUNT_PUBLIC_CONTAINER_NAME = azurerm_storage_container.public_files_container.name
 
-    AWS_ACCESS_KEY_ID     = data.azurerm_key_vault_secret.aws_access_key_id.value
-    AWS_SECRET_ACCESS_KEY = data.azurerm_key_vault_secret.aws_secret_access_token.value
+    AWS_ACCESS_KEY_ID     = var.email_provider == "aws-ses" ? data.azurerm_key_vault_secret.aws_access_key_id.value : ""
+    AWS_SECRET_ACCESS_KEY = var.email_provider == "aws-ses" ? data.azurerm_key_vault_secret.aws_secret_access_token.value : ""
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
