@@ -110,6 +110,7 @@ moved {
 }
 
 resource "aws_security_group_rule" "ingress_through_http" {
+  count             = var.enable_http_listener ? 1 : 0
   security_group_id = aws_security_group.lb_access_sg.id
   type              = "ingress"
   from_port         = 80
@@ -121,7 +122,7 @@ resource "aws_security_group_rule" "ingress_through_http" {
 
 moved {
   from = module.ecs-alb[0].aws_security_group_rule.ingress_through_http["default_http"]
-  to   = aws_security_group_rule.ingress_through_http
+  to   = aws_security_group_rule.ingress_through_http[0]
 }
 
 resource "aws_security_group_rule" "ingress_through_https" {
@@ -192,6 +193,7 @@ moved {
 # AWS LOAD BALANCER - Listeners
 #------------------------------------------------------------------------------
 resource "aws_lb_listener" "lb_http_listeners" {
+  count             = var.enable_http_listener ? 1 : 0
   load_balancer_arn = aws_lb.civiform_lb.arn
   port              = 80
   protocol          = "HTTP"
@@ -209,11 +211,15 @@ resource "aws_lb_listener" "lb_http_listeners" {
   }
 
   tags = var.tags
+
+  depends_on = [
+    aws_security_group_rule.ingress_through_http[0]
+  ]
 }
 
 moved {
   from = module.ecs-alb[0].aws_lb_listener.lb_http_listeners["default_http"]
-  to   = aws_lb_listener.lb_http_listeners
+  to   = aws_lb_listener.lb_http_listeners[0]
 }
 
 resource "aws_lb_listener" "lb_https_listeners" {

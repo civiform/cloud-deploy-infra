@@ -555,3 +555,9 @@ variable "extra_inbound_rule_cidr" {
   type        = string
   default     = null
 }
+
+variable "enable_http_listener" {
+  description = "Whether the HTTP listener should be enabled. Defaulted to true."
+  type        = bool
+  default     = true
+}

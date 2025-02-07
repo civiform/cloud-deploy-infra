@@ -15,6 +15,12 @@ variable "azure_skip_provider_registration" {
   default     = false
 }
 
+variable "azure_subscription" {
+  type        = string
+  description = "The azure subscription id to deploy onto."
+  default     = ""
+}
+
 variable "civiform_time_zone_id" {
   type        = string
   description = "Time zone for Civiform server to use when displaying dates."
@@ -63,6 +69,7 @@ variable "aws_region" {
 variable "email_provider" {
   type        = string
   description = "The provider to use for sending emails"
+  default     = "aws-ses"
 }
 
 variable "sender_email_address" {

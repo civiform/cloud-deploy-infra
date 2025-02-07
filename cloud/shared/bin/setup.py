@@ -48,7 +48,7 @@ def run(config: ConfigLoader, params: List[str]):
             Would you like to continue with the setup? [y/N] > 
             """)
         answer = input(msg)
-        if answer not in ['y', 'Y', 'yes']:
+        if answer.lower() not in ['y', 'yes']:
             exit(1)
     secret_length = config.get_config_var("RANDOM_PASSWORD_LENGTH")
     if not secret_length:
@@ -92,7 +92,7 @@ def run(config: ConfigLoader, params: List[str]):
                 Would you like to destroy the backend resources and recreate them? [y/N] > 
                 """)
             answer = input(msg)
-            if answer in ['y', 'Y', 'yes']:
+            if answer.lower() in ['y', 'yes']:
                 destroy.run(config, [])
                 if not template_setup.destroy_backend_resources(resources):
                     msg = inspect.cleandoc(

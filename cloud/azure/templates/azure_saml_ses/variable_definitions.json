@@ -109,7 +109,7 @@
   "AZURE_SUBSCRIPTION": {
     "required": true,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "string"
   },
   "AZURE_SKIP_PROVIDER_REGISTRATION": {
