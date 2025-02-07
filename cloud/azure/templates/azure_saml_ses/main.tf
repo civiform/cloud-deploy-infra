@@ -1,6 +1,9 @@
 terraform {
   required_providers {
-    # aws = aws
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.78.0"
+    }
     azurerm = {
       source  = "azurerm"
       version = "4.11.0"
@@ -77,6 +80,6 @@ module "email_service" {
     var.staging_program_admin_notification_mailing_list
   ])
   source                   = "../../modules/email_service"
-  # create_aws_email_service = var.email_provider == "aws-ses" ? true : false
+  create_aws_email_service = var.email_provider == "aws-ses" ? true : false
   sender_email_address     = each.key
 }
