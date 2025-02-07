@@ -1,9 +1,6 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.78.0"
-    }
+    # aws = aws
     azurerm = {
       source  = "azurerm"
       version = "4.11.0"
@@ -13,6 +10,12 @@ terraform {
   backend "azurerm" {}
   required_version = ">= 0.14.9"
 }
+
+# provider "aws" {
+#   skip_credentials_validation = true
+#   skip_metadata_api_check     = true
+#   skip_requesting_account_id  = true
+# }
 
 module "app" {
   source = "../../modules/app"
@@ -73,6 +76,7 @@ module "email_service" {
     var.staging_ti_notification_mailing_list,
     var.staging_program_admin_notification_mailing_list
   ])
-  source                   = var.email_provider == "aws-ses" ? "../../../aws/modules/ses" : "../../modules/email_service"
+  source                   = "../../modules/email_service"
+  # create_aws_email_service = var.email_provider == "aws-ses" ? true : false
   sender_email_address     = each.key
 }
