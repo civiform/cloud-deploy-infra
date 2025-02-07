@@ -73,42 +73,15 @@ locals {
   create_email_service = false
 }
 
-module "email_service_sender" {
-  # Only create the aws_ses module if that is the email_provider
-  count                = local.create_email_service ? 1 : 0
-  source               = "../../../aws/modules/ses"
-  sender_email_address = var.sender_email_address
-  providers = {
-    aws = aws
-  }
-}
-
-module "email_service_applicant_notification" {
-  # Only create the aws_ses module if that is the email_provider
-  count                = local.create_email_service ? 1 : 0
-  source               = "../../../aws/modules/ses"
-  sender_email_address = var.staging_applicant_notification_mailing_list
-  providers = {
-    aws = aws
-  }
-}
-
-module "email_service_ti_notification" {
-  # Only create the aws_ses module if that is the email_provider
-  count                = local.create_email_service ? 1 : 0
-  source               = "../../../aws/modules/ses"
-  sender_email_address = var.staging_ti_notification_mailing_list
-  providers = {
-    aws = aws
-  }
-}
 
 module "email_service" {
   # Only create the aws_ses module if that is the email_provider
-  count                = local.create_email_service ? 1 : 0
-  source               = "../../../aws/modules/ses"
-  sender_email_address = var.staging_program_admin_notification_mailing_list
-  providers = {
-    aws = aws
-  }
+  for_each = var.email_provider == "aws-ses" ? toset([
+    var.sender_email_address,
+    var.staging_applicant_notification_mailing_list,
+    var.staging_ti_notification_mailing_list,
+    var.staging_program_admin_notification_mailing_list
+  ]) : []
+  source               = var.email_provider == "aws-ses" ? "../../modules/ses" : ""
+  sender_email_address = each.key
 }

@@ -69,7 +69,7 @@ variable "aws_region" {
 variable "email_provider" {
   type        = string
   description = "The provider to use for sending emails"
-  default     = "aws-ses"
+  default     = "graph-api"
 }
 
 variable "sender_email_address" {
