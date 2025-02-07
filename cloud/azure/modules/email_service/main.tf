@@ -6,5 +6,5 @@
 # }
 
 output "email_arn" {
-  value = "not_implemented_" + var.sender_email_address
+  value = "not_implemented"
 }
