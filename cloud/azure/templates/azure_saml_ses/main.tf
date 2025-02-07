@@ -71,6 +71,7 @@ module "saml_keystore" {
 
 locals {
   create_email_service = false
+  source = var.email_provider == "aws-ses" ? "../../modules/ses" : ""
 }
 
 
@@ -82,6 +83,6 @@ module "email_service" {
     var.staging_ti_notification_mailing_list,
     var.staging_program_admin_notification_mailing_list
   ]) : []
-  source               = var.email_provider == "aws-ses" ? "../../modules/ses" : ""
+  source               = local.source
   sender_email_address = each.key
 }
