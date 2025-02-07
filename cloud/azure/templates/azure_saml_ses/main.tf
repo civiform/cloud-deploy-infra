@@ -1,9 +1,9 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.78.0"
-    }
+    # aws = {
+    #   source  = "hashicorp/aws"
+    #   version = "5.78.0"
+    # }
     azurerm = {
       source  = "azurerm"
       version = "4.11.0"
@@ -14,11 +14,11 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-# provider "aws" {
-#   skip_credentials_validation = true
-#   skip_metadata_api_check     = true
-#   skip_requesting_account_id  = true
-# }
+provider "aws" {
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+}
 
 module "app" {
   source = "../../modules/app"
