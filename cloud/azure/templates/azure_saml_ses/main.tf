@@ -73,7 +73,6 @@ module "email_service" {
     var.staging_ti_notification_mailing_list,
     var.staging_program_admin_notification_mailing_list
   ])
-  source                   = "../../modules/email_service"
-  create_aws_email_service = var.email_provider == "aws-ses" ? true : false
+  source                   = var.email_provider == "aws-ses" ? "../../../aws/modules/ses" : "../../modules/email_service"
   sender_email_address     = each.key
 }
