@@ -6,7 +6,7 @@
     "type": "string"
   },
   "AWS_USERNAME": {
-    "required": true,
+    "required": false,
     "secret": false,
     "tfvar": false,
     "type": "string"

@@ -41,8 +41,6 @@ class Setup(SetupTemplate):
         self._setup_keyvault()
         print(" - Setting up the SAML keystore")
         self._setup_saml_keystore()
-        print(" - Setting up SES")
-        self._setup_ses()
         print(" - Finish Pre-Terraform setup.")
         return True
 
@@ -151,15 +149,3 @@ class Setup(SetupTemplate):
                 saml_keystore_storage_account
             ],
             check=True)
-
-    def _setup_ses(self):
-        if not self.key_vault_name:
-            raise RuntimeError("Key Vault Setup Required")
-        aws_username = self.config.get_config_var("AWS_USERNAME")
-        # fails silently for now. AWS setup not required for azure deployment.
-        subprocess.run(
-            [
-                "cloud/azure/bin/ses-to-keyvault", "-v", self.key_vault_name,
-                "-u", aws_username
-            ],
-            check=False)
