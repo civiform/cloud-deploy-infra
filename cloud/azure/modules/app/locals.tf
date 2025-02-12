@@ -27,6 +27,8 @@ locals {
     AZURE_STORAGE_ACCOUNT_CONTAINER_NAME        = azurerm_storage_container.files_container.name
     AZURE_STORAGE_ACCOUNT_PUBLIC_CONTAINER_NAME = azurerm_storage_container.public_files_container.name
 
+    EMAIL_PROVIDER = "graph-api"
+
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
     ADFS_SECRET                  = data.azurerm_key_vault_secret.adfs_secret.value
