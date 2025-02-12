@@ -11,7 +11,7 @@ variable "application_name" {
 
 variable "aws_region" {
   type        = string
-  description = "Region for the aws account, if using"
+  description = "Region for the aws account. Azure support for AWS isn't supported (#9258), so this is unused"
   default     = "us-east-1"
 }
 

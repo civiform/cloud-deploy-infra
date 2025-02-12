@@ -62,14 +62,14 @@ variable "key_vault_name" {
 
 variable "aws_region" {
   type        = string
-  description = "Region where the AWS servers will live"
+  description = "Region where the AWS servers will live. Azure support for AWS isn't supported (#9258), so this is unused"
   default     = "us-east-1"
 }
 
 variable "email_provider" {
   type        = string
   description = "The provider to use for sending emails"
-  default     = "aws-ses"
+  default     = "graph-api"
 }
 
 variable "sender_email_address" {
