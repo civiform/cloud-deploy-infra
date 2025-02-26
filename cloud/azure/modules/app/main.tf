@@ -27,6 +27,16 @@ data "azurerm_key_vault_secret" "adfs_discovery_uri" {
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }
 
+data "azurerm_key_vault_secret" "applicant_oidc_client_id" {
+  name         = local.applicant_oidc_client_id
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "applicant_oidc_client_secret" {
+  name         = local.applicant_oidc_client_secret
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}
+
 resource "azurerm_data_protection_backup_vault" "backup_vault" {
   name                = "backup-vault"
   resource_group_name = data.azurerm_resource_group.rg.name
