@@ -27,7 +27,7 @@ def run(config: ConfigLoader):
 
     url = f"{config.get_base_url()}:4433"
     print(
-        "\npgadmin terraform deployment finished. Waiting for pgadmin to be available (some request failures are expected). Press ctlr-c to shortcut this wait and print connection information."
+        f"\npgadmin terraform deployment finished. Waiting for pgadmin to be available at {url} (some request failures are expected). Press Ctrl-c to shortcut this wait and print connection information."
     )
     _wait_for_pgadmin_response(url)
     _print_connection_info(config, url)
