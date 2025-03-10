@@ -316,7 +316,7 @@ module "ecs_fargate_service" {
   app_prefix                = var.app_prefix
   desired_count             = var.fargate_desired_task_count
   default_certificate_arn   = var.ssl_certificate_arn
-  ssl_policy                = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
+  ssl_policy                = var.lb_ssl_policy
   vpc_id                    = local.vpc_id
   task_definition_arn       = var.monitoring_stack_enabled ? aws_ecs_task_definition.civiform_with_monitoring.arn : aws_ecs_task_definition.civiform_only.arn
   container_name            = "${var.app_prefix}-civiform"

@@ -17,7 +17,7 @@ resource "aws_lb_listener" "pgadmin" {
   port              = 4433
   protocol          = "HTTPS"
   certificate_arn   = var.lb_ssl_cert_arn
-  ssl_policy        = "ELBSecurityPolicy-2016-08" # Default policy.
+  ssl_policy        = var.lb_ssl_policy
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pgadmin.arn
