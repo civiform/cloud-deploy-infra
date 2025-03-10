@@ -544,6 +544,12 @@ variable "external_vpc_public_subnet_ids" {
   default     = []
 }
 
+variable "lb_idle_timeout" {
+  description = "Time in seconds that the connection is allowed to be idle. If the CiviForm server takes longer than this to respond (e.g. when compiling an export), the request will return a 504 Gateway error."
+  type        = number
+  default     = 120
+}
+
 variable "lb_logging_enabled" {
   type        = bool
   description = "Whether to enable LB access logging."

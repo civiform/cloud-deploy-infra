@@ -155,3 +155,9 @@ variable "enable_http_listener" {
   type        = bool
   default     = true
 }
+
+variable "lb_idle_timeout" {
+  description = "Time in seconds that the connection is allowed to be idle."
+  type        = number
+  default     = 120
+}

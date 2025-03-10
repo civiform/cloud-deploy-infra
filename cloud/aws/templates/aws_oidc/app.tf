@@ -334,6 +334,7 @@ module "ecs_fargate_service" {
   scale_target_min_capacity = var.ecs_scale_target_min_capacity
   https_target_port         = var.port
   lb_internal               = local.enable_managed_vpc ? false : true
+  lb_idle_timeout           = var.lb_idle_timeout
   lb_logging_enabled        = var.lb_logging_enabled
   extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
   enable_http_listener      = var.enable_http_listener
