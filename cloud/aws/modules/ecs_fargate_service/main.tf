@@ -56,7 +56,7 @@ resource "aws_lb" "civiform_lb" {
   load_balancer_type               = "application"
   drop_invalid_header_fields       = false
   subnets                          = var.public_subnets
-  idle_timeout                     = 60
+  idle_timeout                     = var.lb_idle_timeout
   enable_deletion_protection       = false
   enable_cross_zone_load_balancing = false
   enable_http2                     = true

@@ -431,6 +431,12 @@
     "tfvar": true,
     "type": "bool"
   },
+  "LB_IDLE_TIMEOUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "LB_LOGGING_ENABLED": {
     "required": false,
     "secret": false,
