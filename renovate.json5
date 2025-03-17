@@ -2,14 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
   "packageRules": [
-    {
-      "groupName": "jre",
-      "matchPackagePrefixes": [
-        "bellsoft/liberica-openjre-debian",
-        "eclipse-temurin"
-      ],
-      "allowedVersions": "<12.0.0"
-    },
     // GitHub Actions: Pin to commit hashes and include a comment with the version
     {
       "groupName": "GitHub Actions",
