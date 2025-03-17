@@ -18,7 +18,7 @@ jobs:
     concurrency: run-e2e-aws-oidc
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
         with:
           python-version: '3.9'
         
@@ -26,19 +26,19 @@ jobs:
         run: pip install requests
         
       - name: Checkout civiform/cloud-deploy-infra
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           repository: civiform/cloud-deploy-infra
           path: cloud-deploy-infra
 
       - name: Checkout civiform/civiform-deploy
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           repository: civiform/civiform-deploy
           path: civiform-deploy
 
       - name: Install terraform cli
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_wrapper: false
 
@@ -52,7 +52,7 @@ jobs:
 
       - id: get-aws-creds
         name: Authenticate to AWS
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
           # Role in civiform-deploy-e2e-tests account.
           role-to-assume: arn:aws:iam::296877675213:role/e2e-test-runner
@@ -74,14 +74,14 @@ jobs:
         # default:
         # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
         if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
-        uses: slackapi/slack-github-action@v2
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2
         with:
           method: chat.postMessage
           token: ${{ secrets.CIVIBOT_TOKEN }}
