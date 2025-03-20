@@ -5,21 +5,19 @@
 set -e
 set +x
 
-readonly SHORT_SHA="$(git rev-parse --short HEAD)"
-readonly DATE_IN_UNIX_SECONDS="$(date +%s)"
-readonly SNAPSHOT_TAG="SNAPSHOT-${SHORT_SHA}-${DATE_IN_UNIX_SECONDS}"
+# This is the snapshot from last year that works as expected
+readonly SNAPSHOT_TAG="SNAPSHOT-ef53299-1701983458"
 readonly IMAGE="aws-metrics-scraper"
+readonly FULL_IMAGE_NAME="docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}"
+readonly LATEST_IMAGE_NAME="docker.io/civiform/${IMAGE}:latest"
 
-PLATFORM_ARG=()
-if [[ -n "${PLATFORM}" ]]; then
-  PLATFORM_ARG=(--platform "${PLATFORM}")
-fi
-readonly PLATFORM_ARG
+echo "Pulling snapshot image: ${FULL_IMAGE_NAME}"
+docker pull "${FULL_IMAGE_NAME}"
 
-echo "start ${IMAGE} build"
-docker buildx create --use
-docker buildx build --push \
-  "${PLATFORM_ARG[@]}" \
-  -t "docker.io/civiform/${IMAGE}:latest" \
-  -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
-  -f metrics_scraper.Dockerfile .
+echo "Tagging snapshot as latest: ${FULL_IMAGE_NAME} -> ${LATEST_IMAGE_NAME}"
+docker tag "${FULL_IMAGE_NAME}" "${LATEST_IMAGE_NAME}"
+
+echo "Pushing latest tag: ${LATEST_IMAGE_NAME}"
+docker push "${LATEST_IMAGE_NAME}"
+
+echo "Complete"
