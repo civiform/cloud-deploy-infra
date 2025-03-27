@@ -15,6 +15,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "civiform_image_repo" {
+  type        = string
+  description = "Dockerhub repository with Civiform images"
+  default     = "civiform/civiform"
+}
+
 variable "image_tag" {
   type        = string
   description = "Tag for container image"
