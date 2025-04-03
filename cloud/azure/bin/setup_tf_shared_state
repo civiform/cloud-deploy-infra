@@ -22,7 +22,8 @@ fi
 readonly BACKEND_VARS_FILENAME="${1}"
 
 RESOURCE_GROUP_NAME="${AZURE_RESOURCE_GROUP}"
-STORAGE_ACCOUNT_NAME="${AZURE_RESOURCE_GROUP}${RANDOM}"
+# We use the first 15 characters of the resource group, since there is a limit to the storage account name length
+STORAGE_ACCOUNT_NAME="${AZURE_RESOURCE_GROUP:0:15}${RANDOM}"
 CONTAINER_NAME="tfstate"
 
 echo "Check for Resource Group"
