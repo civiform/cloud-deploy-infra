@@ -22,8 +22,11 @@ fi
 readonly BACKEND_VARS_FILENAME="${1}"
 
 RESOURCE_GROUP_NAME="${AZURE_RESOURCE_GROUP}"
-# We use the first 15 characters of the resource group, since there is a limit to the storage account name length
-STORAGE_ACCOUNT_NAME="${AZURE_RESOURCE_GROUP:0:15}${RANDOM}"
+
+# We use the first 15 characters of the resource group and strip all non-alphanumeric
+# characters to match restrictions on the storage account name
+FORMATTED_AZURE_RESOURCE_GROUP=$(echo "${AZURE_RESOURCE_GROUP:0:15}" | sed 's/[^[:alnum:]]//g')
+STORAGE_ACCOUNT_NAME="${FORMATTED_AZURE_RESOURCE_GROUP}${RANDOM}"
 CONTAINER_NAME="tfstate"
 
 echo "Check for Resource Group"
