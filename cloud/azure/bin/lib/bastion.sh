@@ -7,7 +7,7 @@
 #   1: the resource group name
 #######################################
 function get_formatted_name() {
-  echo "$(echo "${1:0:15}" | sed 's/[^[:alnum:]]//g')"
+  echo "${1:0:15}" | sed 's/[^[:alnum:]]//g'
 }
 
 #######################################
