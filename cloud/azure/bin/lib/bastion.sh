@@ -1,6 +1,16 @@
 #! /usr/bin/env bash
 
 #######################################
+# Helper function to get the formatted name of the
+# resource group, which is alphanumeric only
+# Arguments:
+#   1: the resource group name
+#######################################
+function get_formatted_name() {
+  echo "${1:0:15}" | sed 's/[^[:alnum:]]//g'
+}
+
+#######################################
 # Get the ip for the bastion VM
 # Arguments:
 #   1: the resource group name
@@ -8,7 +18,7 @@
 function bastion::get_vm_ip() {
   az network public-ip show \
     -g "${1}" \
-    -n "${1}-ip" \
+    -n "$(get_formatted_name "$1")-ip" \
     --query "ipAddress" | tr -d '"'
 }
 
@@ -57,7 +67,7 @@ function bastion::update_bastion_ssh_keys() {
   az vm user update \
     -u adminuser \
     -g "${1}" \
-    -n "${1}-bstn-vm" \
+    -n "$(get_formatted_name "$1")-bstn-vm" \
     --ssh-key-value "$(<${2}.pub)"
 }
 
@@ -82,7 +92,7 @@ function bastion::allow_ip_security_group() {
   local MY_IPADDRESS=$(curl -s https://checkip.amazonaws.com)
   az network nsg rule update \
     -g "${1}" \
-    --nsg-name "${1}-pblc-nsg" \
+    --nsg-name "$(get_formatted_name "$1")-pblc-nsg" \
     -n "ssh-rule" \
     --access "Allow" \
     --source-address-prefixes "${MY_IPADDRESS}"
@@ -96,7 +106,7 @@ function bastion::allow_ip_security_group() {
 function bastion::deny_ip_security_group() {
   az network nsg rule update \
     -g "${1}" \
-    --nsg-name "${1}-pblc-nsg" \
+    --nsg-name "$(get_formatted_name "$1")-pblc-nsg" \
     -n "ssh-rule" \
     --access "Deny" \
     --source-address-prefixes "*"
