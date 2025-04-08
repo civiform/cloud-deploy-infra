@@ -1,3 +1,9 @@
+locals {
+  # We use the first 15 characters of the resource group and strip all non-alphanumeric
+  # characters to match restrictions on resource naming
+  formatted_resource_group_name = replace(substr(var.resource_group_name, 0, 15), "[^a-zA-Z0-9]", "")
+}
+
 resource "random_pet" "server" {}
 
 resource "random_string" "resource_code" {
@@ -55,7 +61,7 @@ resource "azurerm_subnet" "server_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}-plan"
+  name                = "${local.formatted_resource_group_name}-plan"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
@@ -193,6 +199,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
 module "bastion" {
   source = "../bastion"
 
+  formatted_resource_name = local.formatted_resource_group_name
   resource_group_name      = data.azurerm_resource_group.rg.name
   resource_group_location  = data.azurerm_resource_group.rg.location
   bastion_address_prefixes = var.bastion_address_prefixes
