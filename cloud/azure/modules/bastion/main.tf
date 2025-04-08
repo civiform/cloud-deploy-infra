@@ -72,7 +72,6 @@ resource "tls_private_key" "throwaway_public_key" {
 # Create bastion host VM.
 resource "azurerm_linux_virtual_machine" "bastion_vm" {
   name                  = "${var.formatted_resource_name}bstnvm"
-  # computer_name = "testcptrname"
   location              = var.resource_group_location
   resource_group_name   = var.resource_group_name
   network_interface_ids = ["${azurerm_network_interface.bastion_nic.id}"]

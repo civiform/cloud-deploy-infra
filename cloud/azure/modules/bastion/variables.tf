@@ -22,6 +22,6 @@ variable "bastion_address_prefixes" {
 }
 
 variable "formatted_resource_name" {
-  type = string
+  type        = string
   description = "Alphanumeric resource group name without special characters"
 }

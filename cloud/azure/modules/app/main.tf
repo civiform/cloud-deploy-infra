@@ -199,7 +199,7 @@ resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
 module "bastion" {
   source = "../bastion"
 
-  formatted_resource_name = local.formatted_resource_group_name
+  formatted_resource_name  = local.formatted_resource_group_name
   resource_group_name      = data.azurerm_resource_group.rg.name
   resource_group_location  = data.azurerm_resource_group.rg.location
   bastion_address_prefixes = var.bastion_address_prefixes
