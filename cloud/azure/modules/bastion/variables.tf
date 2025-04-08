@@ -20,3 +20,8 @@ variable "bastion_address_prefixes" {
     "10.0.6.0/24"
   ]
 }
+
+variable "formatted_resource_group_name" {
+  type        = string
+  description = "Alphanumeric resource group name without special characters"
+}
