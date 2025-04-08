@@ -7,7 +7,7 @@
 #   1: the resource group name
 #######################################
 function get_formatted_name() {
-  echo "${1:0:15}" | sed 's/[^[:alnum:]]//g'
+  echo "${1:0:9}" | sed 's/[^[:alnum:]]//g'
 }
 
 #######################################
@@ -67,7 +67,7 @@ function bastion::update_bastion_ssh_keys() {
   az vm user update \
     -u adminuser \
     -g "${1}" \
-    -n "$(get_formatted_name "$1")-bstn-vm" \
+    -n "$(get_formatted_name "$1")bstnvm" \
     --ssh-key-value "$(<${2}.pub)"
 }
 
