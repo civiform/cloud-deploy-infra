@@ -1,7 +1,7 @@
 locals {
   # We use the first 15 characters of the resource group and strip all non-alphanumeric
   # characters to match restrictions on resource naming
-  formatted_resource_group_name = replace(substr(var.resource_group_name, 0, 15), "[^a-zA-Z0-9]", "")
+  formatted_resource_group_name = replace(substr(var.resource_group_name, 0, 9), "[^a-zA-Z0-9]", "")
 }
 
 resource "random_pet" "server" {}
