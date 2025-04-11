@@ -79,8 +79,3 @@ variable "secrets_recovery_window_in_days" {
   type        = string
   description = "Recovery window for secrets"
 }
-variable "lb_ssl_policy" {
-  description = "The AWS security policy to use on the load balancer. https://docs.aws.amazon.com/elasticloadbalancing/latest/network/describe-ssl-policies.html"
-  type        = string
-  default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-}
