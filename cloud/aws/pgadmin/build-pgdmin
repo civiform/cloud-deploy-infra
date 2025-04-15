@@ -15,6 +15,5 @@ echo "start ${IMAGE} build"
 docker buildx create --use
 docker buildx build --push \
   --platform "${PLATFORM}" \
-  -t "docker.io/civiform/${IMAGE}:latest" \
   -t "docker.io/civiform/${IMAGE}:${SNAPSHOT_TAG}" \
   -f pgadmin.Dockerfile .
