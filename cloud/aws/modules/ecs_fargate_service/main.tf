@@ -162,7 +162,7 @@ resource "aws_lb_target_group" "lb_https_tgs" {
   health_check {
     enabled             = true
     interval            = 20
-    path                = "/programs"
+    path                = "/playIndex"
     protocol            = "HTTP"
     timeout             = 15
     healthy_threshold   = 2
