@@ -562,6 +562,12 @@ variable "extra_inbound_rule_cidr" {
   default     = null
 }
 
+variable "ingress_sg_cidr" {
+  description = "The CIDR block for the ingress_through_http and ingress_through_https security groups. This defaults to '0.0.0.0/0' (allowing all traffic)."
+  type        = string
+  default     = null
+}
+
 variable "enable_http_listener" {
   description = "Whether the HTTP listener should be enabled. Defaulted to true."
   type        = bool

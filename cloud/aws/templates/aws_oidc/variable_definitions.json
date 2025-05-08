@@ -449,6 +449,12 @@
     "tfvar": true,
     "type": "string"
   },
+  "INGRESS_SG_CIDR": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "ENABLE_HTTP_LISTENER": {
     "required": false,
     "secret": false,
