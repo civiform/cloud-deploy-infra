@@ -337,6 +337,7 @@ module "ecs_fargate_service" {
   lb_idle_timeout           = var.lb_idle_timeout
   lb_logging_enabled        = var.lb_logging_enabled
   extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
+  ingress_sg_cidr           = var.ingress_sg_cidr
   enable_http_listener      = var.enable_http_listener
 
   tags = {
