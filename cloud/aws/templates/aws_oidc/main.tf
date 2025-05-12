@@ -61,7 +61,7 @@ resource "aws_db_instance" "civiform" {
 
   # If not null, destroys the current database, replacing it with a new one restored from the provided snapshot
   snapshot_identifier             = var.postgres_restore_snapshot_identifier == null ? null : aws_db_snapshot_copy.copied_snapshot[0].target_db_snapshot_identifier
-  delete_automated_backups        = false
+  delete_automated_backups        = var.delete_automated_backups
   deletion_protection             = local.deletion_protection
   instance_class                  = var.postgres_instance_class
   allocated_storage               = var.postgres_storage_gb

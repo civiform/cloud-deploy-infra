@@ -567,3 +567,8 @@ variable "enable_http_listener" {
   type        = bool
   default     = true
 }
+variable "delete_automated_backups" {
+  description = "Whether Terrform should delete automatically generated snapshots when the db is destroyed."
+  type        = bool
+  default     = false
+}

@@ -25,7 +25,8 @@ def run(config: ConfigLoader):
             ###########################################################################
             You are attempting to deploy with POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER set 
             which will restore your database to a former snapshot and can result in data 
-            loss. 
+            loss. We recommend taking a manual snapshot of the database before running 
+            this command.
             
             Do you wish to proceed? [y/N] > 
             """))

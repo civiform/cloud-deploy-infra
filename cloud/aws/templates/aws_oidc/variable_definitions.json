@@ -454,5 +454,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "DELETE_AUTOMATED_BACKUPS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }  
 }
