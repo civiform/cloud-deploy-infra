@@ -31,7 +31,7 @@ module "aws_scraper_logs" {
 
 module "civiform_server_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.61.1"
+  version = "0.61.2"
 
   container_name               = "${var.app_prefix}-civiform"
   container_image              = "${var.civiform_image_repo}:${var.image_tag}"
@@ -136,7 +136,7 @@ module "civiform_server_container_def" {
 
 module "civiform_metrics_scraper_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.61.1"
+  version = "0.61.2"
 
   container_name               = "${var.app_prefix}-metrics-scraper"
   container_image              = var.scraper_image
