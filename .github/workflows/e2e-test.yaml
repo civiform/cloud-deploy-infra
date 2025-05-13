@@ -18,7 +18,7 @@ jobs:
     concurrency: run-e2e-aws-oidc
     steps:
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.9'
         
@@ -81,7 +81,7 @@ jobs:
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
-        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2
         with:
           method: chat.postMessage
           token: ${{ secrets.CIVIBOT_TOKEN }}
