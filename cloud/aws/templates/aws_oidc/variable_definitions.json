@@ -455,7 +455,7 @@
     "tfvar": true,
     "type": "bool"
   },
-  "DELETE_AUTOMATED_BACKUPS": {
+  "DELETE_AUTOMATED_DB_BACKUPS": {
     "required": false,
     "secret": false,
     "tfvar": true,
