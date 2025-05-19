@@ -48,7 +48,7 @@ fi
 if [[ "${tag}" == "latest" ]]; then
   docker pull --platform linux/x86_64 docker.io/civiform/civiform:latest
   snapshot_tag="$(docker inspect docker.io/civiform/civiform:latest \
-    --format='{{ index .Config.Labels "civiform.git.commit_sha" }}')"
+    --format='{{range .Config.Env}}{{if eq (printf "%.19s" .) "CIVIFORM_IMAGE_TAG="}}{{slice . 19}}{{end}}{{end}}')"
 
   if [[ -z "${snapshot_tag}" ]]; then
     # Adding a newline before the error message helps it stand out to the user
@@ -85,10 +85,7 @@ function fetch_json_val() {
 
 commit_sha=""
 
-if [[ "${tag}" =~ ^[0-9a-f]{40}$ ]]; then
-  # We have a long commit SHA. Pass on through.
-  commit_sha="${tag}"
-elif [[ "${tag}" == "SNAPSHOT"* || "${tag}" == "DEV"* ]]; then
+if [[ "${tag}" == "SNAPSHOT"* || "${tag}" == "DEV"* ]]; then
   # In a snapshot tag, eg. "SNAPSHOT-920bc49-1685642238", the middle section is the
   # shortened commit sha. Use this to get the full commit sha.
   split_tag=(${tag//-/ })
