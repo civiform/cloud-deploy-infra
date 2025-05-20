@@ -2,7 +2,7 @@
 
 # https://www.baeldung.com/linux/store-command-in-variable
 readonly TERRAFORM_CMD=("terraform" "-chdir=${TERRAFORM_TEMPLATE_DIR}")
-readonly TERRAFORM_APPLY=(${TERRAFORM_CMD[@]} "apply" "-input=false" "-json")
+readonly TERRAFORM_APPLY=(${TERRAFORM_CMD[@]} "apply" "-input=false")
 
 #######################################
 # Destorys the terraform code
