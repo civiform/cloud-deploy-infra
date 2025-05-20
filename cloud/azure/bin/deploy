@@ -10,7 +10,7 @@ azure_log::fetch_log_file
 
 if ! terraform::perform_apply; then
   out::error "Terraform deployment failed."
-  log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
+  log::deploy_failed "${TF_VAR_image_tag}" "${AZURE_USER_ID}"
   azure_log::upload_log_file
   exit 1
 fi
@@ -20,12 +20,12 @@ if civiform_mode::is_test; then
   exit 0
 fi
 
-azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${IMAGE_TAG}"
+azure::set_new_container_tag "${AZURE_RESOURCE_GROUP}" "${AZURE_APP_NAME}" "${TF_VAR_image_tag}"
 
 if health::wait_for_success "${AZURE_PRIMARY_URL}/playIndex"; then
   echo "New container returns expected signal on ping"
 else
-  log::deploy_failed "${IMAGE_TAG}" "${AZURE_USER_ID}"
+  log::deploy_failed "${TF_VAR_image_tag}" "${AZURE_USER_ID}"
   azure_log::upload_log_file
   exit 1
 fi
@@ -33,6 +33,6 @@ fi
 echo "Success! The new application version is up and running."
 
 echo "Updating deployment log."
-log::deploy_succeeded "${IMAGE_TAG}" "${AZURE_USER_ID}"
+log::deploy_succeeded "${TF_VAR_image_tag}" "${AZURE_USER_ID}"
 azure_log::upload_log_file
 echo "Deployment log updated."
