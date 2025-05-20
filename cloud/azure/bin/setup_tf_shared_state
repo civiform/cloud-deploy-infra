@@ -45,7 +45,8 @@ echo "Check storage accounts"
 CURRENT_ACCOUNTS=$(az storage account list \
   -g ${RESOURCE_GROUP_NAME})
 
-STORAGE_ACCOUNT_PATTERN="\"name\"\: \"(${AZURE_RESOURCE_GROUP}[0-9]+)\""
+STORAGE_ACCOUNT_PATTERN="\"name\"\: \"(${FORMATTED_AZURE_RESOURCE_GROUP}[0-9]+)\""
+
 if [[ $CURRENT_ACCOUNTS =~ $STORAGE_ACCOUNT_PATTERN ]]; then
   echo "You have a storage account already, using the name ${BASH_REMATCH[1]}"
   STORAGE_ACCOUNT_NAME=${BASH_REMATCH[1]}
