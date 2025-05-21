@@ -20,9 +20,9 @@ jobs:
   terraform-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: setup terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
 
       - name: terraform fmt
         id: tf_fmt
@@ -31,7 +31,7 @@ jobs:
   shell-formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Run the shell checker
         uses: luizm/action-sh-checker@master
         env:
@@ -47,8 +47,8 @@ jobs:
     name: python-formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: run YAPF to test if python code is correctly formatted
-        uses: AlexanderMelde/yapf-action@v2.0
+        uses: AlexanderMelde/yapf-action@0c6d76a6b8b182ec5cb01f1d59a9b82bb0272574 # v2.0
         with:
           args: "--verbose --style='{based_on_style: google, SPLIT_BEFORE_FIRST_ARGUMENT:true}'"

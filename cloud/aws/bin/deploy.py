@@ -16,16 +16,22 @@ def run(config: ConfigLoader):
         _check_application_secret_length(config, aws)
         _check_for_postgres_upgrade(config, aws)
 
-    # Even though the code supports it, for now, we are disallowing doing bin/deploy
-    # with a snapshot identified in order to prevent accidental data loss. When we move to
-    # a more imperative process for restoring from a snapshot, we can remove this block.
-    # Restoring from a snapshot via bin/setup is still allowed.
     if config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
-        print(
-            red(
-                '!!! WARNING !!!: You are attempting to deploy with a snapshot restore identifier set. This is currently not allowed. Please remove the POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER from your config file and try again.'
-            ))
-        return
+        answer = input(
+            yellow(
+                """
+            ###########################################################################
+                                            WARNING                                                       
+            ###########################################################################
+            You are attempting to deploy with POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER set 
+            which will restore your database to a former snapshot and can result in data 
+            loss. We recommend taking a manual snapshot of the database before running 
+            this command.
+            
+            Do you wish to proceed? [y/N] > 
+            """))
+        if answer.lower() not in ['y', 'yes']:
+            exit(1)
     if not terraform.perform_apply(config):
         print('Terraform deployment failed.')
         # TODO(#2606): write and upload logs.

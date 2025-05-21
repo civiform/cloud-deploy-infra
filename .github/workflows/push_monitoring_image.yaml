@@ -21,18 +21,18 @@ jobs:
     name: Build monitoring
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      - id: file_changes
-        uses: tj-actions/changed-files@v45
-        with:
-          json: 'true'
+      #- id: file_changes
+      #  uses: tj-actions/changed-files@v45
+      #  with:
+      #    json: 'true'
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
       - name: Run build
         id: build_and_push_monitoring
         env:
@@ -40,7 +40,7 @@ jobs:
           PLATFORM: 'linux/amd64'
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/metrics/')
+        #if: contains(toJSON(steps.file_changes.outputs.all_changed_files), 'cloud/aws/metrics/')
         run: |
           cd $GITHUB_WORKSPACE/cloud/aws/metrics
           ./build-scraper

@@ -8,7 +8,7 @@ resource "azurerm_subnet" "bastion_subnet" {
 
 # Create network security group and SSH rule for public subnet.
 resource "azurerm_network_security_group" "public_nsg" {
-  name                = "${var.resource_group_name}-pblc-nsg"
+  name                = "${var.formatted_resource_group_name}-pblc-nsg"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 
@@ -36,7 +36,7 @@ resource "azurerm_subnet_network_security_group_association" "bastion_subnet_ass
 
 # Create a public IP address for bastion host VM in public subnet.
 resource "azurerm_public_ip" "public_ip" {
-  name                = "${var.resource_group_name}-ip"
+  name                = "${var.formatted_resource_group_name}-ip"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
   # Standard SKUs (like what staging uses) requires Static allocation
@@ -48,12 +48,12 @@ resource "azurerm_public_ip" "public_ip" {
 
 # Create network interface for bastion host VM in public subnet.
 resource "azurerm_network_interface" "bastion_nic" {
-  name                = "${var.resource_group_name}-bstn-nic"
+  name                = "${var.formatted_resource_group_name}-bstn-nic"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    name                          = "${var.resource_group_name}-bstn-nic-cfg"
+    name                          = "${var.formatted_resource_group_name}-bstn-nic-cfg"
     subnet_id                     = azurerm_subnet.bastion_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.public_ip.id
@@ -71,7 +71,7 @@ resource "tls_private_key" "throwaway_public_key" {
 
 # Create bastion host VM.
 resource "azurerm_linux_virtual_machine" "bastion_vm" {
-  name                  = "${var.resource_group_name}-bstn-vm"
+  name                  = "${var.formatted_resource_group_name}bstnvm"
   location              = var.resource_group_location
   resource_group_name   = var.resource_group_name
   network_interface_ids = ["${azurerm_network_interface.bastion_nic.id}"]

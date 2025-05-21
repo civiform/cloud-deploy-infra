@@ -56,7 +56,7 @@ resource "aws_lb" "civiform_lb" {
   load_balancer_type               = "application"
   drop_invalid_header_fields       = false
   subnets                          = var.public_subnets
-  idle_timeout                     = 60
+  idle_timeout                     = var.lb_idle_timeout
   enable_deletion_protection       = false
   enable_cross_zone_load_balancing = false
   enable_http2                     = true
@@ -116,7 +116,7 @@ resource "aws_security_group_rule" "ingress_through_http" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.ingress_sg_cidr]
   prefix_list_ids   = []
 }
 
@@ -131,7 +131,7 @@ resource "aws_security_group_rule" "ingress_through_https" {
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.ingress_sg_cidr]
   prefix_list_ids   = []
 }
 

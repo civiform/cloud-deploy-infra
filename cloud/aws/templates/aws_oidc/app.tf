@@ -31,7 +31,7 @@ module "aws_scraper_logs" {
 
 module "civiform_server_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.61.1"
+  version = "0.61.2"
 
   container_name               = "${var.app_prefix}-civiform"
   container_image              = "${var.civiform_image_repo}:${var.image_tag}"
@@ -136,7 +136,7 @@ module "civiform_server_container_def" {
 
 module "civiform_metrics_scraper_container_def" {
   source  = "cloudposse/ecs-container-definition/aws"
-  version = "0.61.1"
+  version = "0.61.2"
 
   container_name               = "${var.app_prefix}-metrics-scraper"
   container_image              = var.scraper_image
@@ -334,8 +334,10 @@ module "ecs_fargate_service" {
   scale_target_min_capacity = var.ecs_scale_target_min_capacity
   https_target_port         = var.port
   lb_internal               = local.enable_managed_vpc ? false : true
+  lb_idle_timeout           = var.lb_idle_timeout
   lb_logging_enabled        = var.lb_logging_enabled
   extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
+  ingress_sg_cidr           = var.ingress_sg_cidr
   enable_http_listener      = var.enable_http_listener
 
   tags = {

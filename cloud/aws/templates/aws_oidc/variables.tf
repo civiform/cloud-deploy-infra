@@ -544,6 +544,12 @@ variable "external_vpc_public_subnet_ids" {
   default     = []
 }
 
+variable "lb_idle_timeout" {
+  description = "Time in seconds that the connection is allowed to be idle. If the CiviForm server takes longer than this to respond (e.g. when compiling an export), the request will return a 504 Gateway error."
+  type        = number
+  default     = 120
+}
+
 variable "lb_logging_enabled" {
   type        = bool
   description = "Whether to enable LB access logging."
@@ -556,8 +562,19 @@ variable "extra_inbound_rule_cidr" {
   default     = null
 }
 
+variable "ingress_sg_cidr" {
+  description = "The CIDR block for the ingress_through_http and ingress_through_https security groups. This defaults to '0.0.0.0/0' (allowing all traffic)."
+  type        = string
+  default     = "0.0.0.0/0"
+}
+
 variable "enable_http_listener" {
   description = "Whether the HTTP listener should be enabled. Defaulted to true."
   type        = bool
   default     = true
+}
+variable "delete_automated_db_backups" {
+  description = "Whether Terrform should delete automatically generated snapshots when the db is destroyed."
+  type        = bool
+  default     = false
 }

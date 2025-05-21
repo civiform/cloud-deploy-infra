@@ -431,6 +431,12 @@
     "tfvar": true,
     "type": "bool"
   },
+  "LB_IDLE_TIMEOUT": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  },
   "LB_LOGGING_ENABLED": {
     "required": false,
     "secret": false,
@@ -443,7 +449,19 @@
     "tfvar": true,
     "type": "string"
   },
+  "INGRESS_SG_CIDR": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "ENABLE_HTTP_LISTENER": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "DELETE_AUTOMATED_DB_BACKUPS": {
     "required": false,
     "secret": false,
     "tfvar": true,
