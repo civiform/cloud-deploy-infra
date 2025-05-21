@@ -1,3 +1,9 @@
+locals {
+  # We use the first 9 characters of the resource group and strip all non-alphanumeric
+  # characters to match restrictions on resource naming
+  formatted_resource_group_name = replace(substr(var.resource_group_name, 0, 9), "/[^a-zA-Z0-9]/", "")
+}
+
 resource "random_pet" "server" {}
 
 resource "random_string" "resource_code" {
@@ -55,7 +61,7 @@ resource "azurerm_subnet" "server_subnet" {
 }
 
 resource "azurerm_service_plan" "plan" {
-  name                = "${data.azurerm_resource_group.rg.name}-plan"
+  name                = "${local.formatted_resource_group_name}-plan"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Linux"
@@ -72,7 +78,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
 
   site_config {
     application_stack {
-      docker_image_name   = var.image_tag
+      docker_image_name = "${var.civiform_image_repo}:${var.image_tag}"
       docker_registry_url = "https://index.docker.io"
     }
   }
@@ -193,8 +199,9 @@ resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
 module "bastion" {
   source = "../bastion"
 
-  resource_group_name      = data.azurerm_resource_group.rg.name
-  resource_group_location  = data.azurerm_resource_group.rg.location
-  bastion_address_prefixes = var.bastion_address_prefixes
-  vnet_name                = azurerm_virtual_network.civiform_vnet.name
+  formatted_resource_group_name = local.formatted_resource_group_name
+  resource_group_name           = data.azurerm_resource_group.rg.name
+  resource_group_location       = data.azurerm_resource_group.rg.location
+  bastion_address_prefixes      = var.bastion_address_prefixes
+  vnet_name                     = azurerm_virtual_network.civiform_vnet.name
 }
