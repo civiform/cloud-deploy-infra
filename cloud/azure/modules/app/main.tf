@@ -78,7 +78,7 @@ resource "azurerm_linux_web_app" "civiform_app" {
 
   site_config {
     application_stack {
-      docker_image_name = "${var.civiform_image_repo}:${var.image_tag}"
+      docker_image_name   = "${var.civiform_image_repo}:${var.image_tag}"
       docker_registry_url = "https://index.docker.io"
     }
   }
