@@ -18,7 +18,22 @@ data "azurerm_key_vault_secret" "api_secret_salt_key" {
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }
 
+data "azurerm_key_vault_secret" "adfs_client_id" {
+  name         = local.adfs_client_id
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}
+
 data "azurerm_key_vault_secret" "adfs_secret" {
   name         = local.adfs_secret_keyvault_id
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "applicant_oidc_client_id" {
+  name         = local.applicant_oidc_client_id
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "applicant_oidc_client_secret" {
+  name         = local.applicant_oidc_client_secret
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }
