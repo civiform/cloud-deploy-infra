@@ -57,4 +57,9 @@ locals {
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
   }, var.civiform_server_environment_variables)
+  adfs_client_id               = "adfs-client-id"
+  adfs_discovery_uri           = "adfs-discovery-uri"
+  applicant_oidc_client_id     = "applicant-oidc-client-id"
+  applicant_oidc_client_secret = "applicant-oidc-client-secret"
+  applicant_oidc_discovery_uri = "applicant-oidc-discovery-uri"
 }
