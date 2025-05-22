@@ -10,6 +10,7 @@ readonly ADFS_CLIENT_ID="adfs-client-id"
 readonly ADFS_DISCOVERY_URI="adfs-discovery-uri"
 readonly APPLICANT_OIDC_CLIENT_ID="applicant-oidc-client-id"
 readonly APPLICANT_OIDC_CLIENT_SECRET="applicant-oidc-client-secret"
+readonly APPLICANT_OIDC_DISCOVERY_URI="applicant-oidc-discovery-uri"
 readonly TEMPORARY_SECRET="CHANGE ME"
 
 # DOC: Create key vault instance, set permissions, and generate and set secrets
