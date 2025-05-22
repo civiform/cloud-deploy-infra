@@ -32,3 +32,8 @@ data "azurerm_key_vault_secret" "applicant_oidc_client_secret" {
   name         = local.applicant_oidc_client_secret
   key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
 }
+
+data "azurerm_key_vault_secret" "applicant_oidc_discovery_uri" {
+  name         = local.applicant_oidc_discovery_uri
+  key_vault_id = data.azurerm_key_vault.civiform_key_vault.id
+}

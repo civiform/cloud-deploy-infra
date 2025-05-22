@@ -117,3 +117,12 @@ else
     "${APPLICANT_OIDC_CLIENT_SECRET}" \
     "${TEMPORARY_SECRET}"
 fi
+
+if key_vault::has_secret "${vault_name}" "${APPLICANT_OIDC_DISCOVERY_URI}"; then
+  echo "Key ${APPLICANT_OIDC_DISCOVERY_URI} exists in the secret store"
+else
+  key_vault::add_secret \
+    "${vault_name}" \
+    "${APPLICANT_OIDC_DISCOVERY_URI}" \
+    "${TEMPORARY_SECRET}"
+fi

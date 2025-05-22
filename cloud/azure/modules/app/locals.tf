@@ -36,6 +36,7 @@ locals {
     ADFS_DISCOVERY_URI           = data.azurerm_key_vault_secret.adfs_discovery_uri.value
     APPLICANT_OIDC_CLIENT_SECRET = data.azurerm_key_vault_secret.applicant_oidc_client_secret.value
     APPLICANT_OIDC_CLIENT_ID     = data.azurerm_key_vault_secret.applicant_oidc_client_id.value
+    APPLICANT_OIDC_DISCOVERY_URI = data.azurerm_key_vault_secret.applicant_oidc_discovery_uri.value
 
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
@@ -60,4 +61,5 @@ locals {
   adfs_discovery_uri           = "adfs-discovery-uri"
   applicant_oidc_client_id     = "applicant-oidc-client-id"
   applicant_oidc_client_secret = "applicant-oidc-client-secret"
+  applicant_oidc_discovery_uri = "applicant-oidc-discovery-uri"
 }
