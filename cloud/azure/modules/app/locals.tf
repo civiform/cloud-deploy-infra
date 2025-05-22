@@ -31,13 +31,6 @@ locals {
 
     SECRET_KEY = data.azurerm_key_vault_secret.app_secret_key.value
 
-    ADFS_SECRET                  = data.azurerm_key_vault_secret.adfs_secret.value
-    ADFS_CLIENT_ID               = data.azurerm_key_vault_secret.adfs_client_id.value
-    ADFS_DISCOVERY_URI           = data.azurerm_key_vault_secret.adfs_discovery_uri.value
-    APPLICANT_OIDC_CLIENT_SECRET = data.azurerm_key_vault_secret.applicant_oidc_client_secret.value
-    APPLICANT_OIDC_CLIENT_ID     = data.azurerm_key_vault_secret.applicant_oidc_client_id.value
-    APPLICANT_OIDC_DISCOVERY_URI = data.azurerm_key_vault_secret.applicant_oidc_discovery_uri.value
-
     # The values below are all defaulted to null. If SAML authentication is used, the values can be pulled from the
     # saml_keystore module
     LOGIN_RADIUS_KEYSTORE_NAME    = (var.saml_keystore_filename != null ? "/saml/${var.saml_keystore_filename}" : "")
@@ -57,9 +50,4 @@ locals {
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
   }, var.civiform_server_environment_variables)
-  adfs_client_id               = "adfs-client-id"
-  adfs_discovery_uri           = "adfs-discovery-uri"
-  applicant_oidc_client_id     = "applicant-oidc-client-id"
-  applicant_oidc_client_secret = "applicant-oidc-client-secret"
-  applicant_oidc_discovery_uri = "applicant-oidc-discovery-uri"
 }
