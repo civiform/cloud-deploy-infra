@@ -393,6 +393,7 @@ class ConfigLoader:
                         env_vars[name] = config_fields[name]
 
             out[CIVIFORM_SERVER_VARIABLES_KEY] = env_vars
+            print(f"These are the env vars: {env_vars}")
 
         return out
 
