@@ -64,10 +64,3 @@ locals {
     ADFS_ADDITIONAL_SCOPES = ""
   }, var.civiform_server_environment_variables)
 }
-
-output "debug_civiform_server_environment_variables" {
-  value = var.civiform_server_environment_variables
-}
-output "debug_other_thing" {
-  value = local.app_settings
-}
