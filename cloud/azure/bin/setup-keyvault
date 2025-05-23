@@ -8,6 +8,8 @@ readonly API_SECRET_SALT_NAME="api-secret-salt"
 readonly ADFS_SECRET_NAME="adfs-secret"
 readonly ADFS_CLIENT_ID="adfs-client-id"
 readonly ADFS_DISCOVERY_URI="adfs-discovery-uri"
+readonly APPLICANT_OIDC_CLIENT_ID="applicant-oidc-client-id"
+readonly APPLICANT_OIDC_CLIENT_SECRET="applicant-oidc-client-secret"
 readonly TEMPORARY_SECRET="CHANGE ME"
 
 # DOC: Create key vault instance, set permissions, and generate and set secrets
@@ -89,11 +91,20 @@ else
     "${TEMPORARY_SECRET}"
 fi
 
-if key_vault::has_secret "${vault_name}" "${ADFS_DISCOVERY_URI}"; then
-  echo "Key ${ADFS_DISCOVERY_URI} exists in the secret store"
+if key_vault::has_secret "${vault_name}" "${APPLICANT_OIDC_CLIENT_ID}"; then
+  echo "Key ${APPLICANT_OIDC_CLIENT_ID} exists in the secret store"
 else
   key_vault::add_secret \
     "${vault_name}" \
-    "${ADFS_DISCOVERY_URI}" \
+    "${APPLICANT_OIDC_CLIENT_ID}" \
+    "${TEMPORARY_SECRET}"
+fi
+
+if key_vault::has_secret "${vault_name}" "${APPLICANT_OIDC_CLIENT_SECRET}"; then
+  echo "Key ${APPLICANT_OIDC_CLIENT_SECRET} exists in the secret store"
+else
+  key_vault::add_secret \
+    "${vault_name}" \
+    "${APPLICANT_OIDC_CLIENT_SECRET}" \
     "${TEMPORARY_SECRET}"
 fi
