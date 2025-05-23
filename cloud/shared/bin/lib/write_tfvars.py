@@ -25,6 +25,7 @@ class TfVarWriter:
                     for key, value in definition.items():
                         if value is not None:
                             tf_vars_file.write(f'  "{key}"="{value}"\n')
+                            print(f' Writing "{key}"="{value}"\n')
                     tf_vars_file.write("}\n")
                     continue
 
