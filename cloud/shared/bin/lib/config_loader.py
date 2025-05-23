@@ -178,7 +178,7 @@ class ConfigLoader:
         env_var_docs_text = env_var_docs_bytes.decode("utf-8")
         env_var_docs = io.StringIO(env_var_docs_text)
         print("Downloaded env-var-docs.json")
-        print(f"These are the env var docs: {env_var_docs}")
+        print(f"These are the env var docs: {env_var_docs.getValue()}")
         return env_var_docs
 
     # TODO(https://github.com/civiform/civiform/issues/4293): add validations
