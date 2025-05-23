@@ -43,6 +43,8 @@ module "app" {
   saml_keystore_storage_access_key     = module.saml_keystore.storage_access_key
   saml_keystore_storage_account_name   = module.saml_keystore.storage_account_name
   saml_keystore_storage_container_name = module.saml_keystore.storage_container_name
+
+  civiform_server_environment_variables = var.civiform_server_environment_variables
 }
 
 module "custom_hostname" {
