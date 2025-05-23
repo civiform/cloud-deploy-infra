@@ -1,7 +1,3 @@
-output "debug_civiform_server_environment_variables" {
-  value = var.civiform_server_environment_variables
-}
-
 locals {
   # The hard-coded zero indexes here are necessary to access the fqdn from the record set associated with it
   # because the private_dns_zone_configs and record_sets blocks expose lists, even if we only have one dns zone
@@ -16,6 +12,12 @@ locals {
   app_secret_key_keyvault_id      = "app-secret-key"
   api_secret_salt_key_keyvault_id = "api-secret-salt"
   adfs_secret_keyvault_id         = "adfs-secret"
+
+  adfs_client_id               = "adfs-client-id"
+  adfs_discovery_uri           = "adfs-discovery-uri"
+  applicant_oidc_client_id     = "applicant-oidc-client-id"
+  applicant_oidc_client_secret = "applicant-oidc-client-secret"
+  applicant_oidc_discovery_uri = "applicant-oidc-discovery-uri"
 
   app_settings = merge({
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
@@ -61,9 +63,11 @@ locals {
     # azure AD to not include that claim.
     ADFS_ADDITIONAL_SCOPES = ""
   }, var.civiform_server_environment_variables)
-  adfs_client_id               = "adfs-client-id"
-  adfs_discovery_uri           = "adfs-discovery-uri"
-  applicant_oidc_client_id     = "applicant-oidc-client-id"
-  applicant_oidc_client_secret = "applicant-oidc-client-secret"
-  applicant_oidc_discovery_uri = "applicant-oidc-discovery-uri"
+}
+
+output "debug_civiform_server_environment_variables" {
+  value = var.civiform_server_environment_variables
+}
+output "debug_other_thing" {
+  value = local.app_settings
 }
