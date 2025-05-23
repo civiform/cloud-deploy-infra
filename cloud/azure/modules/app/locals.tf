@@ -1,3 +1,7 @@
+output "debug_civiform_server_environment_variables" {
+  value = var.civiform_server_environment_variables
+}
+
 locals {
   # The hard-coded zero indexes here are necessary to access the fqdn from the record set associated with it
   # because the private_dns_zone_configs and record_sets blocks expose lists, even if we only have one dns zone
