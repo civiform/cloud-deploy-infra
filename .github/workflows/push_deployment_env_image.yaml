@@ -1,9 +1,8 @@
+# Note: this was built to help in deploying on Windows, but we currently don't have Windows deployers, so we're disabling it for now.
+
 name: build_push_deployment_env_image
 
 on:
-  push:
-    branches:
-      - main
   # Setting this enables manually triggering workflow in the GitHub UI
   # see https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
   workflow_dispatch: {}
