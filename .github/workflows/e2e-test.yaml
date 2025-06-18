@@ -63,7 +63,7 @@ jobs:
 
       - name: Resolve latest snapshot tag
         # The output is written to GITHUB_ENV as LATEST_SNAPSHOT_TAG
-        run: source cloud/shared/bin/resolve-latest-snapshot-tag
+        run: pwd | ls | source cloud/shared/bin/resolve-latest-snapshot-tag
 
       - name: Run bin/setup
         run: |
@@ -83,15 +83,15 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
-      - name: Notify Slack Complete
-        if: always()
-        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2
-        with:
-          method: chat.postMessage
-          token: ${{ secrets.CIVIBOT_TOKEN }}
-          payload: |
-            channel: ${{ env.CHANNEL_ID }}
-            text: "${{ env.STATUS_ICON }} AWS e2e test for ${{ env.LATEST_SNAPSHOT_TAG }}: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"
-        env:
-          CHANNEL_ID: C03UXPUEXU4
-          STATUS_ICON: ${{fromJSON('[":no_entry:", ":white_check_mark:"]')[job.status == 'success']}}
+      # - name: Notify Slack Complete
+      #   if: always()
+      #   uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2
+      #   with:
+      #     method: chat.postMessage
+      #     token: ${{ secrets.CIVIBOT_TOKEN }}
+      #     payload: |
+      #       channel: ${{ env.CHANNEL_ID }}
+      #       text: "${{ env.STATUS_ICON }} AWS e2e test for ${{ env.LATEST_SNAPSHOT_TAG }}: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"
+      #   env:
+      #     CHANNEL_ID: C03UXPUEXU4
+      #     STATUS_ICON: ${{fromJSON('[":no_entry:", ":white_check_mark:"]')[job.status == 'success']}}
