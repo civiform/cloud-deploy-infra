@@ -63,10 +63,7 @@ jobs:
 
       - name: Resolve latest snapshot tag
         # The output is written to GITHUB_ENV as LATEST_SNAPSHOT_TAG
-        run: |
-             pwd
-             ls
-             source cloud/shared/bin/resolve-latest-snapshot-tag
+        run: source cloud-deploy-infra/cloud/shared/bin/resolve-latest-snapshot-tag
 
       - name: Run bin/setup
         run: |
