@@ -61,6 +61,10 @@ jobs:
       - name: Pre nuke
         run: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
 
+      - name: Resolve latest snapshot tag
+        # The output is written to GITHUB_ENV as LATEST_SNAPSHOT_TAG
+        run: ../cloud/shared/bin/resolve-latest-snapshot-tag
+
       - name: Run bin/setup
         run: |
           # Must run setup scripts from this directory due to 'source' lines in the scripts.
@@ -87,7 +91,7 @@ jobs:
           token: ${{ secrets.CIVIBOT_TOKEN }}
           payload: |
             channel: ${{ env.CHANNEL_ID }}
-            text: "${{ env.STATUS_ICON }} AWS e2e test: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"
+            text: "${{ env.STATUS_ICON }} AWS e2e test for snapshot tag ${{ env.LATEST_SNAPSHOT_TAG }}: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ job.status }}>"
         env:
           CHANNEL_ID: C03UXPUEXU4
           STATUS_ICON: ${{fromJSON('[":no_entry:", ":white_check_mark:"]')[job.status == 'success']}}
