@@ -11,7 +11,7 @@ module "ecs_cluster" {
 # TODO: reconcile with other logs bucket. We should only have one.
 module "aws_cw_logs" {
   source    = "cn-terraform/cloudwatch-logs/aws"
-  version   = "1.0.12"
+  version   = "1.0.13"
   logs_path = "${var.app_prefix}-civiformlogs/"
   tags = {
     Name = "${var.app_prefix} Civiform Cloud Watch Logs"
@@ -21,7 +21,7 @@ module "aws_cw_logs" {
 
 module "aws_scraper_logs" {
   source    = "cn-terraform/cloudwatch-logs/aws"
-  version   = "1.0.12"
+  version   = "1.0.13"
   logs_path = "${var.app_prefix}-civiform-scraper-logs/"
   tags = {
     Name = "${var.app_prefix} Scraper Logs"
