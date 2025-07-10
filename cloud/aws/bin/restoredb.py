@@ -38,7 +38,7 @@ def run(config: ConfigLoader):
             The "ssh" and "ssh-keygen" commands must be available on your machine, typically provided by the openssh-client package. If you do not have these commands, you will need to install them before proceeding.
         """))
     answer = input('Do you understand the risks and wish to proceed? (y/N): ')
-    if answer.lower() != 'y':
+    if answer.lower().strip() not in ['y', 'yes']:
         print('Exiting.')
         return
 
@@ -54,7 +54,7 @@ def run(config: ConfigLoader):
                     yellow(
                         'File does not appear to be a valid PostgreSQL dump file. Are you sure you wish to use this file? (y/N): '
                     ))
-                if answer.lower() == 'y':
+                if answer.lower().strip() in ['y', 'yes']:
                     break
             else:
                 break

@@ -91,7 +91,7 @@ class ConfigLoader:
                 Would you like to continue with the deploy? [y/N] > 
                 '''))
             answer = input(msg)
-            if answer.lower() not in ['y', 'yes']:
+            if answer.lower().strip() not in ['y', 'yes']:
                 exit(1)
 
         self._export_env_variables(config_fields)

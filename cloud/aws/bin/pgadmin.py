@@ -113,7 +113,7 @@ def _print_connection_info(config, url):
     )
     answer = input(
         'Would you like to print the pgadmin username and password? [y/N] > ')
-    if answer.lower() in ['y', 'yes']:
+    if answer.lower().strip() in ['y', 'yes']:
         print(
             f"  pgAdmin login username: {cyan(aws.get_secret_value(pgadmin_username_secret))}\n"
             f"  pgAdmin login password: {cyan(aws.get_secret_value(pgadmin_password_secret))}\n"
@@ -124,7 +124,7 @@ def _print_connection_info(config, url):
         )
 
     answer = input('Would you like to print the database password? [y/N] > ')
-    if answer.lower() in ['y', 'yes']:
+    if answer.lower().strip() in ['y', 'yes']:
         print(
             f"  PostgreSQL database password: {cyan(aws.get_secret_value(database_password_secret))}"
         )
