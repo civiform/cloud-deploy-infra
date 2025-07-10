@@ -109,7 +109,7 @@ def validate_tag(tag):
         end='',
         flush=True)
     resp = input()
-    return resp.lower().strip() == 'yes'
+    return resp.lower().strip() in ['y', 'yes']
 
 
 def normalize_tag(tag):

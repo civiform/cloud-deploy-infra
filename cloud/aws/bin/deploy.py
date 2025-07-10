@@ -30,7 +30,7 @@ def run(config: ConfigLoader):
             
             Do you wish to proceed? [y/N] > 
             """))
-        if answer.lower() not in ['y', 'yes']:
+        if answer.lower().strip() not in ['y', 'yes']:
             exit(1)
     if not terraform.perform_apply(config):
         print('Terraform deployment failed.')
@@ -138,7 +138,7 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                         yellow(
                             'Would you like to proceed with the upgrade? (y/N): '
                         ))
-                    if answer.lower() not in ['y', 'yes']:
+                    if answer.lower().strip() not in ['y', 'yes']:
                         exit(1)
             else:
                 if minor_to_apply is None:
@@ -157,7 +157,7 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                         yellow(
                             'Would you like to proceed with the upgrade? (y/N): '
                         ))
-                    if answer.lower() not in ['y', 'yes']:
+                    if answer.lower().strip() not in ['y', 'yes']:
                         exit(2)
                 config.add_config_value('ALLOW_POSTGRESQL_UPGRADE', 'true')
 
