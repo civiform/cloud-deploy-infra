@@ -5,10 +5,11 @@ resource "aws_sns_topic" "civiform_alert_topic" {
 }
 
 resource "aws_sns_topic_subscription" "civiform_alert_subscription" {
-  count     = var.civiform_alarm_email != "" ? 1 : 0
-  topic_arn = aws_sns_topic.civiform_alert_topic[0].arn
-  protocol  = "email"
-  endpoint  = var.civiform_alarm_email
+  count                  = var.civiform_alarm_email != "" ? 1 : 0
+  topic_arn              = aws_sns_topic.civiform_alert_topic[0].arn
+  protocol               = "email"
+  endpoint               = var.civiform_alarm_email
+  endpoint_auto_confirms = var.auto_confirm_sns_subscription
 }
 
 locals {
