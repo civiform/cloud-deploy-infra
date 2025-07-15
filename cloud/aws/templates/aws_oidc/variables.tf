@@ -581,5 +581,5 @@ variable "delete_automated_db_backups" {
 variable "auto_confirm_sns_subscription" {
   description = "Whether to auto-confirm SNS topic subscription automatically."
   type        = bool
-  default     = true
+  default     = false
 }
