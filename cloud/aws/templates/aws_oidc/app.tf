@@ -339,6 +339,7 @@ module "ecs_fargate_service" {
   extra_inbound_rule_cidr   = var.extra_inbound_rule_cidr
   ingress_sg_cidr           = var.ingress_sg_cidr
   enable_http_listener      = var.enable_http_listener
+  sns_topic_arn             = aws_sns_topic.civiform_alert_topic[0].arn
 
   tags = {
     Name = "${var.app_prefix} Civiform Fargate Service"

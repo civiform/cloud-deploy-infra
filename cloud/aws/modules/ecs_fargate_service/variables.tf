@@ -167,3 +167,9 @@ variable "lb_idle_timeout" {
   type        = number
   default     = 120
 }
+
+variable "sns_topic_arn" {
+  type        = string
+  default     = null
+  description = "Optional SNS topic ARN for ECS autoscaling alarms."
+}
