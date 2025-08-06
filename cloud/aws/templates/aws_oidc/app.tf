@@ -232,6 +232,16 @@ locals {
               "aps:RemoteWrite"
             ],
             "Resource" : "*"
+          },
+          {
+            "Effect" : "Allow",
+            "Action" : [
+              "ssmmessages:CreateControlChannel",
+              "ssmmessages:CreateDataChannel",
+              "ssmmessages:OpenControlChannel",
+              "ssmmessages:OpenDataChannel"
+            ],
+            "Resource" : "*"
           }
         ]
       }

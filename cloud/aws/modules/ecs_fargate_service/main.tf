@@ -254,7 +254,7 @@ resource "aws_ecs_service" "service" {
   deployment_minimum_healthy_percent = 100
   desired_count                      = var.desired_count
   enable_ecs_managed_tags            = false
-  enable_execute_command             = false
+  enable_execute_command             = true
   health_check_grace_period_seconds  = 20
   launch_type                        = "FARGATE"
   force_new_deployment               = false
