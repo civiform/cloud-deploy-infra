@@ -466,5 +466,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
+  },
+  "USE_DOMAIN_VERIFICATION_FOR_SENDER_EMAIL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
   }  
 }

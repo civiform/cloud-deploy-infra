@@ -286,6 +286,12 @@ variable "sender_email_address" {
   default     = null
 }
 
+variable "use_domain_verification_for_sender_email" {
+  type        = bool
+  description = "If a domain was added through SES for email verification, this should be set to true."
+  default     = false
+}
+
 variable "staging_applicant_notification_mailing_list" {
   type        = string
   description = "Applicant notification mailing list for staging"
