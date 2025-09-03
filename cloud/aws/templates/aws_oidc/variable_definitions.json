@@ -369,6 +369,12 @@
     "tfvar": true,
     "type": "string"
   },
+  "ECS_CREATE_AUTOSCALE_ALARM": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
   "ECS_SCALE_TARGET_MAX_CAPACITY": {
     "required": false,
     "secret": false,

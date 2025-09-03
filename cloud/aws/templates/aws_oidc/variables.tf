@@ -451,6 +451,12 @@ variable "ecs_alarm_statistic_period" {
   default     = "60"
 }
 
+variable "ecs_create_autoscale_alarm" {
+  type        = bool
+  description = "Whether or not to create an SNS topic and alarm for autoscaling events."
+  default     = true
+}
+
 variable "ecs_scale_target_max_capacity" {
   type        = number
   description = "The max capacity of the scalable target."
