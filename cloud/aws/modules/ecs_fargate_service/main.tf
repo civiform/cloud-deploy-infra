@@ -357,7 +357,7 @@ module "ecs-autoscaling" {
   scale_target_max_capacity = var.scale_target_max_capacity
   scale_target_min_capacity = var.scale_target_min_capacity
   tags                      = var.tags
-  sns_topic_arn             = var.sns_topic_arn
+  high_cpu_sns_topic_arn    = var.sns_topic_arn
 }
 
 moved {
