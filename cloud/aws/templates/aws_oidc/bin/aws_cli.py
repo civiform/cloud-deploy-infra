@@ -106,7 +106,6 @@ class AwsCli:
             """
             go to the Service URL printed above and click on the logs tab.
             More details at https://docs.civiform.us/it-manual/sre-playbook/terraform-deploy-system/terraform-aws-deployment#inspecting-logs
-            For debugging help, contact the CiviForm oncall: https://docs.civiform.us/governance-and-management/project-management/on-call-guide#on-call-responsibilities
             """)
 
         current_deployment_id = None
