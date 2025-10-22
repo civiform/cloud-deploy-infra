@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "azurerm"
-      version = "4.42.0"
+      version = "4.49.0"
     }
     random = {}
   }
