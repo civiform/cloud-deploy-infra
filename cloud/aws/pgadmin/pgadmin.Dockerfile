@@ -1,4 +1,4 @@
-FROM dpage/pgadmin4:9.12
+FROM dpage/pgadmin4:9.13
 
 USER root
 
