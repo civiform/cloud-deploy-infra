@@ -78,14 +78,14 @@ jobs:
         # default:
         # https://docs.github.com/en/actions/learn-github-actions/expressions#status-check-functions.
         if: (success() || failure()) && steps.get-nuke.outcome == 'success' && steps.get-aws-creds.outcome == 'success'
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           timeout_minutes: 10
           max_attempts: 3
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2
+        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3
         with:
           method: chat.postMessage
           token: ${{ secrets.CIVIBOT_TOKEN }}
