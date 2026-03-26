@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Run the shell checker
-        uses: luizm/action-sh-checker@master
+        uses: luizm/action-sh-checker@883217215b11c1fabbf00eb1a9a041f62d74c744 # master
         env:
           SHELLCHECK_OPTS: -s bash -S error
           sh_checker_exclude: '*.md'
