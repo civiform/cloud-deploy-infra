@@ -14,6 +14,7 @@
       "description": "Ensures GitHub Actions use commit hashes for security and include a version comment."
     },
     // Disable updates for the azurerm Terraform provider because we don't currently support azure deployments
+    // TODO(#13129): Re-enable dependency updates when we continue azure support
     {
       "matchPackageNames": ["azurerm"],
       "matchManagers": ["terraform"],
