@@ -12,6 +12,12 @@
       "postUpdateOptions": ["comment"],
       "rebaseWhen": "always",
       "description": "Ensures GitHub Actions use commit hashes for security and include a version comment."
+    },
+    // Disable updates for the azurerm Terraform provider because we don't currently support azure deployments
+    {
+      "matchPackageNames": ["azurerm"],
+      "matchManagers": ["terraform"],
+      "enabled": false
     }
   ]
 }
