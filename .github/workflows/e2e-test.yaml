@@ -38,7 +38,7 @@ jobs:
           path: civiform-deploy
 
       - name: Install terraform cli
-        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
         with:
           terraform_wrapper: false
 
@@ -52,7 +52,7 @@ jobs:
 
       - id: get-aws-creds
         name: Authenticate to AWS
-        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6
         with:
           # Role in civiform-deploy-e2e-tests account.
           role-to-assume: arn:aws:iam::296877675213:role/e2e-test-runner
@@ -85,7 +85,7 @@ jobs:
           command: /aws-nuke run --config $GITHUB_WORKSPACE/cloud-deploy-infra/e2e-test/nuke.yaml --no-dry-run --force --force-sleep=3
       - name: Notify Slack Complete
         if: always()
-        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3
         with:
           method: chat.postMessage
           token: ${{ secrets.CIVIBOT_TOKEN }}
