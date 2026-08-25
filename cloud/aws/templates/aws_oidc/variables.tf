@@ -489,6 +489,12 @@ variable "monitoring_stack_enabled" {
   default     = true
 }
 
+variable "grafana_version" {
+  type        = string
+  description = "Grafana version for the managed workspace. Set GRAFANA_VERSION in civiform_config.sh to choose one. If unset, cloud/aws/bin/deploy.py upgrades a workspace below the minimum supported version and otherwise leaves it as is. A new workspace uses the AWS default."
+  default     = null
+}
+
 variable "random_password_length" {
   type        = number
   description = "Length of the random generated password to use for app_secret_key"
