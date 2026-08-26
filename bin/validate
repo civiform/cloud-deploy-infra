@@ -1,0 +1,42 @@
+#! /usr/bin/env bash
+
+# DOC: Run terraform validate against every Terraform root under cloud/.
+# Initializes without a backend and without cloud credentials, so this runs anywhere.
+#
+# Modules are validated through the roots that call them rather than on their
+# own: standalone they don't pin a provider version and resolve to the latest
+# release, which produces failures that don't reflect a real deploy.
+
+set -euo pipefail
+
+if ! which terraform >/dev/null; then
+  echo "Can not find the terraform binary. Please install Terraform first."
+  exit 1
+fi
+
+roots=(
+  cloud/aws/templates/aws_oidc
+  cloud/aws/templates/aws_oidc/setup
+  cloud/azure
+  cloud/azure/templates/azure_saml_ses
+  cloud/gcp/templates/gke_autopilot
+  cloud/gcp/templates/gke_autopilot/setup
+)
+
+failed=0
+
+for dir in "${roots[@]}"; do
+  echo "==> ${dir}"
+
+  if ! terraform -chdir="${dir}" init -backend=false -input=false >/dev/null; then
+    echo "init failed: ${dir}"
+    failed=1
+    continue
+  fi
+
+  if ! terraform -chdir="${dir}" validate; then
+    failed=1
+  fi
+done
+
+exit "${failed}"

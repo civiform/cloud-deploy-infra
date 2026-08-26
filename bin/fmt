@@ -1,10 +1,15 @@
 #! /usr/bin/env bash
 
-# DOC: Format terraform, python, and shell script files.
+# DOC: Format terraform, python, and shell script files, then validate terraform.
+
+pushd "$(git rev-parse --show-toplevel)" >/dev/null || exit
 
 if which terraform; then
   echo "Formatting Terraform files"
   terraform fmt -recursive -write
+
+  echo "Validating Terraform roots"
+  bin/validate
 else
   echo "Can not find the terraform binary. Please install Terraform first."
   exit 1
