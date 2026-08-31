@@ -27,6 +27,9 @@ FARGATE_SERVICE = 'civiform-service'
 LOAD_BALANCER = 'civiform-lb'
 CLUSTER = 'civiform'
 
+# Defined in cloud/aws/templates/aws_oidc/monitoring.tf
+GRAFANA_WORKSPACE = 'civiform-metrics'
+
 # Defined in cloud/aws/modules/setup/backend_storage.tf
 S3_TERRAFORM_STATE_BUCKET = 'civiform-backendstate'
 S3_TERRAFORM_LOCK_TABLE = 'civiform-locktable'
