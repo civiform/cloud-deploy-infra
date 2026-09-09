@@ -15,7 +15,8 @@ def is_dns_enabled(config: ConfigLoader) -> bool:
 
 def get_module_dir() -> str:
     """Returns the absolute path to the cloudflare_dns Terraform module."""
-    return os.path.join(os.getcwd(), 'cloud', 'shared', 'modules', 'cloudflare_dns')
+    return os.path.join(
+        os.getcwd(), 'cloud', 'shared', 'modules', 'cloudflare_dns')
 
 
 def setup_backend(config: ConfigLoader):
@@ -29,7 +30,8 @@ def setup_backend(config: ConfigLoader):
             shutil.copy(backend_override_src, backend_override_dest)
         return
 
-    backend_file_location = os.path.join(module_dir, config.backend_vars_filename)
+    backend_file_location = os.path.join(
+        module_dir, config.backend_vars_filename)
     with open(backend_file_location, 'w') as f:
         f.write(
             f'bucket         = "{config.app_prefix}-{resources.S3_TERRAFORM_STATE_BUCKET}"\n'

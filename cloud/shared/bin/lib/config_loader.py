@@ -195,8 +195,8 @@ class ConfigLoader:
             self._validate_cloudflare_dns_variables(self._config_fields))
         return errors
 
-    def _validate_cloudflare_dns_variables(
-            self, config_fields: dict) -> List[str]:
+    def _validate_cloudflare_dns_variables(self,
+                                           config_fields: dict) -> List[str]:
         validation_errors = []
         if config_fields.get("ENABLE_CLOUDFLARE_DNS") == "true":
             if not config_fields.get("CLOUDFLARE_RECORD_NAME"):
@@ -207,11 +207,13 @@ class ConfigLoader:
             if not config_fields.get("CLOUDFLARE_API_TOKEN"):
                 validation_errors.append(
                     red(
-                        "'CLOUDFLARE_API_TOKEN' is required when ENABLE_CLOUDFLARE_DNS is set to true."))
+                        "'CLOUDFLARE_API_TOKEN' is required when ENABLE_CLOUDFLARE_DNS is set to true."
+                    ))
             if not config_fields.get("CLOUDFLARE_ZONE_ID"):
                 validation_errors.append(
                     red(
-                        "'CLOUDFLARE_ZONE_ID' is required when ENABLE_CLOUDFLARE_DNS is set to true."))
+                        "'CLOUDFLARE_ZONE_ID' is required when ENABLE_CLOUDFLARE_DNS is set to true."
+                    ))
         return validation_errors
 
     def _validate_infra_variables(

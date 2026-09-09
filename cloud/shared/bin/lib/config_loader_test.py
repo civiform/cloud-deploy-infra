@@ -501,8 +501,7 @@ class TestConfigLoader(unittest.TestCase):
             any("CLOUDFLARE_RECORD_NAME" in error for error in errors))
         self.assertTrue(
             any("CLOUDFLARE_API_TOKEN" in error for error in errors))
-        self.assertTrue(
-            any("CLOUDFLARE_ZONE_ID" in error for error in errors))
+        self.assertTrue(any("CLOUDFLARE_ZONE_ID" in error for error in errors))
 
     def test_validate_config_cloudflare_dns_valid(self):
         config_loader = ConfigLoader()
