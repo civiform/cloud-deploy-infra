@@ -49,7 +49,7 @@ def write_tfvars(config: ConfigLoader, target_dns: str):
     module_dir = get_module_dir()
     tfvars_path = os.path.join(module_dir, config.tfvars_filename)
 
-    secret_id = (
+    api_token_secret_id = (
         config.get_config_var('CLOUDFLARE_API_TOKEN_SECRET_ARN') or
         f'{config.app_prefix}-{resources.CLOUDFLARE_API_TOKEN_SECRET}')
     zone_id = config.get_config_var('CLOUDFLARE_ZONE_ID') or ''
@@ -59,7 +59,8 @@ def write_tfvars(config: ConfigLoader, target_dns: str):
     proxied_val = 'true' if str(proxied).lower() == 'true' else 'false'
 
     with open(tfvars_path, 'w') as f:
-        f.write(f'cloudflare_api_token_secret_id = "{secret_id}"\n')
+        # codeql[py/clear-text-storage-sensitive-data]: The API token is stored in AWS Secrets Manager. This value is just the ARN or Key of said secret.
+        f.write(f'cloudflare_api_token_secret_id = "{api_token_secret_id}"\n')
         f.write(f'aws_region                     = "{config.aws_region}"\n')
         f.write(f'cloudflare_zone_id             = "{zone_id}"\n')
         f.write(f'record_name                    = "{record_name}"\n')
