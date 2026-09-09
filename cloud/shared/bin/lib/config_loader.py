@@ -204,11 +204,7 @@ class ConfigLoader:
                     red(
                         "'CLOUDFLARE_RECORD_NAME' is required when ENABLE_CLOUDFLARE_DNS is set to true. "
                         "Please specify the DNS record name to create."))
-            if not config_fields.get("CLOUDFLARE_API_TOKEN"):
-                validation_errors.append(
-                    red(
-                        "'CLOUDFLARE_API_TOKEN' is required when ENABLE_CLOUDFLARE_DNS is set to true."
-                    ))
+
             if not config_fields.get("CLOUDFLARE_ZONE_ID"):
                 validation_errors.append(
                     red(

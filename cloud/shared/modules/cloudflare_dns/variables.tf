@@ -1,7 +1,12 @@
-variable "cloudflare_api_token" {
+variable "aws_region" {
   type        = string
-  sensitive   = true
-  description = "Cloudflare API token with Zone.DNS:Edit permissions"
+  description = "AWS region for Secrets Manager and backend"
+  default     = "us-east-1"
+}
+
+variable "cloudflare_api_token_secret_id" {
+  type        = string
+  description = "AWS Secrets Manager secret ARN or name containing the Cloudflare API token"
   default     = null
 }
 

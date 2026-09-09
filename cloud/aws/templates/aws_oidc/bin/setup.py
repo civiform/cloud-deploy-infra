@@ -99,6 +99,16 @@ class Setup(AwsSetupTemplate):
         for name, doc in SECRETS.items():
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
+
+        if cloudflare_dns.is_dns_enabled(self.config):
+            secret_arn = self.config.get_config_var(
+                'CLOUDFLARE_API_TOKEN_SECRET_ARN')
+            if not secret_arn:
+                self._maybe_set_secret_value(
+                    f'{self.config.app_prefix}-{resources.CLOUDFLARE_API_TOKEN_SECRET}',
+                    'Secret for the Cloudflare API token. Enter a token with Zone.DNS:Edit permissions.',
+                )
+
         if self.config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
             fetch = input(
                 "\nPOSTGRES_RESTORE_SNAPSHOT_IDENTIFIER was set. In order for the restored database to be useable, we need to find the username and password secrets stored with the app prefix where the database was originally snapshotted. If these secrets no longer exists in AWS and you say no here, you can enter the username and password manually. Fetch from previous app prefix? [Y/n] > "

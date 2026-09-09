@@ -499,17 +499,33 @@ class TestConfigLoader(unittest.TestCase):
         errors = config_loader.validate_config()
         self.assertTrue(
             any("CLOUDFLARE_RECORD_NAME" in error for error in errors))
-        self.assertTrue(
-            any("CLOUDFLARE_API_TOKEN" in error for error in errors))
         self.assertTrue(any("CLOUDFLARE_ZONE_ID" in error for error in errors))
+        self.assertFalse(
+            any("CLOUDFLARE_API_TOKEN" in error for error in errors))
 
     def test_validate_config_cloudflare_dns_valid(self):
         config_loader = ConfigLoader()
         config_loader._config_fields = {
             "ENABLE_CLOUDFLARE_DNS": "true",
             "CLOUDFLARE_RECORD_NAME": "test-record",
-            "CLOUDFLARE_API_TOKEN": "secret-token",
             "CLOUDFLARE_ZONE_ID": "zone-123",
+        }
+        config_loader._infra_variable_definitions = {}
+        config_loader._civiform_server_env_var_docs = {}
+
+        self.assertEqual(config_loader.validate_config(), [])
+
+    def test_validate_config_cloudflare_dns_valid_with_secret_arn(self):
+        config_loader = ConfigLoader()
+        config_loader._config_fields = {
+            "ENABLE_CLOUDFLARE_DNS":
+                "true",
+            "CLOUDFLARE_RECORD_NAME":
+                "test-record",
+            "CLOUDFLARE_ZONE_ID":
+                "zone-123",
+            "CLOUDFLARE_API_TOKEN_SECRET_ARN":
+                "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-token",
         }
         config_loader._infra_variable_definitions = {}
         config_loader._civiform_server_env_var_docs = {}

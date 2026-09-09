@@ -221,3 +221,22 @@ resource "aws_secretsmanager_secret_version" "esri_arcgis_api_token_secret_versi
   secret_id     = aws_secretsmanager_secret.esri_arcgis_api_token_secret.id
   secret_string = " "
 }
+
+# Creating an AWS secret for cloudflare_api_token
+resource "aws_secretsmanager_secret" "cloudflare_api_token_secret" {
+  count = var.enable_cloudflare_dns && (var.cloudflare_api_token_secret_arn == null || var.cloudflare_api_token_secret_arn == "") ? 1 : 0
+  tags = {
+    Name = "${var.app_prefix} Civiform Cloudflare API Token Secret"
+    Type = "Civiform Cloudflare API Token Secret"
+  }
+  name                    = "${var.app_prefix}-civiform_cloudflare_api_token"
+  kms_key_id              = aws_kms_key.civiform_kms_key.arn
+  recovery_window_in_days = local.secret_recovery_window_in_days
+}
+
+# Creating an AWS secret version for cloudflare_api_token
+resource "aws_secretsmanager_secret_version" "cloudflare_api_token_secret_version" {
+  count         = var.enable_cloudflare_dns && (var.cloudflare_api_token_secret_arn == null || var.cloudflare_api_token_secret_arn == "") ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.cloudflare_api_token_secret[0].id
+  secret_string = " "
+}

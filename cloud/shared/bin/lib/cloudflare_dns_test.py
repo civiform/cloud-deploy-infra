@@ -12,14 +12,22 @@ class TestCloudflareDns(unittest.TestCase):
     def setUp(self):
         self.config = ConfigLoader()
         self.config._config_fields = {
-            "APP_PREFIX": "test-app",
-            "AWS_REGION": "us-east-1",
-            "ENABLE_CLOUDFLARE_DNS": "true",
-            "CLOUDFLARE_RECORD_NAME": "my-instance",
-            "CLOUDFLARE_ZONE_ID": "mock-zone-id",
-            "CLOUDFLARE_API_TOKEN": "mock-token",
-            "CLOUDFLARE_TTL": "300",
-            "CLOUDFLARE_PROXIED": "false",
+            "APP_PREFIX":
+                "test-app",
+            "AWS_REGION":
+                "us-east-1",
+            "ENABLE_CLOUDFLARE_DNS":
+                "true",
+            "CLOUDFLARE_RECORD_NAME":
+                "my-instance",
+            "CLOUDFLARE_ZONE_ID":
+                "mock-zone-id",
+            "CLOUDFLARE_API_TOKEN_SECRET_ARN":
+                "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-token",
+            "CLOUDFLARE_TTL":
+                "300",
+            "CLOUDFLARE_PROXIED":
+                "false",
         }
 
     def test_is_dns_enabled(self):
@@ -44,15 +52,40 @@ class TestCloudflareDns(unittest.TestCase):
                 with open(tfvars_file, "r") as f:
                     content = f.read()
 
-                self.assertIn('cloudflare_api_token = "mock-token"', content)
-                self.assertIn('cloudflare_zone_id   = "mock-zone-id"', content)
-                self.assertIn('record_name          = "my-instance"', content)
                 self.assertIn(
-                    'target_dns_name      = "my-load-balancer.elb.amazonaws.com"',
+                    'cloudflare_api_token_secret_id = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-token"',
                     content)
-                self.assertIn('app_prefix           = "test-app"', content)
-                self.assertIn('ttl                  = 300', content)
-                self.assertIn('proxied              = false', content)
+                self.assertIn(
+                    'aws_region                     = "us-east-1"', content)
+                self.assertIn(
+                    'cloudflare_zone_id             = "mock-zone-id"', content)
+                self.assertIn(
+                    'record_name                    = "my-instance"', content)
+                self.assertIn(
+                    'target_dns_name                = "my-load-balancer.elb.amazonaws.com"',
+                    content)
+                self.assertIn(
+                    'app_prefix                     = "test-app"', content)
+                self.assertIn('ttl                            = 300', content)
+                self.assertIn('proxied                        = false', content)
+
+    def test_write_tfvars_default_secret_id(self):
+        del self.config._config_fields["CLOUDFLARE_API_TOKEN_SECRET_ARN"]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("cloud.shared.bin.lib.cloudflare_dns.get_module_dir",
+                       return_value=tmpdir):
+                cloudflare_dns.write_tfvars(
+                    self.config, "my-load-balancer.elb.amazonaws.com")
+
+                tfvars_file = os.path.join(tmpdir, "setup.auto.tfvars")
+                self.assertTrue(os.path.exists(tfvars_file))
+
+                with open(tfvars_file, "r") as f:
+                    content = f.read()
+
+                self.assertIn(
+                    'cloudflare_api_token_secret_id = "test-app-civiform_cloudflare_api_token"',
+                    content)
 
     def test_setup_backend_remote(self):
         with tempfile.TemporaryDirectory() as tmpdir:

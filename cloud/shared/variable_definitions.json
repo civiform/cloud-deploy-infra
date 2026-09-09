@@ -77,12 +77,12 @@
   "ENABLE_CLOUDFLARE_DNS": {
     "required": false,
     "secret": false,
-    "tfvar": false,
+    "tfvar": true,
     "type": "bool"
   },
-  "CLOUDFLARE_API_TOKEN": {
+  "CLOUDFLARE_API_TOKEN_SECRET_ARN": {
     "required": false,
-    "secret": true,
+    "secret": false,
     "tfvar": true,
     "type": "string"
   },
