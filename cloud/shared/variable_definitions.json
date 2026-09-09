@@ -73,5 +73,41 @@
     "secret": false,
     "tfvar": false,
     "type": "string"
+  },
+  "ENABLE_CLOUDFLARE_DNS": {
+    "required": false,
+    "secret": false,
+    "tfvar": false,
+    "type": "bool"
+  },
+  "CLOUDFLARE_API_TOKEN": {
+    "required": false,
+    "secret": true,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_ZONE_ID": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_RECORD_NAME": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_PROXIED": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "CLOUDFLARE_TTL": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   }
 }

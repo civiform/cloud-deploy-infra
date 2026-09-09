@@ -21,6 +21,7 @@ roots=(
   cloud/azure/templates/azure_saml_ses
   cloud/gcp/templates/gke_autopilot
   cloud/gcp/templates/gke_autopilot/setup
+  cloud/shared/modules/cloudflare_dns
 )
 
 failed=0

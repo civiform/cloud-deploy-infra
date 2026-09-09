@@ -7,6 +7,7 @@ from cloud.shared.bin.lib import terraform
 from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.color import red, yellow, cyan
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib import cloudflare_dns
 
 
 def run(config: ConfigLoader):
@@ -53,9 +54,16 @@ def run(config: ConfigLoader):
     aws.wait_for_ecs_service_healthy()
     lb_dns = aws.get_load_balancer_dns(f'{config.app_prefix}-civiform-lb')
     base_url = config.get_base_url()
-    print(
-        f'Server is available at {lb_dns}. Check your domain registrar to ensure your CNAME record for {base_url} points to this address.'
-    )
+    if cloudflare_dns.is_dns_enabled(config):
+        cloudflare_dns.apply_dns(config, target_dns=lb_dns)
+        record_name = config.get_config_var('CLOUDFLARE_RECORD_NAME')
+        print(
+            f'Server is available at {lb_dns} and mapped to Cloudflare DNS record {record_name}.'
+        )
+    else:
+        print(
+            f'Server is available at {lb_dns}. Check your domain registrar to ensure your CNAME record for {base_url} points to this address.'
+        )
 
 
 def _check_application_secret_length(config: ConfigLoader, aws: AwsCli):

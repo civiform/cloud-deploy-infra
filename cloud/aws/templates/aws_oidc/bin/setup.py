@@ -7,6 +7,7 @@ from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.print import print
+from cloud.shared.bin.lib import cloudflare_dns
 
 SECRETS: Dict[str, str] = {
     resources.ADFS_CLIENT_ID:
@@ -121,6 +122,11 @@ class Setup(AwsSetupTemplate):
             self._maybe_change_default_db_password()
 
         self._aws_cli.wait_for_ecs_service_healthy()
+        app = self.config.app_prefix
+        lb_dns = self._aws_cli.get_load_balancer_dns(
+            f'{app}-{resources.LOAD_BALANCER}')
+        if cloudflare_dns.is_dns_enabled(self.config):
+            cloudflare_dns.apply_dns(self.config, target_dns=lb_dns)
         self._print_final_message()
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):
@@ -184,10 +190,16 @@ class Setup(AwsSetupTemplate):
             f'{app}-{resources.LOAD_BALANCER}')
         print(f'Server is available on url: {lb_dns}')
         print('\nNext steps to complete your Civiform setup:')
-        base_url = self.config.get_base_url()
-        print(
-            f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'
-        )
+        if cloudflare_dns.is_dns_enabled(self.config):
+            record_name = self.config.get_config_var('CLOUDFLARE_RECORD_NAME')
+            print(
+                f'Cloudflare DNS record {record_name} successfully configured to point to {lb_dns}.'
+            )
+        else:
+            base_url = self.config.get_base_url()
+            print(
+                f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'
+            )
         ses_address = self.config.get_config_var('SENDER_EMAIL_ADDRESS')
         print(
             f'Verify email address {ses_address}. If you didn\'t receive the ' +

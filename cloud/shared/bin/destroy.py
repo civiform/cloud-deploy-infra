@@ -4,11 +4,14 @@ Destroy.py destroys Civiform deployment.
 from typing import List
 
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib import cloudflare_dns
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_destroy
 
 
 def run(config: ConfigLoader, params: List[str]):
+    if cloudflare_dns.is_dns_enabled(config):
+        cloudflare_dns.destroy_dns(config)
     template_destroy = get_config_specific_destroy(config)
     template_destroy.pre_terraform_destroy()
     terraform.perform_apply(config, is_destroy=True)
