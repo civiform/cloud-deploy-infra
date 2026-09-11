@@ -113,8 +113,13 @@ def destroy_dns(config: ConfigLoader) -> bool:
     if not os.path.exists(tfvars_path):
         write_tfvars(config, target_dns='dummy-target')
 
-    return terraform.perform_apply(
+    success = terraform.perform_apply(
         config,
         is_destroy=True,
         terraform_template_dir=module_dir,
     )
+    if success:
+        print(f'Successfully destroyed Cloudflare DNS record: {record_name}')
+    else:
+        print(f'Failed to destroy Cloudflare DNS record: {record_name}')
+    return success

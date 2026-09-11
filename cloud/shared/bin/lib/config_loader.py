@@ -199,6 +199,13 @@ class ConfigLoader:
                                            config_fields: dict) -> List[str]:
         validation_errors = []
         if config_fields.get("ENABLE_CLOUDFLARE_DNS") == "true":
+            if config_fields.get("CIVIFORM_CLOUD_PROVIDER") != "aws":
+                validation_errors.append(
+                    red(
+                        "Cloudflare DNS management is currently only supported for AWS. "
+                        f"CIVIFORM_CLOUD_PROVIDER must be 'aws', but got '{config_fields.get('CIVIFORM_CLOUD_PROVIDER')}'."
+                    ))
+
             if not config_fields.get("CLOUDFLARE_RECORD_NAME"):
                 validation_errors.append(
                     red(

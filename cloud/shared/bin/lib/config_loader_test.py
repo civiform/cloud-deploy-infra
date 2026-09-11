@@ -492,7 +492,10 @@ class TestConfigLoader(unittest.TestCase):
 
     def test_validate_config_cloudflare_dns_missing_required_fields(self):
         config_loader = ConfigLoader()
-        config_loader._config_fields = {"ENABLE_CLOUDFLARE_DNS": "true"}
+        config_loader._config_fields = {
+            "ENABLE_CLOUDFLARE_DNS": "true",
+            "CIVIFORM_CLOUD_PROVIDER": "aws",
+        }
         config_loader._infra_variable_definitions = {}
         config_loader._civiform_server_env_var_docs = {}
 
@@ -503,10 +506,28 @@ class TestConfigLoader(unittest.TestCase):
         self.assertFalse(
             any("CLOUDFLARE_API_TOKEN" in error for error in errors))
 
+    def test_validate_config_cloudflare_dns_unsupported_provider(self):
+        config_loader = ConfigLoader()
+        config_loader._config_fields = {
+            "ENABLE_CLOUDFLARE_DNS": "true",
+            "CIVIFORM_CLOUD_PROVIDER": "azure",
+            "CLOUDFLARE_RECORD_NAME": "test-record",
+            "CLOUDFLARE_ZONE_ID": "zone-123",
+        }
+        config_loader._infra_variable_definitions = {}
+        config_loader._civiform_server_env_var_docs = {}
+
+        errors = config_loader.validate_config()
+        self.assertTrue(
+            any(
+                "Cloudflare DNS management is currently only supported for AWS"
+                in error for error in errors))
+
     def test_validate_config_cloudflare_dns_valid(self):
         config_loader = ConfigLoader()
         config_loader._config_fields = {
             "ENABLE_CLOUDFLARE_DNS": "true",
+            "CIVIFORM_CLOUD_PROVIDER": "aws",
             "CLOUDFLARE_RECORD_NAME": "test-record",
             "CLOUDFLARE_ZONE_ID": "zone-123",
         }
@@ -520,6 +541,8 @@ class TestConfigLoader(unittest.TestCase):
         config_loader._config_fields = {
             "ENABLE_CLOUDFLARE_DNS":
                 "true",
+            "CIVIFORM_CLOUD_PROVIDER":
+                "aws",
             "CLOUDFLARE_RECORD_NAME":
                 "test-record",
             "CLOUDFLARE_ZONE_ID":

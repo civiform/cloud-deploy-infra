@@ -137,6 +137,20 @@ class TestCloudflareDns(unittest.TestCase):
                     terraform_template_dir=tmpdir,
                 )
 
+    @patch("cloud.shared.bin.lib.terraform.perform_apply", return_value=False)
+    def test_apply_dns_failure(self, mock_perform_apply):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("cloud.shared.bin.lib.cloudflare_dns.get_module_dir",
+                       return_value=tmpdir):
+                result = cloudflare_dns.apply_dns(
+                    self.config, "my-lb.elb.amazonaws.com")
+                self.assertFalse(result)
+                mock_perform_apply.assert_called_once_with(
+                    self.config,
+                    is_destroy=False,
+                    terraform_template_dir=tmpdir,
+                )
+
     @patch("cloud.shared.bin.lib.terraform.perform_apply", return_value=True)
     def test_apply_dns_when_disabled(self, mock_perform_apply):
         self.config._config_fields["ENABLE_CLOUDFLARE_DNS"] = "false"
@@ -152,6 +166,19 @@ class TestCloudflareDns(unittest.TestCase):
                        return_value=tmpdir):
                 result = cloudflare_dns.destroy_dns(self.config)
                 self.assertTrue(result)
+                mock_perform_apply.assert_called_once_with(
+                    self.config,
+                    is_destroy=True,
+                    terraform_template_dir=tmpdir,
+                )
+
+    @patch("cloud.shared.bin.lib.terraform.perform_apply", return_value=False)
+    def test_destroy_dns_failure(self, mock_perform_apply):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("cloud.shared.bin.lib.cloudflare_dns.get_module_dir",
+                       return_value=tmpdir):
+                result = cloudflare_dns.destroy_dns(self.config)
+                self.assertFalse(result)
                 mock_perform_apply.assert_called_once_with(
                     self.config,
                     is_destroy=True,
