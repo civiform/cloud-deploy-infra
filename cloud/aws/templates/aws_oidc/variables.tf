@@ -578,3 +578,15 @@ variable "delete_automated_db_backups" {
   type        = bool
   default     = false
 }
+
+variable "enable_cloudflare_dns" {
+  description = "Whether Cloudflare DNS management is enabled"
+  type        = bool
+  default     = false
+}
+
+variable "cloudflare_api_token_secret_arn" {
+  description = "Existing AWS secret ARN containing the Cloudflare API token. If omitted and enable_cloudflare_dns is true, a secret will be created."
+  type        = string
+  default     = null
+}

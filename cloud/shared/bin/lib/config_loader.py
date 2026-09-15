@@ -191,7 +191,33 @@ class ConfigLoader:
         errors.extend(
             self._validate_civiform_server_env_vars(
                 self._civiform_server_env_var_docs, self._config_fields))
+        errors.extend(
+            self._validate_cloudflare_dns_variables(self._config_fields))
         return errors
+
+    def _validate_cloudflare_dns_variables(self,
+                                           config_fields: dict) -> List[str]:
+        validation_errors = []
+        if config_fields.get("ENABLE_CLOUDFLARE_DNS") == "true":
+            if config_fields.get("CIVIFORM_CLOUD_PROVIDER") != "aws":
+                validation_errors.append(
+                    red(
+                        "Cloudflare DNS management is currently only supported for AWS. "
+                        f"CIVIFORM_CLOUD_PROVIDER must be 'aws', but got '{config_fields.get('CIVIFORM_CLOUD_PROVIDER')}'."
+                    ))
+
+            if not config_fields.get("CLOUDFLARE_RECORD_NAME"):
+                validation_errors.append(
+                    red(
+                        "'CLOUDFLARE_RECORD_NAME' is required when ENABLE_CLOUDFLARE_DNS is set to true. "
+                        "Please specify the DNS record name to create."))
+
+            if not config_fields.get("CLOUDFLARE_ZONE_ID"):
+                validation_errors.append(
+                    red(
+                        "'CLOUDFLARE_ZONE_ID' is required when ENABLE_CLOUDFLARE_DNS is set to true."
+                    ))
+        return validation_errors
 
     def _validate_infra_variables(
             self, infra_variable_definitions: dict,
@@ -421,6 +447,10 @@ class ConfigLoader:
     @property
     def use_local_backend(self):
         return self._config_fields.get("USE_LOCAL_BACKEND", False)
+
+    @property
+    def is_cloudflare_dns_enabled(self):
+        return self._config_fields.get("ENABLE_CLOUDFLARE_DNS") == "true"
 
     @property
     def skip_confirmations(self):

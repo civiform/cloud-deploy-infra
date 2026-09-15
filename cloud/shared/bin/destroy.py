@@ -4,11 +4,21 @@ Destroy.py destroys Civiform deployment.
 from typing import List
 
 from cloud.shared.bin.lib import terraform
+from cloud.shared.bin.lib import cloudflare_dns
+from cloud.shared.bin.lib.color import red
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 from cloud.shared.bin.lib.setup_class_loader import get_config_specific_destroy
 
 
 def run(config: ConfigLoader, params: List[str]):
+    if cloudflare_dns.is_dns_enabled(config):
+        if not cloudflare_dns.destroy_dns(config):
+            record_name = config.get_config_var('CLOUDFLARE_RECORD_NAME')
+            print(
+                red(
+                    f'\nWARNING: Failed to delete Cloudflare DNS record "{record_name}". '
+                    'Please delete this record manually in the Cloudflare dashboard to prevent '
+                    'a dangling CNAME pointing to a deleted load balancer.\n'))
     template_destroy = get_config_specific_destroy(config)
     template_destroy.pre_terraform_destroy()
     terraform.perform_apply(config, is_destroy=True)

@@ -6,7 +6,9 @@ from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_template import AwsSetupTemplate
 from cloud.shared.bin.lib.config_loader import ConfigLoader
+from cloud.shared.bin.lib.color import yellow
 from cloud.shared.bin.lib.print import print
+from cloud.shared.bin.lib import cloudflare_dns
 
 SECRETS: Dict[str, str] = {
     resources.ADFS_CLIENT_ID:
@@ -98,6 +100,16 @@ class Setup(AwsSetupTemplate):
         for name, doc in SECRETS.items():
             self._maybe_set_secret_value(
                 f'{self.config.app_prefix}-{name}', doc)
+
+        if cloudflare_dns.is_dns_enabled(self.config):
+            secret_arn = self.config.get_config_var(
+                'CLOUDFLARE_API_TOKEN_SECRET_ARN')
+            if not secret_arn:
+                self._maybe_set_secret_value(
+                    f'{self.config.app_prefix}-{resources.CLOUDFLARE_API_TOKEN_SECRET}',
+                    'Secret for the Cloudflare API token. Enter a token with Zone.DNS:Edit permissions.',
+                )
+
         if self.config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
             fetch = input(
                 "\nPOSTGRES_RESTORE_SNAPSHOT_IDENTIFIER was set. In order for the restored database to be useable, we need to find the username and password secrets stored with the app prefix where the database was originally snapshotted. If these secrets no longer exists in AWS and you say no here, you can enter the username and password manually. Fetch from previous app prefix? [Y/n] > "
@@ -121,7 +133,14 @@ class Setup(AwsSetupTemplate):
             self._maybe_change_default_db_password()
 
         self._aws_cli.wait_for_ecs_service_healthy()
-        self._print_final_message()
+        app = self.config.app_prefix
+        lb_dns = self._aws_cli.get_load_balancer_dns(
+            f'{app}-{resources.LOAD_BALANCER}')
+        cloudflare_dns_success = False
+        if cloudflare_dns.is_dns_enabled(self.config):
+            cloudflare_dns_success = cloudflare_dns.apply_dns(
+                self.config, target_dns=lb_dns)
+        self._print_final_message(cloudflare_dns_success=cloudflare_dns_success)
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):
         """
@@ -175,7 +194,7 @@ class Setup(AwsSetupTemplate):
             f'You can see the password here: {self._aws_cli.get_url_of_secret(secret_name)}'
         )
 
-    def _print_final_message(self):
+    def _print_final_message(self, cloudflare_dns_success: bool = True):
         app = self.config.app_prefix
 
         # Print info about load balancer url.
@@ -184,10 +203,23 @@ class Setup(AwsSetupTemplate):
             f'{app}-{resources.LOAD_BALANCER}')
         print(f'Server is available on url: {lb_dns}')
         print('\nNext steps to complete your Civiform setup:')
-        base_url = self.config.get_base_url()
-        print(
-            f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'
-        )
+        if cloudflare_dns.is_dns_enabled(self.config):
+            if cloudflare_dns_success:
+                record_name = self.config.get_config_var(
+                    'CLOUDFLARE_RECORD_NAME')
+                print(
+                    f'Cloudflare DNS record {record_name} successfully configured to point to {lb_dns}.'
+                )
+            else:
+                print(
+                    yellow(
+                        'WARNING: Automated Cloudflare DNS registration failed. '
+                        f'Server is available at {lb_dns}.'))
+        else:
+            base_url = self.config.get_base_url()
+            print(
+                f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'
+            )
         ses_address = self.config.get_config_var('SENDER_EMAIL_ADDRESS')
         print(
             f'Verify email address {ses_address}. If you didn\'t receive the ' +

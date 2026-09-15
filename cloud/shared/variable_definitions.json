@@ -73,5 +73,47 @@
     "secret": false,
     "tfvar": false,
     "type": "string"
+  },
+  "ENABLE_CLOUDFLARE_DNS": {
+    "description": "Optional. Whether to configure Cloudflare DNS for this deployment. Only done in new deployments. Requires using AWS cloud provider.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "CLOUDFLARE_API_TOKEN_SECRET_ARN": {
+    "description": "ARN of a AWS Secrets Manager secret containing a Cloudflare API Token. Required if ENABLE_CLOUDFLARE_DNS is true.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_ZONE_ID": {
+    "description": "Cloudflare Zone ID. Required if ENABLE_CLOUDFLARE_DNS is true.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_RECORD_NAME": {
+    "description": "DNS record name of CNAME to create in Cloudflare. Required if ENABLE_CLOUDFLARE_DNS is true.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
+  "CLOUDFLARE_PROXIED": {
+    "description": "Optional. Whether to proxy traffic for the CNAME record in Cloudflare. Default is false.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "bool"
+  },
+  "CLOUDFLARE_TTL": {
+    "description": "Optional. TTL for the Cloudflare DNS record in seconds (1 for automatic). Default is 1.",
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
   }
 }
