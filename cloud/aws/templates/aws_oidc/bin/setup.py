@@ -136,11 +136,11 @@ class Setup(AwsSetupTemplate):
         app = self.config.app_prefix
         lb_dns = self._aws_cli.get_load_balancer_dns(
             f'{app}-{resources.LOAD_BALANCER}')
-        dns_success = True
+        cloudflare_dns_success = False
         if cloudflare_dns.is_dns_enabled(self.config):
-            dns_success = cloudflare_dns.apply_dns(
+            cloudflare_dns_success = cloudflare_dns.apply_dns(
                 self.config, target_dns=lb_dns)
-        self._print_final_message(dns_success=dns_success)
+        self._print_final_message(cloudflare_dns_success=cloudflare_dns_success)
 
     def _maybe_set_secret_value(self, secret_name: str, documentation: str):
         """
@@ -194,7 +194,7 @@ class Setup(AwsSetupTemplate):
             f'You can see the password here: {self._aws_cli.get_url_of_secret(secret_name)}'
         )
 
-    def _print_final_message(self, dns_success: bool = True):
+    def _print_final_message(self, cloudflare_dns_success: bool = True):
         app = self.config.app_prefix
 
         # Print info about load balancer url.
@@ -203,17 +203,19 @@ class Setup(AwsSetupTemplate):
             f'{app}-{resources.LOAD_BALANCER}')
         print(f'Server is available on url: {lb_dns}')
         print('\nNext steps to complete your Civiform setup:')
-        if cloudflare_dns.is_dns_enabled(self.config) and dns_success:
-            record_name = self.config.get_config_var('CLOUDFLARE_RECORD_NAME')
-            print(
-                f'Cloudflare DNS record {record_name} successfully configured to point to {lb_dns}.'
-            )
-        else:
-            if cloudflare_dns.is_dns_enabled(self.config) and not dns_success:
+        if cloudflare_dns.is_dns_enabled(self.config):
+            if cloudflare_dns_success:
+                record_name = self.config.get_config_var(
+                    'CLOUDFLARE_RECORD_NAME')
+                print(
+                    f'Cloudflare DNS record {record_name} successfully configured to point to {lb_dns}.'
+                )
+            else:
                 print(
                     yellow(
                         'WARNING: Automated Cloudflare DNS registration failed. '
                         f'Server is available at {lb_dns}.'))
+        else:
             base_url = self.config.get_base_url()
             print(
                 f'In your domain registrar create a CNAME record for {base_url} to point to {lb_dns}.'

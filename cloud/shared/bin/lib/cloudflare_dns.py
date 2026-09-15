@@ -73,7 +73,7 @@ def write_tfvars(config: ConfigLoader, target_dns: str):
 def apply_dns(config: ConfigLoader, target_dns: str) -> bool:
     """Applies the cloudflare_dns Terraform configuration to create or update the DNS record."""
     if not is_dns_enabled(config):
-        return True
+        return False
 
     record_name = config.get_config_var('CLOUDFLARE_RECORD_NAME')
     print(f'\nManaging DNS record in Cloudflare: {record_name} -> {target_dns}')
@@ -101,7 +101,7 @@ def apply_dns(config: ConfigLoader, target_dns: str) -> bool:
 def destroy_dns(config: ConfigLoader) -> bool:
     """Destroys the cloudflare_dns Terraform resources."""
     if not is_dns_enabled(config):
-        return True
+        return False
 
     record_name = config.get_config_var('CLOUDFLARE_RECORD_NAME')
     print(f'\nDestroying Cloudflare DNS record: {record_name}')
@@ -121,5 +121,7 @@ def destroy_dns(config: ConfigLoader) -> bool:
     if success:
         print(f'Successfully destroyed Cloudflare DNS record: {record_name}')
     else:
-        print(f'Failed to destroy Cloudflare DNS record: {record_name}')
+        print(
+            f'Failed to destroy Cloudflare DNS record: {record_name}. Delete DNS record in Cloudflare console manually.'
+        )
     return success

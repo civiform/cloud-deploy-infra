@@ -103,7 +103,7 @@
     "type": "string"
   },
   "CLOUDFLARE_PROXIED": {
-    "description": "Optional. Whether to proxy traffic for the CNAME record in Cloudflare. Default is true.",
+    "description": "Optional. Whether to proxy traffic for the CNAME record in Cloudflare. Default is false.",
     "required": false,
     "secret": false,
     "tfvar": true,
