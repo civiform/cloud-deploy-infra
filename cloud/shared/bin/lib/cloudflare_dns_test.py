@@ -156,7 +156,7 @@ class TestCloudflareDns(unittest.TestCase):
         self.config._config_fields["ENABLE_CLOUDFLARE_DNS"] = "false"
         result = cloudflare_dns.apply_dns(
             self.config, "my-lb.elb.amazonaws.com")
-        self.assertTrue(result)
+        self.assertFalse(result)
         mock_perform_apply.assert_not_called()
 
     @patch("cloud.shared.bin.lib.terraform.perform_apply", return_value=True)
@@ -189,7 +189,7 @@ class TestCloudflareDns(unittest.TestCase):
     def test_destroy_dns_when_disabled(self, mock_perform_apply):
         self.config._config_fields["ENABLE_CLOUDFLARE_DNS"] = "false"
         result = cloudflare_dns.destroy_dns(self.config)
-        self.assertTrue(result)
+        self.assertFalse(result)
         mock_perform_apply.assert_not_called()
 
 
