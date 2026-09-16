@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "civiform_files_policy" {
     condition {
       test     = "ArnNotEquals"
       variable = "aws:PrincipalArn"
-      values   = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+      values   = [module.civiform_app.task_execution_role_arn]
     }
   }
   statement {
@@ -62,7 +62,7 @@ data "aws_iam_policy_document" "civiform_files_policy" {
     "${aws_s3_bucket.civiform_files_s3.arn}/*"]
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+      identifiers = [module.civiform_app.task_execution_role_arn]
     }
   }
 }
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     "${aws_s3_bucket.civiform_public_files_s3.arn}/*"]
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.civiform_ecs_task_execution_role.arn]
+      identifiers = [module.civiform_app.task_execution_role_arn]
     }
   }
   # Allows anyone to view program images.
