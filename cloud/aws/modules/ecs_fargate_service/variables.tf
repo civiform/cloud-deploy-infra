@@ -22,7 +22,7 @@ variable "ecs_cluster_arn" {
 variable "desired_count" {
   description = "(Optional) The number of instances of the task definition to place and keep running. Defaults to 1."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "tags" {
