@@ -60,6 +60,14 @@ accounts:
         - type: glob
           property: "DomainName"
           value: "*.civiform.dev"
+      # AWS-managed defaults that can't be deleted. Remove these filters once
+      # aws-nuke filters them itself: https://github.com/ekristen/aws-nuke/issues/1039
+      ElasticacheUser:
+        - property: "UserName"
+          value: "default.iam-user"
+      ElasticacheUserGroup:
+        - property: "ID"
+          value: "default.iam-user-group"
       IAMOpenIDConnectProvider:
         - type: glob
           value: "arn:aws:iam::*:oidc-provider/token.actions.githubusercontent.com"
