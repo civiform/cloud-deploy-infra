@@ -15,6 +15,7 @@ if ! which terraform >/dev/null; then
 fi
 
 roots=(
+  cloud/aws/modules/ecs_fargate_service/tests/external_lb
   cloud/aws/templates/aws_oidc
   cloud/aws/templates/aws_oidc/setup
   cloud/azure

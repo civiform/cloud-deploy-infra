@@ -39,8 +39,9 @@ variable "task_definition_arn" {
 # AWS ECS SERVICE network_configuration BLOCK
 #------------------------------------------------------------------------------
 variable "public_subnets" {
-  description = "The public subnets associated with the task or service."
+  description = "The public subnets associated with the task or service. Only used when create_load_balancer is true."
   type        = list(any)
+  default     = []
 }
 
 variable "private_subnets" {
@@ -53,6 +54,26 @@ variable "private_subnets" {
 #------------------------------------------------------------------------------
 variable "container_name" {
   description = "Name of the running container"
+}
+
+#------------------------------------------------------------------------------
+# APPLICATION LOAD BALANCER
+#------------------------------------------------------------------------------
+variable "create_load_balancer" {
+  description = <<-EOT
+    Whether to create a dedicated Application Load Balancer for this service.
+    When false, no ALB, listeners, or LB security group are created; the caller is
+    responsible for routing traffic to the target group exposed by the
+    lb_https_target_group_arn output, and must set existing_lb_security_group_id.
+  EOT
+  type        = bool
+  default     = true
+}
+
+variable "existing_lb_security_group_id" {
+  description = "Security group ID of the externally managed load balancer, used to allow ingress to the ECS tasks. Required when create_load_balancer is false; ignored otherwise."
+  type        = string
+  default     = null
 }
 
 variable "lb_internal" {

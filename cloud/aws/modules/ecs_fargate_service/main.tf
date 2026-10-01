@@ -18,21 +18,25 @@ locals {
   # with previous deploys to avoid destroying and recreating a bunch of
   # resources.
   name_prefix = "${var.app_prefix}-civiform"
+
+  # Resolves to the module-managed SG when we create the LB, otherwise to the
+  # caller's. Used for the ECS task ingress rule.
+  lb_security_group_id = var.create_load_balancer ? aws_security_group.lb_access_sg[0].id : var.existing_lb_security_group_id
 }
 
 resource "aws_s3_bucket" "lb_logs" {
-  count  = var.lb_logging_enabled ? 1 : 0
+  count  = var.create_load_balancer && var.lb_logging_enabled ? 1 : 0
   bucket = "${local.name_prefix}-lb-logs"
 }
 
 resource "aws_s3_bucket_policy" "lb_logs_policy" {
-  count  = var.lb_logging_enabled ? 1 : 0
+  count  = var.create_load_balancer && var.lb_logging_enabled ? 1 : 0
   bucket = aws_s3_bucket.lb_logs[count.index].id
   policy = data.aws_iam_policy_document.lb_logs_policy[count.index].json
 }
 
 data "aws_iam_policy_document" "lb_logs_policy" {
-  count = var.lb_logging_enabled ? 1 : 0
+  count = var.create_load_balancer && var.lb_logging_enabled ? 1 : 0
   statement {
     effect = "Allow"
     principals {
@@ -50,7 +54,8 @@ data "aws_iam_policy_document" "lb_logs_policy" {
 # APPLICATION LOAD BALANCER
 #------------------------------------------------------------------------------
 resource "aws_lb" "civiform_lb" {
-  name = substr("${local.name_prefix}-lb", 0, 31)
+  count = var.create_load_balancer ? 1 : 0
+  name  = substr("${local.name_prefix}-lb", 0, 31)
 
   internal                         = var.lb_internal
   load_balancer_type               = "application"
@@ -61,7 +66,7 @@ resource "aws_lb" "civiform_lb" {
   enable_cross_zone_load_balancing = false
   enable_http2                     = true
   ip_address_type                  = "ipv4"
-  security_groups                  = [aws_security_group.lb_access_sg.id]
+  security_groups                  = [aws_security_group.lb_access_sg[0].id]
 
   tags = merge(
     var.tags,
@@ -81,10 +86,16 @@ moved {
   to   = aws_lb.civiform_lb
 }
 
+moved {
+  from = aws_lb.civiform_lb
+  to   = aws_lb.civiform_lb[0]
+}
+
 #------------------------------------------------------------------------------
 # ACCESS CONTROL TO APPLICATION LOAD BALANCER
 #------------------------------------------------------------------------------
 resource "aws_security_group" "lb_access_sg" {
+  count       = var.create_load_balancer ? 1 : 0
   name        = "${local.name_prefix}-lb-access-sg"
   description = "Controls access to the Load Balancer"
   vpc_id      = var.vpc_id
@@ -109,9 +120,14 @@ moved {
   to   = aws_security_group.lb_access_sg
 }
 
+moved {
+  from = aws_security_group.lb_access_sg
+  to   = aws_security_group.lb_access_sg[0]
+}
+
 resource "aws_security_group_rule" "ingress_through_http" {
-  count             = var.enable_http_listener ? 1 : 0
-  security_group_id = aws_security_group.lb_access_sg.id
+  count             = var.create_load_balancer && var.enable_http_listener ? 1 : 0
+  security_group_id = aws_security_group.lb_access_sg[0].id
   type              = "ingress"
   from_port         = 80
   to_port           = 80
@@ -126,7 +142,8 @@ moved {
 }
 
 resource "aws_security_group_rule" "ingress_through_https" {
-  security_group_id = aws_security_group.lb_access_sg.id
+  count             = var.create_load_balancer ? 1 : 0
+  security_group_id = aws_security_group.lb_access_sg[0].id
   type              = "ingress"
   from_port         = 443
   to_port           = 443
@@ -138,6 +155,11 @@ resource "aws_security_group_rule" "ingress_through_https" {
 moved {
   from = module.ecs-alb[0].aws_security_group_rule.ingress_through_https["default_http"]
   to   = aws_security_group_rule.ingress_through_https
+}
+
+moved {
+  from = aws_security_group_rule.ingress_through_https
+  to   = aws_security_group_rule.ingress_through_https[0]
 }
 
 #------------------------------------------------------------------------------
@@ -179,6 +201,16 @@ resource "aws_lb_target_group" "lb_https_tgs" {
 
   lifecycle {
     create_before_destroy = true
+
+    precondition {
+      condition     = var.create_load_balancer || var.existing_lb_security_group_id != null
+      error_message = "existing_lb_security_group_id must be set when create_load_balancer is false."
+    }
+
+    precondition {
+      condition     = length("${var.app_prefix}-https-${var.https_target_port}") <= 32
+      error_message = "app_prefix is too long: target group names are capped at 32 characters, so app_prefix must be at most ${32 - length("-https-${var.https_target_port}")} characters."
+    }
   }
 
   depends_on = [aws_lb.civiform_lb]
@@ -193,8 +225,8 @@ moved {
 # AWS LOAD BALANCER - Listeners
 #------------------------------------------------------------------------------
 resource "aws_lb_listener" "lb_http_listeners" {
-  count             = var.enable_http_listener ? 1 : 0
-  load_balancer_arn = aws_lb.civiform_lb.arn
+  count             = var.create_load_balancer && var.enable_http_listener ? 1 : 0
+  load_balancer_arn = aws_lb.civiform_lb[0].arn
   port              = 80
   protocol          = "HTTP"
 
@@ -223,7 +255,8 @@ moved {
 }
 
 resource "aws_lb_listener" "lb_https_listeners" {
-  load_balancer_arn = aws_lb.civiform_lb.arn
+  count             = var.create_load_balancer ? 1 : 0
+  load_balancer_arn = aws_lb.civiform_lb[0].arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = var.ssl_policy
@@ -240,6 +273,11 @@ resource "aws_lb_listener" "lb_https_listeners" {
 moved {
   from = module.ecs-alb[0].aws_lb_listener.lb_https_listeners["default_http"]
   to   = aws_lb_listener.lb_https_listeners
+}
+
+moved {
+  from = aws_lb_listener.lb_https_listeners
+  to   = aws_lb_listener.lb_https_listeners[0]
 }
 ### end ecs-alb replacement
 
@@ -323,7 +361,7 @@ resource "aws_security_group_rule" "ingress_through_http_and_https" {
   from_port                = tostring(aws_lb_target_group.lb_https_tgs.port)
   to_port                  = tostring(aws_lb_target_group.lb_https_tgs.port)
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.lb_access_sg.id
+  source_security_group_id = local.lb_security_group_id
 }
 
 resource "aws_security_group_rule" "ingress_with_custom_cidr" {
