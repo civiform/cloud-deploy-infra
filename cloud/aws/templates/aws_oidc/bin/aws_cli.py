@@ -4,7 +4,7 @@ import json
 import time
 import inspect
 import re
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.shared.bin.lib.config_loader import ConfigLoader
@@ -80,6 +80,20 @@ class AwsCli:
         print('Secrets updated.')
         self.restart_ecs_service()
         print('ECS service has been restarted to pick up the new password.')
+
+    def get_grafana_workspace(self, workspace_name: str) -> Optional[Dict]:
+        """Returns the named Grafana workspace, or None if there is none."""
+        res = self._call_cli("grafana list-workspaces")
+        for workspace in res["workspaces"]:
+            if workspace.get("name") == workspace_name:
+                return workspace
+        return None
+
+    def get_grafana_upgrade_versions(self, workspace_id: str) -> List[str]:
+        """Returns the versions the workspace can currently be upgraded to."""
+        res = self._call_cli(
+            f"grafana list-versions --workspace-id={workspace_id}")
+        return res["grafanaVersions"]
 
     def restart_ecs_service(self):
         """

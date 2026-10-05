@@ -1,5 +1,6 @@
 import textwrap
 import os
+import subprocess
 
 from cloud.aws.templates.aws_oidc.bin import resources
 from cloud.aws.templates.aws_oidc.bin.aws_cli import AwsCli
@@ -8,6 +9,8 @@ from cloud.shared.bin.lib.print import print
 from cloud.shared.bin.lib.color import red, yellow, cyan
 from cloud.shared.bin.lib.config_loader import ConfigLoader
 
+MINIMUM_GRAFANA_VERSION = '10.4'
+
 
 def run(config: ConfigLoader):
     aws = AwsCli(config)
@@ -15,6 +18,7 @@ def run(config: ConfigLoader):
     if not config.is_test():
         _check_application_secret_length(config, aws)
         _check_for_postgres_upgrade(config, aws)
+        _check_for_grafana_upgrade(config, aws)
 
     if config.get_config_var('POSTGRES_RESTORE_SNAPSHOT_IDENTIFIER'):
         answer = input(
@@ -171,3 +175,99 @@ def _check_for_postgres_upgrade(config: ConfigLoader, aws: AwsCli):
                 cyan(
                     f'Proceeding with upgrade to PostgreSQL {config.get_config_var("POSTGRESQL_VERSION")}.'
                 ))
+
+
+def _parse_version(version: str) -> tuple:
+    """Parses '10.4' into (10, 4) so versions can be compared numerically."""
+    return tuple(int(part) for part in version.split('.'))
+
+
+def _check_for_grafana_upgrade(config: ConfigLoader, aws: AwsCli):
+    """
+    Sets GRAFANA_VERSION when the workspace needs upgrading, so Terraform
+    applies it. Amazon Managed Grafana rejects downgrades and upgrades one
+    version at a time, so grafana_version is not a literal in monitoring.tf
+    and the next step is taken from the versions AWS offers.
+    """
+    workspace_name = f'{config.app_prefix}-{resources.GRAFANA_WORKSPACE}'
+
+    try:
+        workspace = aws.get_grafana_workspace(workspace_name)
+    except subprocess.CalledProcessError:
+        print(
+            yellow(
+                f'Could not read the Grafana workspace {workspace_name} to check its version. Skipping the Grafana version check and leaving the workspace as it is.'
+            ))
+        return
+
+    if workspace is None:
+        return
+
+    current_version = workspace['grafanaVersion']
+    specified_version = config.get_config_var('GRAFANA_VERSION')
+    target_version = specified_version or MINIMUM_GRAFANA_VERSION
+
+    try:
+        current = _parse_version(current_version)
+        target = _parse_version(target_version)
+    except ValueError:
+        print(
+            yellow(
+                f'Could not parse the Grafana version {workspace_name} is running ({current_version}) or the target version ({target_version}) as numeric versions. Skipping the Grafana version check and leaving the workspace as it is.'
+            ))
+        return
+
+    if current > target:
+        if specified_version:
+            print(
+                red(
+                    f'GRAFANA_VERSION is set to {specified_version}, but {workspace_name} is already running Grafana {current_version}. Amazon Managed Grafana does not support downgrades. Remove GRAFANA_VERSION from your civiform_config.sh or set it to {current_version} or newer.'
+                ))
+            exit(1)
+        return
+
+    if current == target:
+        return
+
+    # Take the largest offered version that does not pass the target.
+    try:
+        available_versions = aws.get_grafana_upgrade_versions(workspace['id'])
+    except subprocess.CalledProcessError:
+        print(
+            yellow(
+                f'Could not list the Grafana versions available to {workspace_name}. Skipping the Grafana upgrade and leaving the workspace as it is.'
+            ))
+        return
+
+    steps = []
+    for version in available_versions:
+        try:
+            parsed = _parse_version(version)
+        except ValueError:
+            continue
+        if current < parsed <= target:
+            steps.append((parsed, version))
+
+    if not steps:
+        print(
+            yellow(
+                textwrap.dedent(
+                    f'''
+                {workspace_name} is running Grafana {current_version}, which is older than the {target_version} this version of CiviForm expects, but AWS does not currently offer an upgrade towards it for this workspace. The versions it does offer are: {", ".join(available_versions) or "none"}.
+
+                You can upgrade from the workspace page in the AWS console, or by setting GRAFANA_VERSION in your civiform_config.sh. Support for Grafana 9.4 in Amazon Managed Grafana ends on 2026-12-20.
+                ''')))
+        return
+
+    _, next_version = max(steps)
+    remaining = '' if next_version == target_version else f' This is one step towards {target_version}; later deploys will keep upgrading until the workspace reaches it.'
+
+    print(
+        cyan(
+            textwrap.dedent(
+                f'''
+        Upgrading the {workspace_name} Grafana workspace from version {current_version} to {next_version}.{remaining}
+
+        The workspace is briefly unavailable while it upgrades. This does not affect the CiviForm application itself, only the Grafana dashboards. Grafana 10 moves alerting to unified Grafana Alerting, which migrates any alert rules you created by hand: https://docs.aws.amazon.com/grafana/latest/userguide/v10-alerts.html
+        ''')))
+    config.add_config_value('GRAFANA_VERSION', next_version)
