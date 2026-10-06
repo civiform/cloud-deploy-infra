@@ -322,7 +322,7 @@ variable "ssl_certificate_arn" {
 
 variable "fargate_desired_task_count" {
   type        = number
-  description = "Number of Civiform server tasks to run. Can be set to 0 to shutdown server."
+  description = "Initial number of Civiform server tasks. Only applied when the service is created; after that the autoscaler manages the count."
 }
 
 variable "ecs_task_cpu" {

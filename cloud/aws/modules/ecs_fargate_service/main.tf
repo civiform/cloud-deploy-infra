@@ -328,6 +328,11 @@ resource "aws_ecs_service" "service" {
       Name = "${local.name_prefix}-ecs-tasks-sg"
     },
   )
+
+  # The autoscaler owns the task count after creation; don't reset it on deploy.
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 }
 
 #------------------------------------------------------------------------------
