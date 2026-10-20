@@ -338,3 +338,595 @@ run "scraper_reservation_not_below_scraper_memory_fails" {
     output.validate_metrics_scraper_memory_reservation,
   ]
 }
+
+# ---------------------------------------------------------------------------
+# Alarms: actions wiring, dimensions, and per-alarm toggles
+# ---------------------------------------------------------------------------
+#
+# alarms.tf has ten alarm resources, each count 0/1. The run blocks below
+# gather them with concat() so an assertion can sweep every alarm that the
+# run block's variables created. The DB-backed dimension values are unknown
+# at plan time (the data source waits on the DB resource), but the map keys
+# are known, so length() on the dimensions map still works.
+
+run "alarms_without_email_have_no_actions" {
+  command = plan
+
+  variables {
+    civiform_alarm_email = ""
+
+    rds_create_high_cpu_alarm                  = true
+    rds_create_high_queue_depth_alarm          = true
+    rds_create_low_disk_space_alarm            = true
+    rds_create_low_memory_alarm                = true
+    rds_create_low_cpu_credit_alarm            = true
+    rds_create_low_disk_burst_alarm            = true
+    rds_create_swap_alarm                      = true
+    rds_create_anomaly_alarm                   = true
+    rds_create_transaction_id_wraparound_alarm = true
+    ecs_create_high_memory_alarm               = true
+  }
+
+  assert {
+    condition     = length(aws_sns_topic.civiform_alert_topic) == 0 && length(aws_sns_topic_subscription.civiform_alert_subscription) == 0
+    error_message = "no SNS topic or subscription without an alarm email"
+  }
+
+  assert {
+    condition = alltrue([
+      for alarm in concat(
+        aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+        aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+        aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+        aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+        aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+        aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+        aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+        aws_cloudwatch_metric_alarm.connection_count_anomalous,
+        aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+        aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+      ) : length(alarm.alarm_actions) == 0
+    ])
+    error_message = "every alarm must have empty alarm_actions when no alarm email is set"
+  }
+}
+
+run "alarms_with_email_have_one_action" {
+  command = plan
+
+  variables {
+    civiform_alarm_email = "alerts@fixture.example"
+
+    rds_create_high_cpu_alarm                  = true
+    rds_create_high_queue_depth_alarm          = true
+    rds_create_low_disk_space_alarm            = true
+    rds_create_low_memory_alarm                = true
+    rds_create_low_cpu_credit_alarm            = true
+    rds_create_low_disk_burst_alarm            = true
+    rds_create_swap_alarm                      = true
+    rds_create_anomaly_alarm                   = true
+    rds_create_transaction_id_wraparound_alarm = true
+    ecs_create_high_memory_alarm               = true
+  }
+
+  assert {
+    condition     = length(aws_sns_topic.civiform_alert_topic) == 1 && length(aws_sns_topic_subscription.civiform_alert_subscription) == 1
+    error_message = "an alarm email must create one SNS topic and one subscription"
+  }
+
+  assert {
+    condition     = aws_sns_topic_subscription.civiform_alert_subscription[0].protocol == "email" && aws_sns_topic_subscription.civiform_alert_subscription[0].endpoint == "alerts@fixture.example"
+    error_message = "the SNS subscription must email the configured address"
+  }
+
+  assert {
+    condition = alltrue([
+      for alarm in concat(
+        aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+        aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+        aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+        aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+        aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+        aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+        aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+        aws_cloudwatch_metric_alarm.connection_count_anomalous,
+        aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+        aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+      ) : length(alarm.alarm_actions) == 1
+    ])
+    error_message = "every alarm must have exactly one alarm action when an alarm email is set"
+  }
+}
+
+run "alarms_have_dimensions" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = true
+    rds_create_high_queue_depth_alarm          = true
+    rds_create_low_disk_space_alarm            = true
+    rds_create_low_memory_alarm                = true
+    rds_create_low_cpu_credit_alarm            = true
+    rds_create_low_disk_burst_alarm            = true
+    rds_create_swap_alarm                      = true
+    rds_create_anomaly_alarm                   = true
+    rds_create_transaction_id_wraparound_alarm = true
+    ecs_create_high_memory_alarm               = true
+  }
+
+  # The anomaly alarm scopes its metric inside metric_query, so its dimensions
+  # live there rather than at the top level.
+  assert {
+    condition = anytrue([
+      for query in aws_cloudwatch_metric_alarm.connection_count_anomalous[0].metric_query :
+      anytrue([for metric in query.metric : try(length(metric.dimensions), 0) > 0])
+    ])
+    error_message = "the anomaly alarm's metric must carry dimensions"
+  }
+
+  # TODO(plans/list.md item 8): the transaction-ID wraparound alarm has no
+  # dimensions block, so it never binds to the DB instance and sits in
+  # INSUFFICIENT_DATA. It is left out of the sweep below. Once alarms.tf
+  # gives it DBInstanceIdentifier, replace this assertion with the
+  # commented-out one that follows it.
+  assert {
+    condition = alltrue([
+      for alarm in concat(
+        aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+        aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+        aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+        aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+        aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+        aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+        aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+        aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+      ) : try(length(alarm.dimensions), 0) > 0
+    ])
+    error_message = "every single-metric alarm must have a non-empty dimensions block"
+  }
+  # assert {
+  #   condition = alltrue([
+  #     for alarm in concat(
+  #       aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+  #       aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+  #       aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+  #       aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+  #       aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+  #       aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+  #       aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+  #       aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+  #       aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+  #     ) : try(length(alarm.dimensions), 0) > 0
+  #   ])
+  #   error_message = "every single-metric alarm must have a non-empty dimensions block"
+  # }
+
+  # Pins the current state of item 8 so a fix also flips this run block.
+  assert {
+    condition     = try(length(aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high[0].dimensions), 0) == 0
+    error_message = "the transaction-ID wraparound alarm has gained dimensions: plans/list.md item 8 is fixed, swap the assertions above"
+  }
+}
+
+# Per-alarm toggles. Each run block turns on exactly one rds_create_* variable
+# with every other alarm off, and asserts that one alarm, and only that one,
+# is created. That catches a toggle wired to the wrong alarm, which an
+# all-on/all-off pair would not.
+
+run "all_rds_alarms_off" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "no alarms when every toggle is off"
+  }
+}
+
+run "toggle_rds_create_high_cpu_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = true
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.cpu_utilization_too_high) == 1
+    error_message = "rds_create_high_cpu_alarm must create cpu_utilization_too_high"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_high_cpu_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_high_queue_depth_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = true
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.disk_queue_depth_too_high) == 1
+    error_message = "rds_create_high_queue_depth_alarm must create disk_queue_depth_too_high"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_high_queue_depth_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_low_disk_space_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = true
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low) == 1
+    error_message = "rds_create_low_disk_space_alarm must create disk_free_storage_space_too_low"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_low_disk_space_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_low_memory_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = true
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.memory_freeable_too_low) == 1
+    error_message = "rds_create_low_memory_alarm must create memory_freeable_too_low"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_low_memory_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_low_cpu_credit_alarm" {
+  command = plan
+
+  variables {
+    # The default db.t3.micro is burstable, which this alarm also requires.
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = true
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low) == 1
+    error_message = "rds_create_low_cpu_credit_alarm must create cpu_credit_balance_too_low on a burstable class"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_low_cpu_credit_alarm must not create any other alarm"
+  }
+}
+
+run "cpu_credit_alarm_skipped_on_non_burstable_class" {
+  command = plan
+
+  variables {
+    rds_create_low_cpu_credit_alarm = true
+    postgres_instance_class         = "db.m5.large"
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low) == 0
+    error_message = "the CPU credit alarm only applies to t2/t3/t4 instance classes"
+  }
+}
+
+run "toggle_rds_create_low_disk_burst_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = true
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.disk_burst_balance_too_low) == 1
+    error_message = "rds_create_low_disk_burst_alarm must create disk_burst_balance_too_low"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_low_disk_burst_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_swap_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = true
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.memory_swap_usage_too_high) == 1
+    error_message = "rds_create_swap_alarm must create memory_swap_usage_too_high"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_swap_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_anomaly_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = true
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.connection_count_anomalous) == 1
+    error_message = "rds_create_anomaly_alarm must create connection_count_anomalous"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_anomaly_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_rds_create_transaction_id_wraparound_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = true
+    ecs_create_high_memory_alarm               = false
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high) == 1
+    error_message = "rds_create_transaction_id_wraparound_alarm must create maximum_used_transaction_ids_too_high"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.memory_utilization_too_high,
+    )) == 0
+    error_message = "rds_create_transaction_id_wraparound_alarm must not create any other alarm"
+  }
+}
+
+run "toggle_ecs_create_high_memory_alarm" {
+  command = plan
+
+  variables {
+    rds_create_high_cpu_alarm                  = false
+    rds_create_high_queue_depth_alarm          = false
+    rds_create_low_disk_space_alarm            = false
+    rds_create_low_memory_alarm                = false
+    rds_create_low_cpu_credit_alarm            = false
+    rds_create_low_disk_burst_alarm            = false
+    rds_create_swap_alarm                      = false
+    rds_create_anomaly_alarm                   = false
+    rds_create_transaction_id_wraparound_alarm = false
+    ecs_create_high_memory_alarm               = true
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_metric_alarm.memory_utilization_too_high) == 1
+    error_message = "ecs_create_high_memory_alarm must create memory_utilization_too_high"
+  }
+
+  assert {
+    condition = length(concat(
+      aws_cloudwatch_metric_alarm.cpu_utilization_too_high,
+      aws_cloudwatch_metric_alarm.cpu_credit_balance_too_low,
+      aws_cloudwatch_metric_alarm.disk_queue_depth_too_high,
+      aws_cloudwatch_metric_alarm.disk_free_storage_space_too_low,
+      aws_cloudwatch_metric_alarm.disk_burst_balance_too_low,
+      aws_cloudwatch_metric_alarm.memory_freeable_too_low,
+      aws_cloudwatch_metric_alarm.memory_swap_usage_too_high,
+      aws_cloudwatch_metric_alarm.connection_count_anomalous,
+      aws_cloudwatch_metric_alarm.maximum_used_transaction_ids_too_high,
+    )) == 0
+    error_message = "ecs_create_high_memory_alarm must not create any other alarm"
+  }
+}
