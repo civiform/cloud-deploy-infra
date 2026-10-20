@@ -12,6 +12,7 @@
 #   cloud/aws/templates/aws_oidc/providers.tf
 #   cloud/aws/modules/setup/main.tf
 #   cloud/aws/modules/ecs_fargate_service/tests/external_lb/main.tf (this file)
+#   cloud/aws/modules/civiform_app/tests/fixture/main.tf
 terraform {
   required_providers {
     aws = {

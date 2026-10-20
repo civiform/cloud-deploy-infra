@@ -93,3 +93,34 @@ would destroy and recreate its IAM role and both task definitions.
 The two `cloudposse/ecs-container-definition/aws` module calls need no `moved`
 block. That module declares no resources or data sources; it computes JSON and
 holds no state.
+
+## Tests
+
+`tests/fixture/secrets.tftest.hcl` is a plan-only `terraform test` suite.
+Every run block plans the module against a mocked `aws` provider, so it needs
+no credentials, backend, or state, and nothing is ever applied. It covers:
+
+- Three named secrets appear in the container definition's `secrets` array
+  in both task definitions, and not in the scraper container. The array comes
+  out sorted by name whatever order the list was passed in, because the
+  cloudposse container definition module keys secrets by name; a second run
+  block passes the list reversed to pin that down.
+- The execution role policy has exactly one `secretsmanager:GetSecretValue`
+  statement, and it grants exactly those three secret ARNs.
+- The KMS statement lists exactly the key ARNs passed in.
+- An empty `kms_key_arns` fails the variable validation, through
+  `expect_failures`.
+
+The run blocks plan the module directly rather than through the fixture root's
+module call, because assertions can only address resources in the module under
+test, not inside a child module. Init still happens in `tests/fixture`, so the
+fixture's provider pin is the one the suite runs against; the module itself
+pins nothing. `tests/fixture/main.tf` is also a validate-only root with a
+minimal module call.
+
+`bin/validate` runs the suite after validating the fixture. To run it alone:
+
+```sh
+terraform -chdir=cloud/aws/modules/civiform_app/tests/fixture init -backend=false
+terraform -chdir=cloud/aws/modules/civiform_app/tests/fixture test
+```
