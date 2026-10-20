@@ -84,7 +84,33 @@ at plan time.
 
 ## Tests
 
-`cloud/aws/modules/ecs_fargate_service/tests/external_lb` is a validation-only
-root that exercises the external-load-balancer path, which no deployment
-template currently uses. `bin/validate` runs it. It is not a `terraform test`
-suite and does not apply anything.
+`tests/external_lb/topologies.tftest.hcl` is a plan-only `terraform test`
+suite. Every run block plans the module against a mocked `aws` provider, so it
+needs no credentials, backend, or state, and nothing is ever applied. It
+covers:
+
+- The external topology: no ALB, listeners, LB security group, or access-log
+  bucket; the three LB outputs are `null`; task ingress is sourced from
+  `existing_lb_security_group_id`.
+- The default topology: one of each LB resource; task ingress is sourced from
+  the module-managed security group.
+- `lb_logging_enabled` creates the access-log bucket only when the module also
+  creates the load balancer.
+- `enable_http_listener = false` drops the HTTP listener and its ingress rule.
+- Both target group preconditions, through `expect_failures`, plus a passing
+  run at the 21-character `app_prefix` cap.
+
+The run blocks plan the module directly rather than through the fixture root's
+module call, because assertions can only address resources in the module under
+test, not inside a child module. Init still happens in `tests/external_lb`, so
+the fixture's provider pin is the one the suite runs against; the module itself
+pins nothing. `tests/external_lb/main.tf` also remains a validate-only root
+that exercises the external-load-balancer path, which no deployment template
+currently uses.
+
+`bin/validate` runs the suite after validating the fixture. To run it alone:
+
+```sh
+terraform -chdir=cloud/aws/modules/ecs_fargate_service/tests/external_lb init -backend=false
+terraform -chdir=cloud/aws/modules/ecs_fargate_service/tests/external_lb test
+```

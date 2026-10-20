@@ -19,18 +19,24 @@ permissions: read-all
 jobs:
   terraform-formatting:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor from required_version in the roots, and the newest release.
+        terraform_version: ["1.16.0", "latest"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: setup terraform
         uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
         with:
+          terraform_version: ${{ matrix.terraform_version }}
           terraform_wrapper: false
 
       - name: terraform fmt
         id: tf_fmt
         run: terraform fmt -check -recursive -diff cloud
 
-      - name: terraform validate
+      - name: terraform validate and test
         run: bin/validate
 
   shell-formatting:
