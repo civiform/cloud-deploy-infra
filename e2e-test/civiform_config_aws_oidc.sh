@@ -208,7 +208,7 @@ export APP_PREFIX="e2e-test" # max 19 chars, only numbers, letters, dashes, and 
 # in AWS web console: https://console.aws.amazon.com/acm/home#/certificates/list
 # WARNING: certificate needs to be created in the same region as AWS_REGION above, make sure
 # select correct region in web AWS console when creating certificate.
-export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:296877675213:certificate/0d87a1aa-73b5-4b15-9b5e-d785137b5a8d"
+export SSL_CERTIFICATE_ARN="arn:aws:acm:us-east-1:296877675213:certificate/dbb8876c-42cb-41f7-b94c-282a872d0bd8"
 
 # REQUIRED
 # Number of Civiform server tasks to run. This value can be set to 0 to shutdown servers.
