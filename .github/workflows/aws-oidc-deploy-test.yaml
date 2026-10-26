@@ -13,7 +13,7 @@ permissions: read-all
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       SKIP_USER_INPUT: true

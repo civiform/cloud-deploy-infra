@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   run-e2e-aws-oidc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Makes it so only one instance of this workflow can run at a time:
     # https://docs.github.com/en/actions/using-jobs/using-concurrency
     concurrency: run-e2e-aws-oidc
