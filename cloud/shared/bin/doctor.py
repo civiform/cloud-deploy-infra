@@ -3,6 +3,7 @@
 from lib.check import Check
 import platform
 import re
+import sys
 
 from cloud.shared.bin.lib.print import print
 
@@ -14,6 +15,22 @@ AZURE_VERSION_REGEXP = re.compile(r'^.*\s(\d+\.\d+\.\d+).*$')
 
 if not is_linux and not is_mac:
     raise RuntimeError("Only Linux and macOS are supported.")
+
+
+class PythonVersionCheck(Check):
+    MIN_VERSION = "3.11"
+
+    remedy = f"""
+        Python must be at version {MIN_VERSION} or above.
+        https://www.python.org/downloads/
+    """
+
+    def name(self):
+        return "Python version"
+
+    def is_ok(self):
+        current_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+        return self.version_at_least(self.MIN_VERSION, current_version)
 
 
 class DockerCheck(Check):
@@ -197,6 +214,7 @@ class AzureLoginCheck(Check):
 
 
 checks = [
+    PythonVersionCheck(),
     DockerCheck(),
     TerraformCheck(),
     JavaCheck(),
