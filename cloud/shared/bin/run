@@ -71,7 +71,8 @@ fi
 #   Value found at the specified path in the JSON document
 #######################################
 function fetch_json_val() {
-  local response="$(curl -s "${2}")"
+  # --retry covers transient failures (timeouts and HTTP 408, 429 and 5xx).
+  local response="$(curl -s --retry 3 --retry-delay 5 "${2}")"
 
   if echo "${response}" | grep -q '"message": "Not Found"'; then
     # Adding a newline before the error message helps it stand out to the user
@@ -80,7 +81,23 @@ function fetch_json_val() {
     exit 1
   fi
 
-  echo "${response}" | python3 -c "import sys, json; print(json.load(sys.stdin)${3})"
+  # Any other error from GitHub (for example a rate limit) is JSON without the
+  # expected field, so print GitHub's message instead of a Python traceback.
+  echo "${response}" | python3 -c "
+import json, sys
+url = sys.argv[1]
+try:
+    data = json.load(sys.stdin)
+except ValueError:
+    print(f'\nError: the response from {url} was not valid JSON', file=sys.stderr)
+    sys.exit(1)
+try:
+    print(data${3})
+except (KeyError, TypeError):
+    message = data.get('message', data) if isinstance(data, dict) else data
+    print(f'\nError: unexpected response from {url}: {message}', file=sys.stderr)
+    sys.exit(1)
+" "${2}"
 }
 
 commit_sha=""
