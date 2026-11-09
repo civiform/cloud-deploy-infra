@@ -449,11 +449,16 @@ class TestConfigLoader(unittest.TestCase):
             )
             return env_var_docs
 
-        with patch(
-                'cloud.shared.bin.lib.config_loader.ConfigLoader._download_env_var_docs',
-                side_effect=mock_download_env_var_docs):
+        # Patch the class object directly. A string target would be resolved
+        # through importlib.import_module, which this test has mocked, so the
+        # patch would land on a MagicMock and the real download would run.
+        with patch.object(
+                ConfigLoader, '_download_env_var_docs',
+                side_effect=mock_download_env_var_docs) as mock_download:
             install_mock_env_var_docs_package(self, mock_import_module)
             env_var_docs = config_loader._load_civiform_server_env_vars()
+
+            mock_download.assert_called_once_with("v1.23.0")
             # Assert that the python module that enables the variable auto generation is downloaded
             mock_import_module.assert_called_with('env_var_docs.parser')
             self.assertEqual(
@@ -469,8 +474,10 @@ class TestConfigLoader(unittest.TestCase):
                             mode=Mode.ADMIN_READABLE)
                 }, env_var_docs)
 
+    @patch.object(
+        ConfigLoader, '_get_commit_sha_for_tag', return_value='abc123')
     @patch('urllib.request.urlopen')
-    def test_download_env_var_docs(self, mock_urlopen):
+    def test_download_env_var_docs(self, mock_urlopen, mock_get_commit_sha):
         config_loader = ConfigLoader()
 
         mock_response = io.BytesIO(
@@ -481,6 +488,11 @@ class TestConfigLoader(unittest.TestCase):
         expected = '{ "MY_VAR": { "description": "A var", "type": "string", "type": "bool"} }'
         env_var_docs = config_loader._download_env_var_docs("v1.23.0")
         self.assertEqual(env_var_docs.getvalue(), expected)
+
+        mock_get_commit_sha.assert_called_once_with("v1.23.0")
+        mock_urlopen.assert_called_once_with(
+            "https://raw.githubusercontent.com/civiform/civiform/abc123/server/conf/env-var-docs.json"
+        )
 
     def test_validate_config_cloudflare_dns_disabled(self):
         config_loader = ConfigLoader()

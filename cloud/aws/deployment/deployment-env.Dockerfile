@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     curl \
     unzip \
-    python3.10-venv \
+    python3-venv \
     default-jre \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/lib/apt/lists.d/* \
