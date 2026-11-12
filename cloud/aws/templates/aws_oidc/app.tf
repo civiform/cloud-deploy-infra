@@ -1,6 +1,6 @@
 module "ecs_cluster" {
   source  = "cn-terraform/ecs-cluster/aws"
-  version = "1.0.12"
+  version = "2.0.1"
   name    = "${var.app_prefix}-civiform"
   tags = {
     Name = "${var.app_prefix} Civiform ECS Cluster"
