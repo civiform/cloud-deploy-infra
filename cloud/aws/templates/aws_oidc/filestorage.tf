@@ -128,7 +128,10 @@ data "aws_iam_policy_document" "civiform_public_files_policy" {
     actions = ["s3:GetObject"]
     # The location of program images is controlled in the civiform repo in
     # server/app/services/cloud/PublicFileNameFormatter.java. Be sure to keep these files in sync.
-    resources = ["${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*"]
+    resources = [
+      "${aws_s3_bucket.civiform_public_files_s3.arn}/program-summary-image/program-*",
+      "${aws_s3_bucket.civiform_public_files_s3.arn}/question-image/question-*"
+    ]
     principals {
       type        = "*"
       identifiers = ["*"]
