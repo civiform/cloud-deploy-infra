@@ -174,7 +174,7 @@ module "ecs_fargate_service" {
   app_prefix                = var.app_prefix
   desired_count             = var.fargate_desired_task_count
   default_certificate_arn   = var.ssl_certificate_arn
-  ssl_policy                = "ELBSecurityPolicy-FS-1-2-Res-2020-10"
+  ssl_policy                = "ELBSecurityPolicy-TLS13-1-2-Res-2021-06"
   vpc_id                    = local.vpc_id
   task_definition_arn       = var.monitoring_stack_enabled ? module.civiform_app.civiform_with_monitoring_task_definition_arn : module.civiform_app.civiform_only_task_definition_arn
   container_name            = module.civiform_app.server_container_name
