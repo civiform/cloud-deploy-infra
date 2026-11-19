@@ -13,7 +13,7 @@ module "aws_cw_logs" {
   source                      = "cn-terraform/cloudwatch-logs/aws"
   version                     = "1.0.13"
   logs_path                   = "${var.app_prefix}-civiformlogs/"
-  log_group_retention_in_days = 0
+  log_group_retention_in_days = var.cloudwatch_log_retention_days
   tags = {
     Name = "${var.app_prefix} Civiform Cloud Watch Logs"
     Type = "Civiform Cloud Watch Logs"
@@ -24,7 +24,7 @@ module "aws_scraper_logs" {
   source                      = "cn-terraform/cloudwatch-logs/aws"
   version                     = "1.0.13"
   logs_path                   = "${var.app_prefix}-civiform-scraper-logs/"
-  log_group_retention_in_days = 0
+  log_group_retention_in_days = var.cloudwatch_log_retention_days
   tags = {
     Name = "${var.app_prefix} Scraper Logs"
     Type = "Scraper Logs"
