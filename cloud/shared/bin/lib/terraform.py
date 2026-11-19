@@ -114,6 +114,36 @@ def capture_stderr(cmd):
         popen.terminate()
 
 
+def plan_has_no_changes(
+        terraform_template_dir: str,
+        tf_vars_filename: str,
+        is_destroy=False,
+        replace_resource: Optional[str] = None) -> bool:
+    '''Returns True only if `terraform plan` succeeds and reports no changes.
+
+    `terraform apply` rewrites the remote state after refreshing it, even when
+    the plan is empty. If the checked out revision uses a newer provider
+    version than the one that last wrote the state, that upgrades the state's
+    schema, and older revisions can no longer deploy. `terraform plan` never
+    writes state, so an empty plan lets us skip the apply entirely.
+
+    Any other result (changes, or an error such as a state lock) returns False
+    so the caller runs the apply exactly as it always has.
+    '''
+    # Exit code 0 means no changes, 1 means an error, and 2 means changes.
+    plan_cmd = f'terraform -chdir={terraform_template_dir} plan -detailed-exitcode -input=false -var-file={tf_vars_filename} -compact-warnings'
+    if replace_resource:
+        plan_cmd += f' -replace={replace_resource}'
+    if is_destroy:
+        plan_cmd += ' -destroy'
+
+    print(f" - Run {plan_cmd}")
+    print(" - Checking for changes. This does not change anything.")
+    result = subprocess.run(
+        shlex.split(plan_cmd), capture_output=True, text=True)
+    return result.returncode == 0
+
+
 # TODO(#2741): When using this for Azure make sure to setup backend bucket prior to calling these functions.
 def perform_apply(
         config_loader: ConfigLoader,
@@ -139,6 +169,13 @@ def perform_apply(
 
     if config_loader.is_test():
         print(" - Test. Not applying terraform.")
+        return True
+
+    if plan_has_no_changes(terraform_template_dir, tf_vars_filename, is_destroy,
+                           replace_resource):
+        print(
+            " - No changes. Skipping terraform apply so the remote state is not rewritten."
+        )
         return True
 
     # Enable compact-warnings as we have a bunch of
