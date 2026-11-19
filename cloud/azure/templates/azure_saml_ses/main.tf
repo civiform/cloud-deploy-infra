@@ -11,7 +11,7 @@ terraform {
     random = {}
   }
   backend "azurerm" {}
-  required_version = ">= 0.14.9"
+  required_version = ">= 1.16.0"
 }
 
 module "app" {

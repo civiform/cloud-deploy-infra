@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 from lib.check import Check
+import json
 import platform
 import re
 import sys
@@ -44,13 +45,38 @@ class DockerCheck(Check):
 
 
 class TerraformCheck(Check):
-    remedy = "Need to install Terraform CLI: https://learn.hashicorp.com/tutorials/terraform/install-cli"
+    MIN_VERSION = "1.16.0"
+
+    remedy = f"""
+        Need to install Terraform CLI at version {MIN_VERSION} or above.
+        https://developer.hashicorp.com/terraform/install
+    """
 
     def name(self):
         return "Terraform CLI"
 
     def is_ok(self):
-        return self._check_command_succeeds(["terraform", "-version"])
+        output = self._get_command_output(["terraform", "version", "-json"])
+
+        # Terraform is not installed
+        if not output:
+            return False
+
+        try:
+            terraform_version = json.loads(output)["terraform_version"]
+        except (ValueError, KeyError):
+            print(f'could not determine the terraform version: got "{output}"')
+            return False
+
+        # Terraform's required_version constraint never matches a pre-release
+        # build (e.g. "1.17.0-beta1"), so treat any pre-release as unsupported.
+        if "-" in terraform_version:
+            print(
+                f'pre-release terraform versions are not supported: got "{terraform_version}"'
+            )
+            return False
+
+        return self.version_at_least(self.MIN_VERSION, terraform_version)
 
 
 class JavaCheck(Check):
