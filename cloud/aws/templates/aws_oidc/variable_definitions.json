@@ -53,6 +53,12 @@
     "tfvar": true,
     "type": "integer"
   },
+  "GRAFANA_VERSION": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "string"
+  },
   "MONITORING_STACK_ENABLED": {
     "required": false,
     "secret": false,
