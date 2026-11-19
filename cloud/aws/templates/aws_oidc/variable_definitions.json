@@ -466,5 +466,11 @@
     "secret": false,
     "tfvar": true,
     "type": "bool"
-  }  
+  },
+  "CLOUDWATCH_LOG_RETENTION_DAYS": {
+    "required": false,
+    "secret": false,
+    "tfvar": true,
+    "type": "integer"
+  }
 }

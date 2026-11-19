@@ -206,6 +206,7 @@ module "pgadmin" {
 
   secrets_kms_key_arn             = aws_kms_key.civiform_kms_key.arn
   secrets_recovery_window_in_days = local.secret_recovery_window_in_days
+  cloudwatch_log_retention_days   = var.cloudwatch_log_retention_days
 }
 
 module "dbaccess" {
